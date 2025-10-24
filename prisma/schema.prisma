@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===============================================
+// 1. Usuários (Clientes e Entregadores)
+// ===============================================
+
+model User {
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String
+  name     String
+  phone    String?
+  address  Json? // Para armazenar o endereço principal do cliente ou múltiplos endereços (requer tipagem JSON no Next.js)
+  role     Role    @default(CLIENT) // CLIENTE, RESTAURANT_OWNER, DELIVERY_PERSON, ADMIN
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relação com Pedidos
+  orders Order[]
+
+  // Relação com Restaurante (para donos de restaurante)
+  restaurant Restaurant?
+}
+
+// ===============================================
+// 2. Restaurantes (Parceiro)
+// ===============================================
+
+model Restaurant {
+  id             String  @id @default(uuid())
+  ownerId        String  @unique // ID do User que é dono deste restaurante
+  name           String
+  slug           String  @unique // Nome amigável para a URL (ex: /restaurante/hamburgueria-gourmet)
+  description    String?
+  avatarImageUrl String? // URL da imagem de logo do restaurante
+  coverImageUrl  String? // URL da imagem de capa do restaurante
+
+  // CAMPO DE CATEGORIA PARA FILTRAR
+  category RestaurantCategory @default(RESTAURANT)
+
+  // Informações de Localização e contato
+  latitude  Decimal
+  longitude Decimal
+  address   String // Endereço físicos
+
+  // Contatos
+  phones String[] // Lista de números de telefone
+
+  // Status
+  isOpen Boolean @default(true) // Aberto ou Fechado
+
+  // Relações
+  owner    User      @relation(fields: [ownerId], references: [id])
+  products Product[]
+  orders   Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ===============================================
+// 3. Produtos (Itens do Cardápio)
+// ===============================================
+
+model Product {
+  id           String   @id @default(uuid())
+  restaurantId String
+  name         String
+  description  String?
+  price        Decimal  @db.Decimal(6, 2) // Preço do item (ex: 29.90)
+  imageUrl     String? // URL da imagem do produto
+  ingredients  String[] // Lista de ingredientes (ex: ["100g de carne", "2 tomates", "cebola"])
+
+  // Categorias (ex: Hamburguer, Pizza, Sobremesa)
+  category String
+
+  // Relações
+  restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ===============================================
+// 4. Pedidos (Transação Principal)
+// ===============================================
+
+model Order {
+  id                String            @id @default(uuid())
+  userId            String // Cliente que fez o pedido
+  restaurantId      String // Restaurante que recebeu o pedido
+  totalAmount       Decimal           @db.Decimal(10, 2) // Valor total do pedido (incluindo frete)
+  deliveryFee       Decimal           @db.Decimal(6, 2) // Valor do frete
+  status            OrderStatus       @default(PENDING) // Status do pedido
+  consumptionMethod ConsumptionMethod @default(DELIVERY) // Método de consumo (delivery ou pickup)
+
+  // Local de Entrega (pode ser diferente do endereço do User)
+  deliveryAddress Json? // Endereço de entrega atual do pedido
+
+  // Relações
+  user       User        @relation(fields: [userId], references: [id])
+  restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
+  items      OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ===============================================
+// 5. Itens do Pedido (Detalhes)
+// ===============================================
+
+model OrderItem {
+  id        String @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+
+  // Preço do item no momento da compra (para histórico)
+  priceAtOrder Decimal @db.Decimal(6, 2)
+
+  // Relações
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ===============================================
+// ENUMS DE APOIO
+// ===============================================
+
+// Enum para Categorias de Restaurantes
+enum RestaurantCategory {
+  RESTAURANT // Restaurantes genéricos (Comida Brasileira, Japonesa, etc)
+  PIZZARIA
+  HAMBURGUERIA
+  SORVETERIA
+  ACAI
+  SAUDAVEL
+  DOCES
+}
+
+// Enum para Nível de Usuário
+enum Role {
+  CLIENT
+  RESTAURANT_OWNER
+  DELIVERY_PERSON
+  ADMIN
+}
+
+// Enum para Status do Pedido
+enum OrderStatus {
+  PENDING // Pendente (acabou de ser feito)
+  CONFIRMED // Confirmado pelo Restaurante
+  PREPARING // Em preparação
+  READY_FOR_PICKUP // Pronto para retirada (pelo entregador)
+  OUT_FOR_DELIVERY // A caminho
+  DELIVERED // Entregue
+  CANCELED // Cancelado
+}
+
+// Enum para Método de Consumo
+enum ConsumptionMethod {
+  DELIVERY // Entrega
+  PICKUP // Retirada no local
+  DINE_IN // Consumo no local
+}
