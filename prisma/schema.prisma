@@ -8,7 +8,7 @@ datasource db {
 }
 
 // ===============================================
-// 1. Usuários (Clientes e Entregadores)
+// Usuários (Clientes e Entregadores)
 // ===============================================
 
 model User {
@@ -31,7 +31,7 @@ model User {
 }
 
 // ===============================================
-// 2. Restaurantes (Parceiro)
+// Restaurantes (Parceiro)
 // ===============================================
 
 model Restaurant {
@@ -58,16 +58,30 @@ model Restaurant {
   isOpen Boolean @default(true) // Aberto ou Fechado
 
   // Relações
-  owner    User      @relation(fields: [ownerId], references: [id])
-  products Product[]
-  orders   Order[]
+  owner          User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  products       Product[]
+  menuCategories MenuCategory[]
+  orders         Order[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 // ===============================================
-// 3. Produtos (Itens do Cardápio)
+// Categorias de Cardápio
+// ===============================================
+model MenuCategory {
+  id           String     @id @default(uuid())
+  name         String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId String
+  products     Product[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+// ===============================================
+// Produtos (Itens do Cardápio)
 // ===============================================
 
 model Product {
@@ -80,10 +94,11 @@ model Product {
   ingredients  String[] // Lista de ingredientes (ex: ["100g de carne", "2 tomates", "cebola"])
 
   // Categorias (ex: Hamburguer, Pizza, Sobremesa)
-  category String
+  menuCategoryId String
+  menuCategory   MenuCategory @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
 
   // Relações
-  restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
+  restaurant Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
 
   createdAt DateTime @default(now())
@@ -107,8 +122,8 @@ model Order {
   deliveryAddress Json? // Endereço de entrega atual do pedido
 
   // Relações
-  user       User        @relation(fields: [userId], references: [id])
-  restaurant Restaurant  @relation(fields: [restaurantId], references: [id])
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   items      OrderItem[]
 
   createdAt DateTime @default(now())
@@ -129,8 +144,8 @@ model OrderItem {
   priceAtOrder Decimal @db.Decimal(6, 2)
 
   // Relações
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
