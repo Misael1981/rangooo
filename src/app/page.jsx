@@ -42,29 +42,16 @@ const clients = [
 
 export default function Home() {
   return (
-    <div className="">
-      {/* Hero Section com Parallax */}
-      <section className="relative min-h-screen">
-        <ParallaxSection
-          backgroundImage="/fundo.png"
-          height="min-h-screen"
-          speed={0.5}
-          overlay="bg-black/40"
-          className=""
-        >
-          {/* Conteúdo principal */}
-          <div className="flex h-full flex-col items-center justify-center p-4 text-white">
-            <HeaderHome />
+    <>
+      <div className="fixed inset-0 -z-10 bg-[url('/fundo.png')] bg-cover bg-center bg-no-repeat" />
+      <div className="flex h-full flex-col items-center justify-center gap-6 bg-black/40 p-4 text-white">
+        <HeaderHome />
 
-            <HeroSection />
+        <HeroSection />
 
-            {/* CTA Button */}
-            <ButtonsType buttons={buttons} />
-
-            <ClientsCards clients={clients} />
-          </div>
-        </ParallaxSection>
-      </section>
-    </div>
+        <ButtonsType buttons={buttons} />
+        <ClientsCards clients={clients} />
+      </div>
+    </>
   );
 }
