@@ -1,11 +1,13 @@
 import HeaderHome from "@/components/HeaderHome";
 import HeroSection from "@/components/HeroSection";
 import EstablishmentsBrowser from "@/components/EstablishmentsBrowser";
-import prisma from "@/lib/prisma";
+import { db } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function Home() {
-  // Use o client correto e trate o retorno como array
-  const establishments = await prisma.restaurant.findMany({
+  const establishments = await db.restaurant.findMany({
     select: {
       id: true,
       name: true,
