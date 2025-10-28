@@ -1,6 +1,6 @@
 const HeroSection = () => {
   return (
-    <section>
+    <section className="flex flex-col items-center justify-center gap-4">
       <h1 className="mb-6 text-center text-4xl font-bold md:text-6xl lg:text-7xl">
         Rangooo
       </h1>

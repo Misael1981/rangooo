@@ -31,14 +31,14 @@ const main = async () => {
       avatarImageUrl:
         "https://res.cloudinary.com/dsxpenevq/image/upload/v1761599120/logo-congoBurger-Photoroom_gtebnp.png",
       coverImageUrl:
-        "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQac8bHYlkBUjlHSKiuseLm2hIFzVY0OtxEPnw",
+        "https://res.cloudinary.com/dsxpenevq/image/upload/v1761659324/fachada-C_B_bvdctz.png",
       ownerId: congoOwner.id,
       category: "HAMBURGUERIA",
       latitude: -23.5505,
       longitude: -46.6333,
       address: "Av. Paulista, 1000 - São Paulo/SP",
       phones: ["+55 11 99999-9999", "+55 11 3333-3333"],
-      brandColors: ["#092c48", "#e8af44", "#ffffff"],
+      brandColors: ["#0d1c2c", "#e8af44", "#ffffff"],
     },
   });
 
@@ -359,7 +359,7 @@ const main = async () => {
       avatarImageUrl:
         "https://res.cloudinary.com/dsxpenevq/image/upload/v1761599121/logo_jk_alpgnl.svg",
       coverImageUrl:
-        "https://placehold.co/600x200/0d9488/ffffff?text=Pizza+Serverless",
+        "https://res.cloudinary.com/dsxpenevq/image/upload/v1761659324/fachada-JK_y8evr0.jpg",
       ownerId: pizzaOwner.id,
       category: "PIZZARIA",
       latitude: -23.5505,
