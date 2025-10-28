@@ -8,7 +8,12 @@ const ClientsCards = ({ clients }) => {
         <Card key={client.name} className="p-0">
           <CardContent
             className="bg-[var(--brand-primary)] relative flex h-[200px] w-[300px] flex-col items-center justify-center gap-4 rounded-lg p-4"
-            style={{ ['--brand-primary']: Array.isArray(client.brandColors) ? client.brandColors[0] : '#111827' }}
+            style={{
+              ["--brand-primary"]:
+                Array.isArray(client.brandColors) && client.brandColors[0]
+                  ? client.brandColors[0]
+                  : "#111827",
+            }}
           >
             <div className="relative h-[120px] w-[250px]">
               <Image

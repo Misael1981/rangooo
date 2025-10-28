@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const HeaderHome = () => {
   return (
-    <header className="">
+    <header className="flex items-center justify-center">
       <Image
         src="/logo-rangooo.png"
         alt="Rangooo Logo"

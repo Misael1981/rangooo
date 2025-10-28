@@ -28,7 +28,6 @@ export const metadata = {
     other: [{ rel: "mask-icon", url: "/logos.svg", color: "#0d9488" }],
   },
   manifest: "/site.webmanifest",
-  themeColor: "#0d9488",
 };
 
 export default function RootLayout({ children }) {
