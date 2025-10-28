@@ -27,7 +27,7 @@ model User {
   orders Order[]
 
   // Relação com Restaurante (para donos de restaurante)
-  restaurant Restaurant?
+  restaurants Restaurant[]
 }
 
 // ===============================================
@@ -46,13 +46,15 @@ model Restaurant {
   // CAMPO DE CATEGORIA PARA FILTRAR
   category RestaurantCategory @default(RESTAURANT)
 
-  // Informações de Localização e contato
   latitude  Decimal
   longitude Decimal
   address   String // Endereço físicos
 
   // Contatos
   phones String[] // Lista de números de telefone
+
+  // Paleta de cores da marca (array JSON de strings HEX/HSL)
+  brandColors Json?
 
   // Status
   isOpen Boolean @default(true) // Aberto ou Fechado

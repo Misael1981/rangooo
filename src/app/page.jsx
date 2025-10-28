@@ -1,46 +1,34 @@
-import ParallaxSection from "@/components/ParallaxSection";
 import HeaderHome from "@/components/HeaderHome";
 import HeroSection from "@/components/HeroSection";
 import ButtonsType from "@/components/ButtonsType";
 import ClientsCards from "@/components/ClientsCards";
-
-const buttons = [
-  {
-    label: "Todos",
-    link: "/restaurantes",
-  },
-  {
-    label: "Restaurantes",
-    link: "/restaurantes",
-  },
-  {
-    label: "Pizzarias",
-    link: "/pizzarias",
-  },
-  {
-    label: "Hamburguerias",
-    link: "/hamburguerias",
-  },
-  {
-    label: "Sorveterias",
-    link: "/sorveterias",
-  },
-];
+import { db } from "@/lib/prisma";
 
 const clients = [
   {
     name: "Congos Burger",
-    image: "/clients/logo-congoBurger.png",
+    image: "/clients/logo-congoBurger-Photoroom.png",
     color: "bg-[#092c48]",
   },
   {
     name: "Pizzaria JK",
-    image: "/clients/logo-jk.png",
+    image: "/clients/logo_jk.svg",
     color: "bg-[#000000]",
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const establishments = await db.restaurant.findMany({
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      avatarImageUrl: true,
+      brandColors: true,
+    },
+    orderBy: { name: "asc" },
+  });
+
   return (
     <>
       <div className="fixed inset-0 -z-10 bg-[url('/fundo.png')] bg-cover bg-center bg-no-repeat" />
@@ -49,8 +37,10 @@ export default function Home() {
 
         <HeroSection />
 
-        <ButtonsType buttons={buttons} />
-        <ClientsCards clients={clients} />
+        <div className="container mx-auto max-w-6xl">
+          <ButtonsType />
+        </div>
+        <ClientsCards clients={establishments} />
       </div>
     </>
   );
