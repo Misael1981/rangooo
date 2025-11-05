@@ -30,7 +30,7 @@ export default async function MenuPage({ params, searchParams }) {
   const categoriesRaw = await db.menuCategory.findMany({
     where: { restaurantId: restaurant.id },
     include: { products: true },
-    orderBy: { name: "asc" },
+    orderBy: { createdAt: "asc" },
   });
 
   const categories = categoriesRaw.map((cat) => ({

@@ -57,7 +57,7 @@ const main = async () => {
           "Quatro hambúrgueres (100% carne bovina), alface americana, queijo fatiado sabor cheddar, molho especial, cebola, picles e pão com gergilim, acompanhamento e bebida.",
         price: 39.9,
         imageUrl:
-          "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQaHB8tslkBUjlHSKiuseLm2hIFzVY0OtxEPnw",
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1762344248/1_okucta.png",
         menuCategoryId: combosCategory.id,
         restaurantId: congoRestaurant.id,
         ingredients: [
@@ -76,7 +76,7 @@ const main = async () => {
           "Dois hambúrgueres de carne 100% bovina, méquinese, a exclusiva maionese especial com sabor de carne defumada, onion rings, fatias de bacon, queijo processado sabor cheddar, o delicioso molho lácteo com queijo tipo cheddar tudo isso no pão tipo brioche trazendo uma explosão de sabores pros seus dias de glória! Acompanhamento e Bebida.",
         price: 41.5,
         imageUrl:
-          "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQeGQofnEPyQaHEV2WL8rGUs41oMICtYfNkphl",
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1762344604/2_artand.png",
         menuCategoryId: combosCategory.id,
         restaurantId: congoRestaurant.id,
         ingredients: [
@@ -96,7 +96,7 @@ const main = async () => {
           "Composto por pão tipo brioche com batata, molho Honey&Fire, bacon em fatias, alface, tomate, queijo sabor cheddar e carne 100% de peito de frango, temperada e empanada, acompanhamento e bebida.",
         price: 39.9,
         imageUrl:
-          "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQr12aTqPo3SsGjBJCaM7yhxnbDlXeL5N9dckv",
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1762344780/3_buyjr3.png",
         menuCategoryId: combosCategory.id,
         restaurantId: congoRestaurant.id,
         ingredients: [
@@ -116,7 +116,7 @@ const main = async () => {
           "Dois hambúrgueres (100% carne bovina), molho lácteo com queijo tipo cheddar, cebola ao molho shoyu e pão escuro com gergelim, acompanhamento e bebida.",
         price: 36.2,
         imageUrl:
-          "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQWdq0w8niS9XCLQu7Nb4jvBYZze16goaOqsKR",
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1762344932/4_kmwwu7.png",
         menuCategoryId: combosCategory.id,
         restaurantId: congoRestaurant.id,
         ingredients: [
@@ -227,7 +227,7 @@ const main = async () => {
         ingredients: [],
         price: 10.9,
         imageUrl:
-          "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQNd3jSNrcJroaszwjUAlM6iSO5ZTx2HV70t31",
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1762345183/5_jit9yh.png",
         menuCategoryId: frenchFriesCategory.id,
         restaurantId: congoRestaurant.id,
       },
@@ -238,7 +238,7 @@ const main = async () => {
         ingredients: [],
         price: 9.9,
         imageUrl:
-          "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQ7Y6lv9tkc0L9oMIXZsFJtwnBh2KCz3y6uSW1",
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1762345586/7_cm0me8.png",
         menuCategoryId: frenchFriesCategory.id,
         restaurantId: congoRestaurant.id,
       },
@@ -249,7 +249,7 @@ const main = async () => {
         ingredients: [],
         price: 5.9,
         imageUrl:
-          "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQ5toOZxYa1oARJCUGh4EY3x8NjXHtvZ7lnVfw",
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1762345537/6_yqiabt.png",
         menuCategoryId: frenchFriesCategory.id,
         restaurantId: congoRestaurant.id,
       },
