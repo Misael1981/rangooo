@@ -1,20 +1,32 @@
 import Image from "next/image";
 
-const LogoImage = ({ restaurant }) => {
-  const bg = Array.isArray(restaurant.brandColors)
-    ? restaurant.brandColors[0]
-    : "#111827";
+const LogoImage = ({
+  restaurant,
+  size = 120,
+  width,
+  height,
+  className,
+  style,
+  ...divProps
+}) => {
+  const w = width ?? size;
+  const h = height ?? size;
+  const bg =
+    Array.isArray(restaurant.brandColors) && restaurant.brandColors[0]
+      ? restaurant.brandColors[0]
+      : "#111827";
+
   return (
     <div
-      className="flex h-[130px] w-[130px] items-center justify-center rounded-lg p-2"
-      style={{ backgroundColor: bg }}
+      className={`relative rounded-lg ${className ?? ""}`}
+      style={{ width: w, height: h, backgroundColor: bg, ...(style ?? {}) }}
+      {...divProps}
     >
       <Image
         src={restaurant.avatarImageUrl}
         alt={restaurant.name}
-        width={120}
-        height={120}
-        className="rounded-full"
+        fill
+        className="object-contain p-2"
       />
     </div>
   );
