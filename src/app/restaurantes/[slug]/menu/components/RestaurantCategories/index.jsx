@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 const linksInfos = [
   {
     label: "Pagamentos",
-    href: "/",
+    href: "/restaurantes/congo-burger/modos-pagamento",
     icon: <BsCreditCard size={24} />,
   },
   {
