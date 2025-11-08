@@ -37,7 +37,7 @@ const main = async () => {
       category: "HAMBURGUERIA",
       latitude: -23.5505,
       longitude: -46.6333,
-      address: "Av. Paulista, 1000 - São Paulo/SP",
+      address: "Praca Comendador José Ferreira Matos, s/n, Congonhal - MG",
       socialMedia: {
         instagram: "https://www.instagram.com/congo_burger/",
         facebook: "https://www.facebook.com/congo.burger",
@@ -388,7 +388,8 @@ const main = async () => {
       socialMedia: {
         instagram: "https://www.instagram.com/pizzaria_jk/",
       },
-      address: "Rodovia JK, 406 - Congonhal/MG",
+      address:
+        "Rod. Juscelino Kubitschek de Oliveira, 989 - Centro, Congonhal - MG",
       brandColors: ["#8c110e", "#e1a432", "#000000"],
     },
   });

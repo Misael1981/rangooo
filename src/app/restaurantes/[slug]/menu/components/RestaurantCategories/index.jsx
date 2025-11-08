@@ -29,7 +29,7 @@ const RestaurantCategories = ({ restaurant }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <LogoImage restaurant={restaurant} width={56} height={56} />
-            <div>
+            <div className="max-w-[80%]">
               <h2 className="text-lg font-semibold">{restaurant.name}</h2>
               <p className="text-xs opacity-55">{restaurant.description}</p>
             </div>

@@ -10,7 +10,7 @@ const containerStyle = {
   overflow: "hidden",
 };
 
-function MapsLocation({ lat, lng, address, zoom = 15 }) {
+function MapsLocation({ lat, lng, address, zoom = 15, forceEmbed = true }) {
   const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
   const destination = hasCoords ? `${lat},${lng}` : address || "";
 
@@ -25,7 +25,7 @@ function MapsLocation({ lat, lng, address, zoom = 15 }) {
   );
 
   // Fallback: sem API key ou sem coordenadas, usa iframe embed
-  if (!isLoaded || !hasCoords) {
+  if (forceEmbed || !isLoaded || !hasCoords) {
     const q = encodeURIComponent(destination || "");
     const src = hasCoords
       ? `https://www.google.com/maps?q=${encodeURIComponent(`${lat},${lng}`)}&output=embed`

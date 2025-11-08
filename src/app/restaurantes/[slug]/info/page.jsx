@@ -17,6 +17,7 @@ export default async function Page({ params }) {
   if (!restaurant) {
     return notFound();
   }
+
   const social = restaurant?.socialMedia ?? {};
   const instagramHandle =
     typeof social.instagram === "string" && social.instagram.trim()
@@ -38,6 +39,19 @@ export default async function Page({ params }) {
       : `https://www.facebook.com/${facebookHandle.replace(/^@/, "")}`
     : null;
   const contacts = await getContactsByRestaurantId(restaurant.id);
+
+  function formatPhoneNumber(phone) {
+    // Remove o +55 e espaços extras
+    const cleaned = phone.replace("+55", "").trim();
+
+    // Usa regex pra capturar o DDD e o número
+    const match = cleaned.match(/^(\d{2})\s?(\d{4,5}-?\d{4})$/);
+
+    if (!match) return "Formato inválido";
+
+    const [, ddd, number] = match;
+    return `(${ddd}) ${number.replace("-", "-")}`;
+  }
   return (
     <div className="w-full">
       <HeaderInfosPage title="Informações" />
@@ -49,15 +63,19 @@ export default async function Page({ params }) {
           <ul className="w-full space-y-4">
             <li className="flex items-center gap-8">
               <MapPin className="inline-block h-6 w-6 text-orange-700" />
-              <span className="text-lg">{restaurant.address}</span>
+              <span className="max-w-[80%] text-lg">{restaurant.address}</span>
             </li>
             <li className="flex items-center gap-8">
               <FaWhatsapp className="inline-block h-6 w-6 text-green-500" />
-              <span className="text-lg">{contacts[0].number}</span>
+              <span className="text-lg">
+                {formatPhoneNumber(contacts[0].number)}
+              </span>
             </li>
             <li className="flex items-center gap-8">
               <FaPhoneAlt className="inline-block h-6 w-6 text-blue-500" />
-              <span className="text-lg">{contacts[1].number}</span>
+              <span className="text-lg">
+                {formatPhoneNumber(contacts[1].number)}
+              </span>
             </li>
             {instagramUrl && (
               <li className="flex items-center gap-8">
@@ -87,7 +105,7 @@ export default async function Page({ params }) {
             )}
           </ul>
         </section>
-        <section className="h-[300px] w-full max-w-[600px] rounded-md border border-solid border-gray-800 p-4">
+        <section className="h-[300px] w-full max-w-[600px] rounded-md border border-solid border-gray-800 bg-slate-100 p-4">
           <MapsLocation address={restaurant.address} />
         </section>
       </div>
