@@ -8,6 +8,7 @@ const main = async () => {
   // Limpeza (sequencial, sem transação)
   await prismaClient.product.deleteMany();
   await prismaClient.menuCategory.deleteMany();
+  await prismaClient.contactNumber.deleteMany();
   await prismaClient.restaurant.deleteMany();
   await prismaClient.user.deleteMany();
 
@@ -37,9 +38,29 @@ const main = async () => {
       latitude: -23.5505,
       longitude: -46.6333,
       address: "Av. Paulista, 1000 - São Paulo/SP",
-      phones: ["+55 11 99999-9999", "+55 11 3333-3333"],
+      socialMedia: {
+        instagram: "https://www.instagram.com/congo_burger/",
+        facebook: "https://www.facebook.com/congo.burger",
+      },
       brandColors: ["#0d1c2c", "#e8af44", "#ffffff"],
     },
+  });
+
+  await prismaClient.contactNumber.createMany({
+    data: [
+      {
+        restaurantId: congoRestaurant.id,
+        type: "WHATSAPP",
+        number: "+55 11 99999-9999",
+        isPrimary: true,
+      },
+      {
+        restaurantId: congoRestaurant.id,
+        type: "PHONE",
+        number: "+55 11 3333-3333",
+        isPrimary: false,
+      },
+    ],
   });
 
   const combosCategory = await prismaClient.menuCategory.create({
@@ -355,7 +376,7 @@ const main = async () => {
       name: "Pizzaria JK",
       slug: "pizzaria-jk",
       description:
-        "A melhor pizza de São Paulo, forno à lenha e ingredientes frescos.",
+        "A melhor pizza de Congonhal, melhor recheio e mais saboroso do país!",
       avatarImageUrl:
         "https://res.cloudinary.com/dsxpenevq/image/upload/v1761599121/logo_jk_alpgnl.svg",
       coverImageUrl:
@@ -364,10 +385,29 @@ const main = async () => {
       category: "PIZZARIA",
       latitude: -23.5505,
       longitude: -46.6333,
-      address: "Rua das Pizzas, 2000 - São Paulo/SP",
-      phones: ["+55 11 88888-8888", "+55 11 2222-2222"],
+      socialMedia: {
+        instagram: "https://www.instagram.com/pizzaria_jk/",
+      },
+      address: "Rodovia JK, 406 - Congonhal/MG",
       brandColors: ["#8c110e", "#e1a432", "#000000"],
     },
+  });
+
+  await prismaClient.contactNumber.createMany({
+    data: [
+      {
+        restaurantId: pizzaRestaurant.id,
+        type: "WHATSAPP",
+        number: "+55 35 99999-9999",
+        isPrimary: true,
+      },
+      {
+        restaurantId: pizzaRestaurant.id,
+        type: "PHONE",
+        number: "+55 35 3333-3333",
+        isPrimary: false,
+      },
+    ],
   });
 
   const classicPizzasCategory = await prismaClient.menuCategory.create({

@@ -51,7 +51,8 @@ model Restaurant {
   address   String // Endereço físicos
 
   // Contatos
-  phones String[] // Lista de números de telefone
+  contacts    ContactNumber[]
+  socialMedia Json? // Redes sociais (ex: Facebook, Instagram, Twitter)
 
   // Paleta de cores da marca (array JSON de strings HEX/HSL)
   brandColors Json?
@@ -67,6 +68,25 @@ model Restaurant {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ===============================================
+// Contatos do Restaurante
+// ===============================================
+model ContactNumber {
+  id           String       @id @default(cuid())
+  restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId String
+
+  type         ContactType
+  number       String
+  label        String?
+  isPrimary    Boolean      @default(false)
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([restaurantId, type])
 }
 
 // ===============================================
@@ -192,4 +212,9 @@ enum ConsumptionMethod {
   DELIVERY // Entrega
   PICKUP // Retirada no local
   DINE_IN // Consumo no local
+}
+
+enum ContactType {
+  PHONE
+  WHATSAPP
 }

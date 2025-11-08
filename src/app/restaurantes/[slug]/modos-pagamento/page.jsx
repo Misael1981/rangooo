@@ -1,30 +1,12 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
-import { ChevronLeftIcon } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { FaMoneyBillWave, FaCreditCard } from "react-icons/fa";
 import { MdOutlinePix } from "react-icons/md";
+import HeaderInfosPage from "../components/HeaderInfosPage";
 
 export default function ModosPagamento() {
-  const router = useRouter();
-  const handleBack = () => {
-    router.back();
-  };
   return (
     <div className="w-full">
-      <div className="flex items-center gap-2 bg-red-600 p-4">
-        <Button
-          variant="secondary"
-          size="icon"
-          className="rounded-full"
-          onClick={handleBack}
-        >
-          <ChevronLeftIcon />
-        </Button>
-        <h1 className="text-2xl font-bold text-white">Formas de Pagamento</h1>
-      </div>
+      <HeaderInfosPage title="Formas de Pagamento" />
       <section className="p-4">
         <ul className="space-y-6">
           <li className="flex items-center gap-4 text-2xl">

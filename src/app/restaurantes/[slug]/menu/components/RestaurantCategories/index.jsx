@@ -5,25 +5,24 @@ import Link from "next/link";
 import { BsCreditCard, BsClock, BsInfoCircle } from "react-icons/bs";
 import { Separator } from "@/components/ui/separator";
 
-const linksInfos = [
-  {
-    label: "Pagamentos",
-    href: "/restaurantes/congo-burger/modos-pagamento",
-    icon: <BsCreditCard size={24} />,
-  },
-  {
-    label: "Horários",
-    href: "/",
-    icon: <BsClock size={24} />,
-  },
-  {
-    label: "Informações",
-    href: "/",
-    icon: <BsInfoCircle size={24} />,
-  },
-];
-
 const RestaurantCategories = ({ restaurant }) => {
+  const linksInfos = [
+    {
+      label: "Pagamentos",
+      href: `/restaurantes/${restaurant.slug}/modos-pagamento`,
+      icon: <BsCreditCard size={24} />,
+    },
+    {
+      label: "Horários",
+      href: `/restaurantes/${restaurant.slug}/horarios`,
+      icon: <BsClock size={24} />,
+    },
+    {
+      label: "Informações",
+      href: `/restaurantes/${restaurant.slug}/info`,
+      icon: <BsInfoCircle size={24} />,
+    },
+  ];
   return (
     <section className="relative z-50 mt-[-1.5rem] space-y-4 rounded-t-3xl bg-white p-4">
       <div className="space-y-2">
@@ -64,7 +63,7 @@ const RestaurantCategories = ({ restaurant }) => {
         <h4>Funcionamento</h4>
         <p className="text-lg text-green-500">Aberto</p>
       </div>
-      <Separator className="my-4 bg-gray-500" />
+      <Separator className="my-4 bg-gray-300" />
     </section>
   );
 };
