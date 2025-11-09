@@ -4,6 +4,7 @@ import ProductDetails from "./components/ProductDetails";
 import { notFound } from "next/navigation";
 import { toPlain } from "@/lib/utils";
 import ProductDescription from "./components/ProductDescription";
+import AddToBagButton from "./components/AddToBagButton";
 
 export default async function ProductPage({ params }) {
   const { slug, productId } = await params;
@@ -27,6 +28,7 @@ export default async function ProductPage({ params }) {
       <HeaderMenu image={product.imageUrl} alt={product.name} />
       <ProductDetails product={productPlain} restaurant={restaurantPlain} />
       <ProductDescription product={productPlain} />
+      <AddToBagButton product={productPlain} />
     </div>
   );
 }
