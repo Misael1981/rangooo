@@ -8,21 +8,23 @@ import {
 } from "@/components/ui/sheet";
 import { useContext } from "react";
 import { CartContext } from "../../contexts/cart";
+import CartItem from "../CartItem";
 
 const SheetCart = () => {
   const { isOpen, toggleCart, products } = useContext(CartContext);
   return (
     <Sheet open={isOpen} onOpenChange={toggleCart}>
-      <SheetContent>
+      <SheetContent className="w-[90%]">
         <SheetHeader>
-          <SheetTitle>Sacola</SheetTitle>
+          <SheetTitle className="text-left">Sacola</SheetTitle>
         </SheetHeader>
-        {products.map((product, index) => (
-          <div key={index}>
-            <p>{product.name}</p>
-            <p>{product.quantity}</p>
+        <section className="mt-6 space-y-2">
+          <div>
+            {products.map((product, index) => (
+              <CartItem key={index} product={product} />
+            ))}
           </div>
-        ))}
+        </section>
       </SheetContent>
     </Sheet>
   );
