@@ -1,5 +1,6 @@
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
+import { CartProvider } from "./restaurantes/[slug]/menu/contexts/cart";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,7 +34,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.className} antialiased`}>{children}</body>
+      <body className={`${inter.className} antialiased`}>
+        <CartProvider>{children}</CartProvider>
+      </body>
     </html>
   );
 }
