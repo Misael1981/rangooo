@@ -2,13 +2,13 @@ import Image from "next/image";
 
 const Products = ({ products }) => {
   return (
-    <div className="space-y-6 p-2">
+    <div className="space-y-6 p-4">
       {products.map((product) => (
         <div
           key={product.id}
-          className="flex items-center gap-8 rounded-md p-4 shadow-2xl"
+          className="flex items-center gap-8 rounded-md border border-gray-300 p-4 shadow-lg"
         >
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h3 className="text-sm font-medium">{product.name}</h3>
             <p className="line-clamp-2 text-xs text-muted-foreground">
               {product.description}
