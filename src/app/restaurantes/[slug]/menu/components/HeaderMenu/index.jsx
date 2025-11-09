@@ -11,7 +11,7 @@ const HeaderMenu = ({ image, alt }) => {
     router.back();
   };
   return (
-    <div className="relative h-[250px] w-full">
+    <div className="relative min-h-[332px] w-full">
       <div className="absolute left-0 top-0 z-10 h-full w-full bg-black/50" />
       <Button
         variant="secondary"

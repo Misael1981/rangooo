@@ -20,14 +20,20 @@ export default async function ProductPage({ params }) {
     notFound();
   }
 
+  if (product.restaurant.slug !== slug) {
+    notFound();
+  }
+
   const productPlain = toPlain(product);
   const restaurantPlain = productPlain.restaurant;
 
   return (
-    <div>
+    <div className="flex flex-col">
       <HeaderMenu image={product.imageUrl} alt={product.name} />
       <ProductDetails product={productPlain} restaurant={restaurantPlain} />
-      <ProductDescription product={productPlain} />
+      <div className="flex-auto">
+        <ProductDescription product={productPlain} />
+      </div>
       <AddToBagButton product={productPlain} />
     </div>
   );
