@@ -4,15 +4,24 @@ import LogoImage from "@/app/restaurantes/[slug]/components/LogoImage";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/helpers/format-currency";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { CartContext } from "../../../contexts/cart";
+import ProductDescription from "../ProductDescription";
+import AddToBagButton from "../AddToBagButton";
 
 const ProductDetails = ({ product, restaurant }) => {
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useContext(CartContext);
+
   const handleDecreaseQuantity = () => {
     setQuantity((prevQuantity) => Math.max(prevQuantity - 1, 1));
   };
   const handleIncreaseQuantity = () => {
     setQuantity((prevQuantity) => prevQuantity + 1);
+  };
+
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
   };
   return (
     <section className="">
@@ -52,6 +61,10 @@ const ProductDetails = ({ product, restaurant }) => {
           </div>
         </div>
       </div>
+      <div className="flex-auto">
+        <ProductDescription product={product} />
+      </div>
+      <AddToBagButton product={product} quantity={quantity} />
     </section>
   );
 };

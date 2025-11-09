@@ -31,10 +31,6 @@ export default async function ProductPage({ params }) {
     <div className="flex flex-col">
       <HeaderMenu image={product.imageUrl} alt={product.name} />
       <ProductDetails product={productPlain} restaurant={restaurantPlain} />
-      <div className="flex-auto">
-        <ProductDescription product={productPlain} />
-      </div>
-      <AddToBagButton product={productPlain} />
     </div>
   );
 }
