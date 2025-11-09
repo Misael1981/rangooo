@@ -3,6 +3,7 @@ import HeaderMenu from "../components/HeaderMenu";
 import ProductDetails from "./components/ProductDetails";
 import { notFound } from "next/navigation";
 import { toPlain } from "@/lib/utils";
+import ProductDescription from "./components/ProductDescription";
 
 export default async function ProductPage({ params }) {
   const { slug, productId } = await params;
@@ -22,9 +23,10 @@ export default async function ProductPage({ params }) {
   const restaurantPlain = productPlain.restaurant;
 
   return (
-    <div className="">
+    <div>
       <HeaderMenu image={product.imageUrl} alt={product.name} />
       <ProductDetails product={productPlain} restaurant={restaurantPlain} />
+      <ProductDescription product={productPlain} />
     </div>
   );
 }

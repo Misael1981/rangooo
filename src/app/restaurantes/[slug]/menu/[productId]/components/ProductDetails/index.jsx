@@ -15,9 +15,9 @@ const ProductDetails = ({ product, restaurant }) => {
     setQuantity((prevQuantity) => prevQuantity + 1);
   };
   return (
-    <section className="relative">
-      <div className="absolute -top-5 left-0 right-0 z-50 rounded-t-3xl bg-white/90 p-4">
-        <div>
+    <section className="">
+      <div className="relative -top-5 z-50 rounded-t-3xl bg-white/90 px-4">
+        <div className="pt-4">
           <div className="flex items-center gap-2">
             <LogoImage
               restaurant={restaurant}
