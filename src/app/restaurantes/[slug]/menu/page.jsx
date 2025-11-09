@@ -71,9 +71,12 @@ export default async function MenuPage({ params, searchParams }) {
   return (
     <div className="w-full">
       {/* Exemplo de uso: passe para seu componente de categorias */}
-      <HeaderMenu restaurant={restaurant} />
+      <HeaderMenu
+        image={restaurant.coverImageUrl}
+        alt="Imagem do restaurante"
+      />
       <RestaurantCategories restaurant={restaurant} categories={categories} />
-      <CategoriesProducts categories={categories} />
+      <CategoriesProducts categories={categories} slug={slug} />
     </div>
   );
 }

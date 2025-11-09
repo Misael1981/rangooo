@@ -5,7 +5,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import Products from "../Products";
 
-const CategoriesProducts = ({ categories }) => {
+const CategoriesProducts = ({ categories, slug }) => {
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
@@ -30,7 +30,7 @@ const CategoriesProducts = ({ categories }) => {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
       <h3 className="px-5 pt-2 font-semibold">{selectedCategory.name}</h3>
-      <Products products={selectedCategory.products} />
+      <Products products={selectedCategory.products} slug={slug} />
     </section>
   );
 };

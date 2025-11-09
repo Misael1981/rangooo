@@ -5,7 +5,7 @@ import { ChevronLeftIcon, ScrollTextIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-const HeaderMenu = ({ restaurant }) => {
+const HeaderMenu = ({ image, alt }) => {
   const router = useRouter();
   const handleBack = () => {
     router.back();
@@ -21,12 +21,7 @@ const HeaderMenu = ({ restaurant }) => {
       >
         <ChevronLeftIcon />
       </Button>
-      <Image
-        src={restaurant.coverImageUrl}
-        alt={restaurant.name}
-        fill
-        className="object-cover"
-      />
+      <Image src={image} alt={alt} fill className="object-cover" />
       <Button
         variant="secondary"
         size="icon"

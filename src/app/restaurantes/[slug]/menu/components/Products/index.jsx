@@ -1,11 +1,13 @@
 import Image from "next/image";
+import Link from "next/link";
 
-const Products = ({ products }) => {
+const Products = ({ products, slug }) => {
   return (
     <div className="space-y-6 p-4">
       {products.map((product) => (
-        <div
+        <Link
           key={product.id}
+          href={`/restaurantes/${slug}/menu/${product.id}`}
           className="flex items-center gap-8 rounded-md border border-gray-300 p-4 shadow-lg"
         >
           <div className="space-y-1">
@@ -28,7 +30,7 @@ const Products = ({ products }) => {
               className="rounded-lg object-contain"
             />
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
