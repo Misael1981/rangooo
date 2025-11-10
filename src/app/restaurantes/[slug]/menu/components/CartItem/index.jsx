@@ -8,7 +8,7 @@ import { useContext } from "react";
 import { CartContext } from "../../contexts/cart";
 
 const CartItem = ({ product }) => {
-  const { decreaseProductQuantity, increaseProductQuantity } =
+  const { decreaseProductQuantity, increaseProductQuantity, removeProduct } =
     useContext(CartContext);
   return (
     <div className="flex items-center justify-between">
@@ -47,7 +47,11 @@ const CartItem = ({ product }) => {
           </div>
         </div>
       </div>
-      <Button className="h-7 w-7" variant="destructive">
+      <Button
+        className="h-7 w-7"
+        variant="destructive"
+        onClick={() => removeProduct(product.id)}
+      >
         <TrashIcon />
       </Button>
     </div>
