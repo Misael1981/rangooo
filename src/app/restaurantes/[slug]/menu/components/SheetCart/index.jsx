@@ -12,7 +12,7 @@ import CartItem from "../CartItem";
 import { Button } from "@/components/ui/button";
 
 function SheetCart() {
-  const { isOpen, toggleCart, products } = useContext(CartContext);
+  const { isOpen, toggleCart, products, total } = useContext(CartContext);
   return (
     <Sheet open={isOpen} onOpenChange={toggleCart}>
       <SheetContent className="flex h-full w-[90%] flex-col p-0">
@@ -26,10 +26,19 @@ function SheetCart() {
           ))}
         </div>
 
-        <div className="border-t border-gray-300 bg-white p-4">
-          <Button className="h-10 w-full" variant="default">
-            Finalizar pedido
-          </Button>
+        <div className="space-y-4 p-4">
+          <div className="flex items-center justify-between rounded-md border border-gray-300 bg-slate-100 p-4">
+            <span className="text-lg font-bold">Total</span>
+            <span className="text-lg font-bold text-green-500">
+              R$ {total.toFixed(2)}
+            </span>
+          </div>
+
+          <div className="border-t border-gray-300 bg-white pt-4">
+            <Button className="h-10 w-full" variant="default">
+              Finalizar pedido
+            </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
