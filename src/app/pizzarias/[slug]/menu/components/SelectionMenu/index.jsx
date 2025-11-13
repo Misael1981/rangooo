@@ -9,6 +9,7 @@ import Products from "@/components/Products";
 
 const SelectionMenu = ({ categories, slug, segment }) => {
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
+  const [viewMode, setViewMode] = useState("single");
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
   };
@@ -34,12 +35,15 @@ const SelectionMenu = ({ categories, slug, segment }) => {
       </ScrollArea>
       <Separator className="my-4 bg-gray-300" />
       <section>
-        {/pizza/i.test(String(selectedCategory?.name)) && <ViewModeToggle />}
+        {/pizza/i.test(String(selectedCategory?.name)) && (
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+        )}
         <h3 className="px-5 pt-2 font-semibold">{selectedCategory.name}</h3>
         <Products
           products={selectedCategory.products}
           slug={slug}
           segment={segment}
+          viewMode={viewMode}
         />
       </section>
     </div>
