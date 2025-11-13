@@ -2,20 +2,21 @@
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
-import Products from "../Products";
-import { Separator } from "../ui/separator";
+import ViewModeToggle from "../ViewModeToggle";
+import Products from "@/components/Products";
 
-const CategoriesProducts = ({ categories, slug, segment }) => {
+const SelectionMenu = ({ categories, slug, segment }) => {
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
   };
 
   return (
-    <section className="bg-white">
+    <div className="bg-white">
       <ScrollArea className="w-full px-4">
-        <div className="flex w-max items-center gap-4">
+        <section className="flex w-max items-center gap-4">
           {categories.map((category) => (
             <Button
               key={category.id}
@@ -28,20 +29,21 @@ const CategoriesProducts = ({ categories, slug, segment }) => {
               {category.name}
             </Button>
           ))}
-        </div>
+        </section>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-      <div>
-        <Separator className="my-4 bg-gray-300" />
+      <Separator className="my-4 bg-gray-300" />
+      <section>
+        {/pizza/i.test(String(selectedCategory?.name)) && <ViewModeToggle />}
         <h3 className="px-5 pt-2 font-semibold">{selectedCategory.name}</h3>
         <Products
           products={selectedCategory.products}
           slug={slug}
           segment={segment}
         />
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
 
-export default CategoriesProducts;
+export default SelectionMenu;

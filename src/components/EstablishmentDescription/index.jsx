@@ -23,7 +23,9 @@ const EstablishmentDescription = ({ restaurant }) => {
           </Badge>
         </div>
         <div className="flex items-center justify-center">
-          <p className="text-xs text-blue-500">{restaurant.address}</p>
+          <p className="text-center text-xs text-blue-500">
+            {restaurant.address}
+          </p>
         </div>
       </div>
     </section>
