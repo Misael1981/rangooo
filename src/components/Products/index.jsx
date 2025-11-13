@@ -1,18 +1,35 @@
+"use client";
+
 import { segmentForCategory } from "@/lib/routes";
 import Image from "next/image";
 import Link from "next/link";
+import { useCallback } from "react";
 
-function Products({ slug, segment, products }) {
+function Products({ slug, segment, products, viewMode, selectedIds = [], onSelectionChange }) {
   const category = segmentForCategory(segment);
+  const isDouble = String(viewMode) === "double";
+
+  const toggleSelect = useCallback(
+    (id) => {
+      if (!onSelectionChange) return;
+      const exists = selectedIds.includes(id);
+      if (exists) {
+        onSelectionChange(selectedIds.filter((x) => x !== id));
+        return;
+      }
+      if (selectedIds.length >= 2) {
+        return;
+      }
+      onSelectionChange([...selectedIds, id]);
+    },
+    [onSelectionChange, selectedIds],
+  );
+
   return (
     <div className="space-y-6 p-4">
       {products.map((product) => {
-        return (
-          <Link
-            key={product.id}
-            href={`/${category}/${slug}/menu/${product.id}`}
-            className="flex items-center gap-8 rounded-md border border-gray-300 p-4 shadow-lg"
-          >
+        const cardInner = (
+          <>
             <div className="space-y-1">
               <h3 className="text-sm font-medium">{product.name}</h3>
               <p className="line-clamp-2 text-xs text-muted-foreground">
@@ -33,6 +50,32 @@ function Products({ slug, segment, products }) {
                 className="rounded-lg object-contain"
               />
             </div>
+          </>
+        );
+
+        if (isDouble) {
+          const selected = selectedIds.includes(product.id);
+          return (
+            <button
+              key={product.id}
+              type="button"
+              onClick={() => toggleSelect(product.id)}
+              className={`flex w-full items-center gap-8 rounded-md border p-4 shadow-lg ${
+                selected ? "border-green-500 ring-2 ring-green-200" : "border-gray-300"
+              }`}
+            >
+              {cardInner}
+            </button>
+          );
+        }
+
+        return (
+          <Link
+            key={product.id}
+            href={`/${category}/${slug}/menu/${product.id}`}
+            className="flex items-center gap-8 rounded-md border border-gray-300 p-4 shadow-lg"
+          >
+            {cardInner}
           </Link>
         );
       })}

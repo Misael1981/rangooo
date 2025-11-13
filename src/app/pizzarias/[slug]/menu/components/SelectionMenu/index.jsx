@@ -6,12 +6,15 @@ import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import ViewModeToggle from "../ViewModeToggle";
 import Products from "@/components/Products";
+import SelectDoublePizza from "../SelectDoublePizza";
 
 const SelectionMenu = ({ categories, slug, segment }) => {
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const [viewMode, setViewMode] = useState("single");
+  const [selectedIds, setSelectedIds] = useState([]);
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
+    setSelectedIds([]);
   };
 
   return (
@@ -34,9 +37,15 @@ const SelectionMenu = ({ categories, slug, segment }) => {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
       <Separator className="my-4 bg-gray-300" />
-      <section>
+      <section className="pb-16">
         {/pizza/i.test(String(selectedCategory?.name)) && (
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <>
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <SelectDoublePizza
+              product={selectedCategory.products[0]}
+              slug={slug}
+            />
+          </>
         )}
         <h3 className="px-5 pt-2 font-semibold">{selectedCategory.name}</h3>
         <Products
@@ -44,6 +53,8 @@ const SelectionMenu = ({ categories, slug, segment }) => {
           slug={slug}
           segment={segment}
           viewMode={viewMode}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
         />
       </section>
     </div>
