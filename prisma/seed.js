@@ -411,46 +411,101 @@ const main = async () => {
     ],
   });
 
-  const classicPizzasCategory = await prismaClient.menuCategory.create({
-    data: { name: "Pizzas Clássicas", restaurantId: pizzaRestaurant.id },
+  const bigPizzasCategory = await prismaClient.menuCategory.create({
+    data: { name: "Pizza Grande", restaurantId: pizzaRestaurant.id },
   });
 
   await prismaClient.product.createMany({
     data: [
       {
-        name: "Mussarela",
-        description: "Queijo mussarela de búfala, tomate cereja e orégano.",
-        price: 45.0,
-        imageUrl: "https://placehold.co/100x100/6ee7b7/000000?text=Mussarela",
-        menuCategoryId: classicPizzasCategory.id,
+        name: "Calabresa",
+        description:
+          "Pizza com calabresa, mussarela, cebola e azeitonas, inclui molho de tomate e orégano. Todos ingredientes são 100% naturais.",
+        price: 52.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040942/calabresa_hcxnaq.png",
+        menuCategoryId: bigPizzasCategory.id,
         restaurantId: pizzaRestaurant.id,
-        ingredients: ["Mussarela", "Tomate", "Orégano"],
+        ingredients: ["Calabresa", "Mussarela", "Cebola", "Azeitonas"],
       },
       {
-        name: "Calabresa Premium",
-        description: "Calabresa artesanal, cebola roxa e azeitonas pretas.",
+        name: "Frango com Catupiry",
+        description:
+          "Pizza com frango, catupiry e azeitonas, inclui molho de tomate e orégano. Todos ingredientes são 100% naturais.",
         price: 52.0,
-        imageUrl: "https://placehold.co/100x100/6ee7b7/000000?text=Calabresa",
-        menuCategoryId: classicPizzasCategory.id,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040940/frango-catupiry_o5o2ay.png",
+        menuCategoryId: bigPizzasCategory.id,
         restaurantId: pizzaRestaurant.id,
-        ingredients: ["Calabresa", "Cebola Roxa", "Azeitonas"],
+        ingredients: ["Frango", "Catupiry", "Azeitonas"],
       },
       {
         name: "Marguerita",
         description:
-          "Molho de tomate, mussarela, manjericão e parmesão ralado.",
+          "Sabor tradicional, montado com ingredientes frescos e de alta qualidade.",
         price: 48.0,
-        imageUrl: "https://placehold.co/100x100/6ee7b7/000000?text=Marguerita",
-        menuCategoryId: classicPizzasCategory.id,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040940/margarita_jaowdq.png",
+        menuCategoryId: bigPizzasCategory.id,
         restaurantId: pizzaRestaurant.id,
-        ingredients: ["Molho de Tomate", "Mussarela", "Manjericão"],
+        ingredients: ["Molho de Tomate", "Mussarela", "Tomate", "Manjericão"],
+      },
+      {
+        name: "Moda da Casa",
+        description:
+          "Um sabor único, com ingredientes frescos e de alta qualidade.",
+        price: 48.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040942/moda_muf67u.png",
+        menuCategoryId: bigPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+        ingredients: [
+          "Mussarela",
+          "Catupiry",
+          "Lombo Canadense",
+          "Bacon",
+          "Parmesão",
+        ],
+      },
+      {
+        name: "Atenas",
+        description:
+          "Pizza com mussarela, lombo defumado, parmesão e tomate seco, inclui molho de tomate e orégano. Todos ingredientes são 100% naturais.",
+        price: 48.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040940/atenas_o4ycrv.png",
+        menuCategoryId: bigPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+        ingredients: ["Mussarela", "Lombo Defumado", "Parmesão", "Tomate Seco"],
+      },
+      {
+        name: "Bacon",
+        description:
+          "Pizza com mussarela e bacon frito, inclui molho de tomate e orégano. Todos ingredientes são 100% naturais.",
+        price: 48.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040940/bacon_vkqgw8.png",
+        menuCategoryId: bigPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+        ingredients: ["Mussarela", "Bacon Frito"],
+      },
+      {
+        name: "Brócolis",
+        description:
+          "Pizza com mussarela, alho, brócolis, catupiry e bacon, inclui molho de tomate e orégano. Todos ingredientes são 100% naturais.",
+        price: 48.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040940/brocolis_cefqfs.png",
+        menuCategoryId: bigPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+        ingredients: ["Mussarela", "Alho", "Brócolis", "Catupiry", "Bacon"],
       },
     ],
   });
 
-  const specialPizzasCategory = await prismaClient.menuCategory.create({
+  const smallPizzasCategory = await prismaClient.menuCategory.create({
     data: {
-      name: "Pizzas Especiais",
+      name: "Pizza Pequenas",
       restaurantId: pizzaRestaurant.id,
     },
   });
@@ -458,23 +513,87 @@ const main = async () => {
   await prismaClient.product.createMany({
     data: [
       {
-        name: "Quatro Queijos Rangooo",
-        description: "Mussarela, provolone, gorgonzola e catupiry original.",
-        price: 65.0,
-        imageUrl: "https://placehold.co/100x100/fcd34d/000000?text=4+Queijos",
-        menuCategoryId: specialPizzasCategory.id,
+        name: "Calabresa",
+        description:
+          "Pizza com calabresa, mussarela, cebola e azeitonas, inclui molho de tomate e orégano. Todos ingredientes são 100% naturais.",
+        price: 52.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040942/calabresa_hcxnaq.png",
+        menuCategoryId: smallPizzasCategory.id,
         restaurantId: pizzaRestaurant.id,
-        ingredients: ["Mussarela", "Provolone", "Gorgonzola", "Catupiry"],
+        ingredients: ["Calabresa", "Mussarela", "Cebola", "Azeitonas"],
       },
       {
-        name: "Pepperoni Picante",
+        name: "Frango com Catupiry",
         description:
-          "Pepperoni, pimenta jalapeño, e um toque de azeite trufado.",
-        price: 68.0,
-        imageUrl: "https://placehold.co/100x100/fcd34d/000000?text=Pepperoni",
-        menuCategoryId: specialPizzasCategory.id,
+          "Pizza com frango, catupiry e azeitonas, inclui molho de tomate e orégano. Todos ingredientes são 100% naturais.",
+        price: 52.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040940/frango-catupiry_o5o2ay.png",
+        menuCategoryId: smallPizzasCategory.id,
         restaurantId: pizzaRestaurant.id,
-        ingredients: ["Pepperoni", "Jalapeño", "Azeite Trufado"],
+        ingredients: ["Frango", "Catupiry", "Azeitonas"],
+      },
+      {
+        name: "Marguerita",
+        description:
+          "Sabor tradicional, montado com ingredientes frescos e de alta qualidade.",
+        price: 48.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040940/margarita_jaowdq.png",
+        menuCategoryId: smallPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+        ingredients: ["Molho de Tomate", "Mussarela", "Tomate", "Manjericão"],
+      },
+      {
+        name: "Moda da Casa",
+        description:
+          "Um sabor único, com ingredientes frescos e de alta qualidade.",
+        price: 48.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040942/moda_muf67u.png",
+        menuCategoryId: smallPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+        ingredients: [
+          "Mussarela",
+          "Catupiry",
+          "Lombo Canadense",
+          "Bacon",
+          "Parmesão",
+        ],
+      },
+      {
+        name: "Atenas",
+        description:
+          "Pizza com mussarela, lombo defumado, parmesão e tomate seco, inclui molho de tomate e orégano. Todos ingredientes são 100% naturais.",
+        price: 48.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040940/atenas_o4ycrv.png",
+        menuCategoryId: smallPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+        ingredients: ["Mussarela", "Lombo Defumado", "Parmesão", "Tomate Seco"],
+      },
+      {
+        name: "Bacon",
+        description:
+          "Pizza com mussarela e bacon frito, inclui molho de tomate e orégano. Todos ingredientes são 100% naturais.",
+        price: 48.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040940/bacon_vkqgw8.png",
+        menuCategoryId: smallPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+        ingredients: ["Mussarela", "Bacon Frito"],
+      },
+      {
+        name: "Brócolis",
+        description:
+          "Pizza com mussarela, alho, brócolis, catupiry e bacon, inclui molho de tomate e orégano. Todos ingredientes são 100% naturais.",
+        price: 48.0,
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763040940/brocolis_cefqfs.png",
+        menuCategoryId: smallPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+        ingredients: ["Mussarela", "Alho", "Brócolis", "Catupiry", "Bacon"],
       },
     ],
   });
@@ -492,7 +611,8 @@ const main = async () => {
         name: "Chocolate com Morango",
         description: "Massa fininha, chocolate cremoso e morangos frescos.",
         price: 55.0,
-        imageUrl: "https://placehold.co/100x100/fda4af/000000?text=Doce",
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763042818/chocolate-morango_csjozi.png",
         menuCategoryId: dessertPizzasCategory.id,
         restaurantId: pizzaRestaurant.id,
         ingredients: ["Chocolate", "Morango"],
@@ -501,10 +621,53 @@ const main = async () => {
         name: "Banana com Canela",
         description: "Banana caramelizada, canela e toque de açúcar mascavo.",
         price: 49.0,
-        imageUrl: "https://placehold.co/100x100/fda4af/000000?text=Banana",
+        imageUrl:
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1763042818/banana-canela_xgfek1.png",
         menuCategoryId: dessertPizzasCategory.id,
         restaurantId: pizzaRestaurant.id,
         ingredients: ["Banana", "Canela", "Açúcar Mascavo"],
+      },
+    ],
+  });
+
+  const drinksPizzasCategory = await prismaClient.menuCategory.create({
+    data: {
+      name: "Bebidas",
+      restaurantId: pizzaRestaurant.id,
+    },
+  });
+
+  await prismaClient.product.createMany({
+    data: [
+      {
+        name: "Coca-cola",
+        description: "Coca-cola gelada para acompanhar seu lanche.",
+        ingredients: [],
+        price: 5.9,
+        imageUrl:
+          "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQJS1b33q29eEsh0CVmOywrqx1UPnJpRGcHN5v",
+        menuCategoryId: drinksPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Fanta Laranja",
+        description: "Fanta Laranja gelada para acompanhar seu lanche.",
+        ingredients: [],
+        price: 5.9,
+        imageUrl:
+          "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQW7Kxm9gniS9XCLQu7Nb4jvBYZze16goaOqsK",
+        menuCategoryId: drinksPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Água Mineral",
+        description: "A bebida favorita do Cristiano Ronaldo.",
+        ingredients: [],
+        price: 2.9,
+        imageUrl:
+          "https://u9a6wmr3as.ufs.sh/f/jppBrbk0cChQ7i05S5tkc0L9oMIXZsFJtwnBh2KCz3y6uSW1",
+        menuCategoryId: drinksPizzasCategory.id,
+        restaurantId: pizzaRestaurant.id,
       },
     ],
   });

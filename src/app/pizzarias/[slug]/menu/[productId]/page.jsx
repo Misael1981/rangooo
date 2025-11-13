@@ -1,8 +1,8 @@
-import { db } from "@/lib/prisma";
-import HeaderMenu from "@/app/restaurantes/[slug]/menu/components/HeaderMenu";
+import HeaderImage from "@/components/HeaderImage";
 import ProductDetails from "@/components/ProductDetails";
-import { notFound } from "next/navigation";
+import { db } from "@/lib/prisma";
 import { toPlain } from "@/lib/utils";
+import { notFound } from "next/navigation";
 
 export default async function ProductPage({ params }) {
   const { slug, productId } = await params;
@@ -27,7 +27,7 @@ export default async function ProductPage({ params }) {
 
   return (
     <div className="flex flex-col">
-      <HeaderMenu image={product.imageUrl} alt={product.name} />
+      <HeaderImage image={product.imageUrl} alt={product.name} />
       <ProductDetails product={productPlain} restaurant={restaurantPlain} />
     </div>
   );
