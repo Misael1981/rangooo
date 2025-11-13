@@ -1,6 +1,6 @@
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
-import { CartProvider } from "./restaurantes/[slug]/menu/contexts/cart";
+import { CartProvider } from "./contexts/cart";
 
 const inter = Inter({
   subsets: ["latin"],

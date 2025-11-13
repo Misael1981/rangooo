@@ -2,23 +2,17 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import { notFound } from "next/navigation";
-import LogoImage from "../../../components/LogoImage";
-import WelcomeSection from "../../../components/WelcomeSection";
-import ConsumptionMethodOption from "../../../components/ConsumptionMethodOption";
-import { redirect } from "next/navigation";
 import { getRestaurantBySlug } from "@/data/get-restaurant-by-slug";
-import { segmentForCategory } from "@/lib/routes";
+import LogoImage from "@/components/LogoImage";
+import WelcomeSection from "@/components/WelcomeSection";
+import ConsumptionMethodOption from "@/components/ConsumptionMethodOption";
 
-export default async function EstablishmentPage({ params }) {
+export default async function PizzariaPage({ params }) {
   const { slug } = await params;
   const restaurant = await getRestaurantBySlug(slug);
-
   if (!restaurant) {
     return notFound();
   }
-
-  const segment = segmentForCategory(restaurant.category ?? restaurant.type);
-  redirect(`/${segment}/${slug}`);
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-4">
@@ -36,6 +30,7 @@ export default async function EstablishmentPage({ params }) {
           buttonText="Comer no local"
           option="DINE_IN"
           slug={slug}
+          segment="pizzarias"
         />
         <ConsumptionMethodOption
           imageUrl="/images/takeaway.png"
@@ -43,6 +38,7 @@ export default async function EstablishmentPage({ params }) {
           buttonText="Pegar no local"
           option="PICKUP"
           slug={slug}
+          segment="pizzarias"
         />
         <ConsumptionMethodOption
           imageUrl="/images/delivery.png"
@@ -50,6 +46,7 @@ export default async function EstablishmentPage({ params }) {
           buttonText="Entregar"
           option="DELIVERY"
           slug={slug}
+          segment="pizzarias"
         />
       </div>
     </div>
