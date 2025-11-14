@@ -6,8 +6,9 @@ import ProductDoubleDetails from "../components/ProductDoubleDetails";
 
 export default async function Double({ params, searchParams }) {
   const { slug } = await params;
-  const flavor1 = String(searchParams?.flavor1 || "");
-  const flavor2 = String(searchParams?.flavor2 || "");
+  const sp = await searchParams;
+  const flavor1 = String(sp?.flavor1 || "");
+  const flavor2 = String(sp?.flavor2 || "");
 
   if (!flavor1 || !flavor2) {
     return notFound();
