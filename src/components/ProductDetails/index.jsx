@@ -9,7 +9,7 @@ import { CartContext } from "../../app/contexts/cart";
 import ProductDescription from "../ProductDescription";
 import AddToBagButton from "../AddToBagButton";
 
-const ProductDetails = ({ product, restaurant }) => {
+const ProductDetails = ({ product, restaurant, secondProduct }) => {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useContext(CartContext);
 
@@ -20,8 +20,21 @@ const ProductDetails = ({ product, restaurant }) => {
     setQuantity((prevQuantity) => prevQuantity + 1);
   };
 
+  const displayProduct = secondProduct
+    ? {
+        ...product,
+        name: `${product.name} + ${secondProduct.name}`,
+        price:
+          Math.max(
+            Number(product.price ?? 0),
+            Number(secondProduct.price ?? 0),
+          ),
+        composite: [product, secondProduct],
+      }
+    : product;
+
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    addToCart(displayProduct, quantity);
   };
   return (
     <section className="">
@@ -36,11 +49,11 @@ const ProductDetails = ({ product, restaurant }) => {
             />
             <p className="text-sm text-muted-foreground">{restaurant.name}</p>
           </div>
-          <p className="text-lg font-semibold">{product.name}</p>
+          <p className="text-lg font-semibold">{displayProduct.name}</p>
         </div>
         <div className="flex items-center justify-between py-4">
           <h3 className="text-lg font-semibold text-green-500">
-            {formatCurrency(product.price)}
+            {formatCurrency(displayProduct.price)}
           </h3>
           <div className="flex items-center gap-3 text-center">
             <Button
@@ -62,9 +75,9 @@ const ProductDetails = ({ product, restaurant }) => {
         </div>
       </div>
       <div className="flex-auto">
-        <ProductDescription product={product} />
+        <ProductDescription product={displayProduct} />
       </div>
-      <AddToBagButton product={product} quantity={quantity} />
+      <AddToBagButton product={displayProduct} quantity={quantity} />
     </section>
   );
 };
