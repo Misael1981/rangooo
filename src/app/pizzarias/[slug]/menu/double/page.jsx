@@ -1,8 +1,8 @@
-import HeaderImage from "@/components/HeaderImage";
-import ProductDetails from "@/components/ProductDetails";
 import { db } from "@/lib/prisma";
 import { toPlain } from "@/lib/utils";
 import { notFound } from "next/navigation";
+import HeaderDoubleImages from "../components/HeaderDoubleImages";
+import ProductDoubleDetails from "../components/ProductDoubleDetails";
 
 export default async function Double({ params, searchParams }) {
   const { slug } = await params;
@@ -35,10 +35,17 @@ export default async function Double({ params, searchParams }) {
 
   return (
     <div className="flex flex-col">
-      <h1>
-        pagina para dois sobores: {productPlain.name} +{" "}
-        {secondProductPlain.name}
-      </h1>
+      <HeaderDoubleImages
+        imageUrl1={productPlain.imageUrl}
+        imageUrl2={secondProductPlain.imageUrl}
+        alt1={productPlain.name}
+        alt2={secondProductPlain.name}
+      />
+      <ProductDoubleDetails
+        product={productPlain}
+        secondProduct={secondProductPlain}
+        restaurant={restaurantPlain}
+      />
     </div>
   );
 }

@@ -24,11 +24,10 @@ const ProductDetails = ({ product, restaurant, secondProduct }) => {
     ? {
         ...product,
         name: `${product.name} + ${secondProduct.name}`,
-        price:
-          Math.max(
-            Number(product.price ?? 0),
-            Number(secondProduct.price ?? 0),
-          ),
+        price: Math.max(
+          Number(product.price ?? 0),
+          Number(secondProduct.price ?? 0),
+        ),
         composite: [product, secondProduct],
       }
     : product;
@@ -38,7 +37,7 @@ const ProductDetails = ({ product, restaurant, secondProduct }) => {
   };
   return (
     <section className="">
-      <div className="relative -top-5 z-50 rounded-t-3xl bg-white/90 px-4">
+      <div className="relative -top-5 z-50 rounded-t-3xl bg-white px-4">
         <div className="pt-4">
           <div className="flex items-center gap-2">
             <LogoImage
