@@ -390,7 +390,7 @@ const main = async () => {
       },
       address:
         "Rod. Juscelino Kubitschek de Oliveira, 989 - Centro, Congonhal - MG",
-      brandColors: ["#8c110e", "#e1a432", "#000000"],
+      brandColors: ["#000000", "#8c110e", "#e1a432"],
     },
   });
 
