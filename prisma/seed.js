@@ -1,29 +1,45 @@
 const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcryptjs");
 
 const prismaClient = new PrismaClient();
 
 const main = async () => {
-  // Removido $transaction; usar prismaClient direto
+  // Limpeza segura (ignora erros pontuais de FK/ausência de tabela)
+  const safeDelete = async (model, name) => {
+    try {
+      await model.deleteMany();
+    } catch (e) {
+      console.warn(`warn: deleteMany(${name})`, e?.code || e?.message);
+    }
+  };
 
-  // Limpeza (sequencial, sem transação)
-  await prismaClient.product.deleteMany();
-  await prismaClient.menuCategory.deleteMany();
-  await prismaClient.contactNumber.deleteMany();
-  await prismaClient.restaurant.deleteMany();
-  await prismaClient.user.deleteMany();
+  await safeDelete(prismaClient.orderItem, "orderItem");
+  await safeDelete(prismaClient.order, "order");
+  await safeDelete(prismaClient.account, "account");
+  await safeDelete(prismaClient.session, "session");
+  await safeDelete(prismaClient.verificationToken, "verificationToken");
+  await safeDelete(prismaClient.product, "product");
+  await safeDelete(prismaClient.menuCategory, "menuCategory");
+  await safeDelete(prismaClient.contactNumber, "contactNumber");
+  await safeDelete(prismaClient.restaurant, "restaurant");
+  await safeDelete(prismaClient.user, "user");
 
   // 1. Dono e Restaurante: Congo Burger
+  console.log("Criando usuário dono Congo Burger...");
+  const congoPassword = await bcrypt.hash("dev-password", 10);
   const congoOwner = await prismaClient.user.upsert({
     where: { email: "owner@congo-burger.com" },
     update: {},
     create: {
       email: "owner@congo-burger.com",
+      password: congoPassword,
       password: "dev-password",
       name: "Dono Congo Burger",
       role: "RESTAURANT_OWNER",
     },
   });
 
+  console.log("Criando restaurante Congo Burger...");
   const congoRestaurant = await prismaClient.restaurant.create({
     data: {
       name: "Congo Burger",
@@ -45,7 +61,7 @@ const main = async () => {
       brandColors: ["#0d1c2c", "#e8af44", "#ffffff"],
     },
   });
-
+  console.log("Criando números de contato Congo Burger...");
   await prismaClient.contactNumber.createMany({
     data: [
       {
@@ -62,14 +78,14 @@ const main = async () => {
       },
     ],
   });
-
+  console.log("Criando categoria de combos Congo Burger...");
   const combosCategory = await prismaClient.menuCategory.create({
     data: {
       name: "Combos",
       restaurantId: congoRestaurant.id,
     },
   });
-
+  console.log("Criando produtos Congo Burger...");
   await prismaClient.product.createMany({
     data: [
       {
@@ -149,12 +165,14 @@ const main = async () => {
       },
     ],
   });
+  console.log("Criando categoria de lanches Congo Burger...");
   const hamburguersCategory = await prismaClient.menuCategory.create({
     data: {
       name: "Lanches",
       restaurantId: congoRestaurant.id,
     },
   });
+  console.log("Criando produtos Congo Burger...");
   await prismaClient.product.createMany({
     data: [
       {
@@ -234,12 +252,14 @@ const main = async () => {
       },
     ],
   });
+  console.log("Criando categoria de fritas Congo Burger...");
   const frenchFriesCategory = await prismaClient.menuCategory.create({
     data: {
       name: "Fritas",
       restaurantId: congoRestaurant.id,
     },
   });
+  console.log("Criando produtos Congo Burger...");
   await prismaClient.product.createMany({
     data: [
       {
@@ -276,12 +296,14 @@ const main = async () => {
       },
     ],
   });
+  console.log("Criando categoria de bebidas Congo Burger...");
   const drinksCategory = await prismaClient.menuCategory.create({
     data: {
       name: "Bebidas",
       restaurantId: congoRestaurant.id,
     },
   });
+  console.log("Criando produtos Congo Burger...");
   await prismaClient.product.createMany({
     data: [
       {
@@ -316,12 +338,14 @@ const main = async () => {
       },
     ],
   });
+  console.log("Criando categoria de sobremesas Congo Burger...");
   const desertsCategory = await prismaClient.menuCategory.create({
     data: {
       name: "Sobremesas",
       restaurantId: congoRestaurant.id,
     },
   });
+  console.log("Criando produtos Congo Burger...");
   await prismaClient.product.createMany({
     data: [
       {
@@ -360,17 +384,19 @@ const main = async () => {
   // --- 2. SETUP DA PIZZARIA JK ---
 
   // Cria o dono da Pizzaria JK
+  console.log("Criando dono da Pizzaria JK...");
+  const pizzaPassword = await bcrypt.hash("dev-password", 10);
   const pizzaOwner = await prismaClient.user.upsert({
     where: { email: "owner@pizzaria-jk.com" },
     update: {},
     create: {
       email: "owner@pizzaria-jk.com",
-      password: "dev-password",
+      password: pizzaPassword,
       name: "Dono Pizzaria JK",
       role: "RESTAURANT_OWNER",
     },
   });
-
+  console.log("Criando restaurante Pizzaria JK...");
   const pizzaRestaurant = await prismaClient.restaurant.create({
     data: {
       name: "Pizzaria JK",
@@ -393,7 +419,7 @@ const main = async () => {
       brandColors: ["#000000", "#8c110e", "#e1a432"],
     },
   });
-
+  console.log("Criando números de contato Pizzaria JK...");
   await prismaClient.contactNumber.createMany({
     data: [
       {
@@ -411,6 +437,7 @@ const main = async () => {
     ],
   });
 
+  console.log("Criando categoria de pizzas grandes Pizzaria JK...");
   const bigPizzasCategory = await prismaClient.menuCategory.create({
     data: { name: "Pizza Grande", restaurantId: pizzaRestaurant.id },
   });
@@ -502,6 +529,7 @@ const main = async () => {
       },
     ],
   });
+  console.log("Criando categoria de pizzas pequenas Pizzaria JK...");
 
   const smallPizzasCategory = await prismaClient.menuCategory.create({
     data: {
@@ -509,7 +537,7 @@ const main = async () => {
       restaurantId: pizzaRestaurant.id,
     },
   });
-
+  console.log("Criando produtos Pizzaria JK...");
   await prismaClient.product.createMany({
     data: [
       {
@@ -597,14 +625,14 @@ const main = async () => {
       },
     ],
   });
-
+  console.log("Criando categoria de pizzas doces Pizzaria JK...");
   const dessertPizzasCategory = await prismaClient.menuCategory.create({
     data: {
       name: "Pizzas Doces",
       restaurantId: pizzaRestaurant.id,
     },
   });
-
+  console.log("Criando produtos Pizzaria JK...");
   await prismaClient.product.createMany({
     data: [
       {
@@ -629,14 +657,14 @@ const main = async () => {
       },
     ],
   });
-
+  console.log("Criando categoria de bebidas Pizzaria JK...");
   const drinksPizzasCategory = await prismaClient.menuCategory.create({
     data: {
       name: "Bebidas",
       restaurantId: pizzaRestaurant.id,
     },
   });
-
+  console.log("Criando produtos Pizzaria JK...");
   await prismaClient.product.createMany({
     data: [
       {
@@ -672,9 +700,10 @@ const main = async () => {
     ],
   });
 };
-
+console.log("Criando usuários Pizzaria JK...");
 main()
   .catch((e) => {
+    console.error(e);
     throw e;
   })
   .finally(async () => {
