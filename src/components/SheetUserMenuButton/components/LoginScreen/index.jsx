@@ -13,6 +13,9 @@ const LoginScreen = () => {
   const handleLoginWithGoogle = async () => {
     await signIn("google");
   };
+  const handleLoginWithFacebook = async () => {
+    await signIn("facebook");
+  };
   return (
     <div className="flex flex-col gap-4">
       <div className="space-y-1">
@@ -42,7 +45,7 @@ const LoginScreen = () => {
           <FaGoogle />
           Entrar com Google
         </Button>
-        <Button className="bg-[#3b5a9a]">
+        <Button className="bg-[#3b5a9a]" onClick={handleLoginWithFacebook}>
           <FaFacebookF />
           Entrar com Facebook
         </Button>
