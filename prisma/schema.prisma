@@ -18,7 +18,7 @@ model User {
   emailVerified DateTime? @map("email_verified")
   image         String?
   phone         String?
-  password      String    @map("hashed_password")
+  password      String?   @map("hashed_password")
   address       Json? // Para armazenar o endereço principal do cliente ou múltiplos endereços (requer tipagem JSON no Next.js)
   role          Role      @default(CLIENT) // CLIENTE, RESTAURANT_OWNER, DELIVERY_PERSON, ADMIN
 

@@ -6,57 +6,86 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { signOut, useSession } from "next-auth/react";
+import LoginScreen from "./components/LoginScreen";
+import { Avatar, AvatarImage } from "../ui/avatar";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { Button } from "../ui/button";
-import { FaFacebookF, FaGoogle } from "react-icons/fa";
-import { NotebookText } from "lucide-react";
-import DialogDataUser from "./components/DialogDataUser";
-import { useState } from "react";
+import { LogOutIcon, NotebookText, ScrollTextIcon } from "lucide-react";
 
 const SheetUserMenuButton = ({ open, onOpenChange }) => {
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const { data } = useSession();
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: "/" });
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[90%] overflow-auto p-4">
         <SheetHeader>
-          <SheetTitle className="mb-6 text-left">
+          <SheetTitle className="mb-6 text-left text-red-700">
             Cantinho do usuário
           </SheetTitle>
         </SheetHeader>
-        <div className="flex flex-col gap-4">
-          <div className="space-y-1">
-            <h2 className="mb-2 text-xl leading-none">
-              Olá, <strong>faça seu login</strong>
-            </h2>
-            <p className="text-sm text-gray-500">
-              Preencha o formulário, com seus dados corretamente, eles vão
-              garantir que seu pedido chegue direitinho até você.
-            </p>
-            <p className="text-sm text-gray-500">
-              Depois, é só se conectar com a sua rede preferida e aproveitar a
-              experiência.
-            </p>
+        {data?.user ? (
+          <div className="flex min-h-[90%] flex-col gap-4">
+            <section className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Avatar>
+                  <AvatarImage
+                    src={data?.user?.image}
+                    alt={data?.user?.name}
+                    width={6}
+                    height={6}
+                  />
+                </Avatar>
+                <div className="space-y-1">
+                  <h2 className="text-xl leading-none">
+                    Olá, <strong>{data.user.name}</strong>
+                  </h2>
+                  <p className="truncate leading-none text-gray-400">
+                    <span className="text-sm capitalize">
+                      {format(new Date(), "EEEE, dd", { locale: ptBR })}
+                    </span>
+                    <span className="text-sm">&nbsp;de&nbsp;</span>
+                    <span className="text-sm capitalize">
+                      {format(new Date(), "MMMM", { locale: ptBR })}
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-500">
+                Seja bem-vindo(a) ao seu cantinho! Aqui você pode ver seus
+                pedidos, acompanhar o status de entrega e fazer alterações em
+                seus dados.
+              </p>
+            </section>
+            <section className="flex flex-col gap-2">
+              <Button className="w-fit" variant="secondary">
+                <NotebookText />
+                Editar meus Dados
+              </Button>
+              <Button className="w-fit" variant="secondary">
+                <ScrollTextIcon />
+                Meus Pedidos
+              </Button>
+            </section>
+            <footer className="mt-auto">
+              <Button
+                variant="destructive"
+                className="w-full"
+                onClick={handleLogout}
+              >
+                <LogOutIcon />
+                Sair
+              </Button>
+            </footer>
           </div>
-          <Button
-            className="w-fit"
-            variant="ghost"
-            onClick={() => setDialogOpen(true)}
-          >
-            <NotebookText />
-            Preencha os dados
-          </Button>
-          <DialogDataUser open={dialogOpen} onOpenChange={setDialogOpen} />
-          <div className="flex w-full flex-col gap-2">
-            <Button className="bg-[#d64131]">
-              <FaGoogle />
-              Entrar com Google
-            </Button>
-            <Button className="bg-[#3b5a9a]">
-              <FaFacebookF />
-              Entrar com Facebook
-            </Button>
-          </div>
-        </div>
+        ) : (
+          <LoginScreen />
+        )}
       </SheetContent>
     </Sheet>
   );
