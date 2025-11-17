@@ -380,6 +380,17 @@ const main = async () => {
       },
     ],
   });
+  // Criando lista de ingredientes adicionais para Congo Burger (usado em componentes como AboutProducts)
+  console.log("Criando lista de ingredientes adicionais para Congo Burger...");
+  await prismaClient.additionalIngredient.createMany({
+    data: [
+      { name: "Calabresa", price: 2.9, restaurantId: congoRestaurant.id },
+      { name: "Cebola", price: 3.9, restaurantId: congoRestaurant.id },
+      { name: "Catupiry", price: 3.9, restaurantId: congoRestaurant.id },
+      { name: "Milho", price: 3.9, restaurantId: congoRestaurant.id },
+      { name: "Bacon", price: 3.9, restaurantId: congoRestaurant.id },
+    ],
+  });
 
   // --- 2. SETUP DA PIZZARIA JK ---
 
@@ -437,9 +448,105 @@ const main = async () => {
     ],
   });
 
+  console.log("Criando lista de ingredientes adicionais para pizza");
+  await prismaClient.additionalIngredient.createMany({
+    data: [
+      {
+        name: "Molho de Tomate",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Mussarela",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Cebola",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Azeitonas",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Presunto",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Lombo Canadense",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Frango",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Calabresa",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Catupiry",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Parmesão",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+      {
+        name: "Provolone",
+        price: 2.9,
+        restaurantId: pizzaRestaurant.id,
+      },
+    ],
+  });
+
   console.log("Criando categoria de pizzas grandes Pizzaria JK...");
   const bigPizzasCategory = await prismaClient.menuCategory.create({
     data: { name: "Pizza Grande", restaurantId: pizzaRestaurant.id },
+  });
+
+  const extraNames = [
+    "Molho de Tomate",
+    "Mussarela",
+    "Cebola",
+    "Azeitonas",
+    "Lombo Canadense",
+    "Frango",
+    "Calabresa",
+    "Catupiry",
+    "Parmesão",
+    "Provolone",
+  ];
+  const extras = await prismaClient.additionalIngredient.findMany({
+    where: { restaurantId: pizzaRestaurant.id, name: { in: extraNames } },
+    select: { id: true },
+  });
+
+  const bigPizzaExtrasGroup = await prismaClient.additionalOptionGroup.create({
+    data: {
+      restaurantId: pizzaRestaurant.id,
+      name: "Adicionais Pizza Grande",
+      minSelection: 0,
+      maxSelection: 3,
+      menuCategoryId: bigPizzasCategory.id,
+    },
+  });
+
+  await prismaClient.optionGroupItem.createMany({
+    data: extras.map((e) => ({
+      additionalIngredientId: e.id,
+      optionGroupId: bigPizzaExtrasGroup.id,
+      customPrice: null,
+    })),
   });
 
   await prismaClient.product.createMany({

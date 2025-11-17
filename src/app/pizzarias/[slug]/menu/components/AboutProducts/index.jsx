@@ -4,23 +4,23 @@ import { PiChefHatLight } from "react-icons/pi";
 
 const ingredientsAdd = [
   {
-    name: "Ingrediente 1",
+    name: "Calabresa",
     price: 2.9,
   },
   {
-    name: "Ingrediente 2",
+    name: "Cebola",
     price: 3.9,
   },
   {
-    name: "Ingrediente 3",
+    name: "Catupiry",
     price: 3.9,
   },
   {
-    name: "Ingrediente 4",
+    name: "Milho",
     price: 3.9,
   },
   {
-    name: "Ingrediente 5",
+    name: "Bacon",
     price: 3.9,
   },
 ];

@@ -107,13 +107,14 @@ model Restaurant {
   isOpen Boolean @default(true) // Aberto ou Fechado
 
   // Relações
-  owner          User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  products       Product[]
-  menuCategories MenuCategory[]
-  orders         Order[]
+  owner                 User                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  products              Product[]
+  menuCategories        MenuCategory[]
+  orders                Order[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  AdditionalOptionGroup AdditionalOptionGroup[]
 }
 
 // ===============================================
@@ -139,19 +140,19 @@ model ContactNumber {
 // Categorias de Cardápio
 // ===============================================
 model MenuCategory {
-  id           String     @id @default(uuid())
-  name         String
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  restaurantId String
-  products     Product[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id                     String                  @id @default(uuid())
+  name                   String
+  restaurant             Restaurant              @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurantId           String
+  products               Product[]
+  additionalOptionGroups AdditionalOptionGroup[]
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
 }
 
 // ===============================================
 // Produtos (Itens do Cardápio)
 // ===============================================
-
 model Product {
   id           String   @id @default(uuid())
   restaurantId String
@@ -166,11 +167,68 @@ model Product {
   menuCategory   MenuCategory @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
 
   // Relações
-  restaurant Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  orderItems OrderItem[]
+  restaurant          Restaurant              @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  orderItems          OrderItem[]
+  productOptionGroups AdditionalOptionGroup[] 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model AdditionalOptionGroup {
+  id             String            @id @default(uuid())
+  restaurantId   String
+  name           String
+  minSelection   Int               @default(0)
+  maxSelection   Int               @default(1)
+  restaurant     Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  menuCategory   MenuCategory?     @relation(fields: [menuCategoryId], references: [id], onDelete: SetNull)
+  menuCategoryId String? // Pode ser null se o grupo for ligado a um produto específico
+  product        Product?          @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  productId      String?
+  items          OptionGroupItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([restaurantId])
+  @@index([menuCategoryId])
+  @@index([productId])
+}
+
+model OptionGroupItem {
+  id                     String                @id @default(uuid())
+  additionalIngredient   AdditionalIngredient  @relation(fields: [additionalIngredientId], references: [id], onDelete: Cascade)
+  additionalIngredientId String
+  optionGroup            AdditionalOptionGroup @relation(fields: [optionGroupId], references: [id], onDelete: Cascade)
+  optionGroupId          String
+  customPrice            Decimal?              @db.Decimal(6, 2)
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+
+  @@unique([additionalIngredientId, optionGroupId])
+  @@index([optionGroupId])
+  @@index([additionalIngredientId])
+}
+
+// ===============================================
+// Ingredientes Adicionais (Extras)
+// ===============================================
+model AdditionalIngredient {
+  id           String  @id @default(cuid())
+  restaurantId String
+  name         String
+  price        Decimal @db.Decimal(6, 2)
+  isActive     Boolean @default(true)
+
+  OptionGroupItem OptionGroupItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([restaurantId, name])
+  @@index([restaurantId])
 }
 
 // ===============================================
