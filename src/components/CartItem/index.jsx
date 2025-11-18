@@ -26,13 +26,18 @@ const CartItem = ({ product }) => {
             {product.name}
           </h3>
           <p className="text-sm font-semibold text-green-500">
-            {formatCurrency(product.price)}
+            {formatCurrency(Number(product.price ?? 0))}
           </p>
+          {Array.isArray(product.extras) && product.extras.length > 0 && (
+            <p className="text-xs text-muted-foreground">
+              Extras: {product.extras.map((e) => e.name).join(", ")}
+            </p>
+          )}
           <div className="flex items-center gap-2 text-center">
             <Button
               className="h-7 w-7"
               variant="outline"
-              onClick={() => decreaseProductQuantity(product.id)}
+              onClick={() => decreaseProductQuantity(product.lineId)}
             >
               <ChevronLeftIcon />
             </Button>
@@ -40,7 +45,7 @@ const CartItem = ({ product }) => {
             <Button
               className="h-7 w-7"
               variant="default"
-              onClick={() => increaseProductQuantity(product.id)}
+              onClick={() => increaseProductQuantity(product.lineId)}
             >
               <ChevronRightIcon />
             </Button>
@@ -50,7 +55,7 @@ const CartItem = ({ product }) => {
       <Button
         className="h-7 w-7"
         variant="destructive"
-        onClick={() => removeProduct(product.id)}
+        onClick={() => removeProduct(product.lineId)}
       >
         <TrashIcon />
       </Button>

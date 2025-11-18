@@ -17,6 +17,7 @@ const ProductDoubleDetails = ({
 }) => {
   const price = (product.price + secondProduct.price) / 2;
   const [quantity, setQuantity] = useState(1);
+  const [extras, setExtras] = useState([]);
   const { addToCart } = useContext(CartContext);
 
   const handleDecreaseQuantity = () => {
@@ -91,8 +92,9 @@ const ProductDoubleDetails = ({
         product={product}
         secondProduct={secondProduct}
         additionalIngredients={additionalIngredients}
+        onExtrasChange={setExtras}
       />
-      <AddToBagButton product={displayProduct} quantity={quantity} />
+      <AddToBagButton product={displayProduct} quantity={quantity} extras={extras} />
     </section>
   );
 };

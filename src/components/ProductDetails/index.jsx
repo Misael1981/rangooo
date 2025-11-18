@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/helpers/format-currency";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useContext, useState } from "react";
-import { CartContext } from "../../app/contexts/cart";
-import ProductDescription from "../ProductDescription";
 import AddToBagButton from "../AddToBagButton";
+import { CartContext } from "@/app/contexts/cart";
+import ProductDescription from "../ProductDescription";
 
 const ProductDetails = ({
   product,
@@ -16,6 +16,7 @@ const ProductDetails = ({
   additionalIngredients,
 }) => {
   const [quantity, setQuantity] = useState(1);
+  const [extras, setExtras] = useState([]);
   const { addToCart } = useContext(CartContext);
 
   const handleDecreaseQuantity = () => {
@@ -82,9 +83,14 @@ const ProductDetails = ({
         <ProductDescription
           product={displayProduct}
           additionalIngredients={additionalIngredients}
+          onExtrasChange={setExtras}
         />
       </div>
-      <AddToBagButton product={displayProduct} quantity={quantity} />
+      <AddToBagButton
+        product={displayProduct}
+        quantity={quantity}
+        extras={extras}
+      />
     </section>
   );
 };

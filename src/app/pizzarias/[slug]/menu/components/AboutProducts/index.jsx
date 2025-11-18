@@ -1,8 +1,10 @@
+import { useState } from "react";
 import IngredientManager from "@/components/IngredientManager";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PiChefHatLight } from "react-icons/pi";
 
-const AboutProducts = ({ product, secondProduct, additionalIngredients }) => {
+const AboutProducts = ({ product, secondProduct, additionalIngredients, onExtrasChange }) => {
+  const [extrasSelected, setExtrasSelected] = useState([]);
   return (
     <ScrollArea className="flex h-[350px] flex-col gap-4 bg-white pb-8">
       <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
@@ -24,6 +26,11 @@ const AboutProducts = ({ product, secondProduct, additionalIngredients }) => {
             <IngredientManager
               ingredients={additionalIngredients}
               title="Adicionar Ingrediente"
+              selected={extrasSelected}
+              onChange={(items) => {
+                setExtrasSelected(items);
+                if (typeof onExtrasChange === "function") onExtrasChange(items);
+              }}
             />
             <IngredientManager
               ingredients={product.ingredients?.map((i) => ({ name: i })) ?? []}

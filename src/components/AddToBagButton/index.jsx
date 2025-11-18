@@ -5,11 +5,11 @@ import { CartContext } from "@/app/contexts/cart";
 import { useContext } from "react";
 import SheetCart from "../SheetCart";
 
-const AddToBagButton = ({ product, quantity }) => {
+const AddToBagButton = ({ product, quantity, extras = [] }) => {
   const { isOpen, toggleCart, addToCart } = useContext(CartContext);
 
   const handleClick = () => {
-    addToCart(product, quantity);
+    addToCart(product, quantity, extras);
     toggleCart();
   };
 

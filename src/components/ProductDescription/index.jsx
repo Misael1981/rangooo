@@ -1,10 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PiChefHatLight } from "react-icons/pi";
 import IngredientManager from "../IngredientManager";
 
-const ProductDescription = ({ product, additionalIngredients }) => {
+const ProductDescription = ({
+  product,
+  additionalIngredients,
+  onExtrasChange,
+}) => {
+  const [extrasSelected, setExtrasSelected] = useState([]);
+
   return (
     <ScrollArea className="max-h-[calc(100vh-220px)] overflow-auto">
       <section className="space-y-6 bg-white px-4 pb-16">
@@ -22,20 +29,21 @@ const ProductDescription = ({ product, additionalIngredients }) => {
               <li key={index}>{ingredient}</li>
             ))}
           </ul>
-          {additionalIngredients && additionalIngredients.length > 0 && (
-            <div className="flex flex-col items-center justify-center gap-4 p-4">
-              <IngredientManager
-                ingredients={additionalIngredients}
-                title="Adicionar Ingrediente"
-              />
-              <IngredientManager
-                ingredients={
-                  product.ingredients?.map((i) => ({ name: i })) ?? []
-                }
-                title="Retirar Ingrediente"
-              />
-            </div>
-          )}
+          <div className="flex flex-col items-center justify-center gap-4 p-4">
+            <IngredientManager
+              ingredients={additionalIngredients}
+              title="Adicionar Ingrediente"
+              selected={extrasSelected}
+              onChange={(items) => {
+                setExtrasSelected(items);
+                if (typeof onExtrasChange === "function") onExtrasChange(items);
+              }}
+            />
+            <IngredientManager
+              ingredients={product.ingredients?.map((i) => ({ name: i })) ?? []}
+              title="Retirar Ingrediente"
+            />
+          </div>
         </div>
       </section>
     </ScrollArea>
