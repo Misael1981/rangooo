@@ -114,7 +114,6 @@ model Restaurant {
 
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
-  AdditionalOptionGroup AdditionalOptionGroup[]
 }
 
 // ===============================================
@@ -145,7 +144,7 @@ model MenuCategory {
   restaurant             Restaurant              @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId           String
   products               Product[]
-  additionalOptionGroups AdditionalOptionGroup[]
+  additionalIngredients  AdditionalIngredient[]
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
 }
@@ -169,67 +168,30 @@ model Product {
   // Relações
   restaurant          Restaurant              @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   orderItems          OrderItem[]
-  productOptionGroups AdditionalOptionGroup[] 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model AdditionalOptionGroup {
-  id             String            @id @default(uuid())
-  restaurantId   String
-  name           String
-  minSelection   Int               @default(0)
-  maxSelection   Int               @default(1)
-  restaurant     Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  menuCategory   MenuCategory?     @relation(fields: [menuCategoryId], references: [id], onDelete: SetNull)
-  menuCategoryId String? // Pode ser null se o grupo for ligado a um produto específico
-  product        Product?          @relation(fields: [productId], references: [id], onDelete: SetNull)
-
-  productId      String?
-  items          OptionGroupItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([restaurantId])
-  @@index([menuCategoryId])
-  @@index([productId])
-}
-
-model OptionGroupItem {
-  id                     String                @id @default(uuid())
-  additionalIngredient   AdditionalIngredient  @relation(fields: [additionalIngredientId], references: [id], onDelete: Cascade)
-  additionalIngredientId String
-  optionGroup            AdditionalOptionGroup @relation(fields: [optionGroupId], references: [id], onDelete: Cascade)
-  optionGroupId          String
-  customPrice            Decimal?              @db.Decimal(6, 2)
-  createdAt              DateTime              @default(now())
-  updatedAt              DateTime              @updatedAt
-
-  @@unique([additionalIngredientId, optionGroupId])
-  @@index([optionGroupId])
-  @@index([additionalIngredientId])
 }
 
 // ===============================================
 // Ingredientes Adicionais (Extras)
 // ===============================================
 model AdditionalIngredient {
-  id           String  @id @default(cuid())
-  restaurantId String
-  name         String
-  price        Decimal @db.Decimal(6, 2)
-  isActive     Boolean @default(true)
+  id             String      @id @default(cuid())
+  menuCategoryId String      @map("menu_category_id")
+  name           String
+  price          Decimal     @db.Decimal(6, 2)
+  isActive       Boolean     @default(true)
 
-  OptionGroupItem OptionGroupItem[]
+  menuCategory   MenuCategory @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 
-  @@unique([restaurantId, name])
-  @@index([restaurantId])
+  @@unique([menuCategoryId, name])
+  @@index([menuCategoryId])
 }
+
 
 // ===============================================
 // 4. Pedidos (Transação Principal)
@@ -268,8 +230,9 @@ model OrderItem {
 
   // Preço do item no momento da compra (para histórico)
   priceAtOrder Decimal @db.Decimal(6, 2)
-
+  
   // Relações
+  additionalIngredients Json?
   order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
