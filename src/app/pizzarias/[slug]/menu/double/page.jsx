@@ -3,6 +3,7 @@ import { toPlain } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import HeaderDoubleImages from "../components/HeaderDoubleImages";
 import ProductDoubleDetails from "../components/ProductDoubleDetails";
+import { getAdditionalIngredientByMenuCategory } from "@/data/get-AdditionalIngredient-by-menuCategory";
 
 export default async function Double({ params, searchParams }) {
   const { slug } = await params;
@@ -30,6 +31,10 @@ export default async function Double({ params, searchParams }) {
     return notFound();
   }
 
+  const additionalIngredients = await getAdditionalIngredientByMenuCategory(
+    p1.menuCategoryId,
+  );
+
   const productPlain = toPlain(p1);
   const secondProductPlain = toPlain(p2);
   const restaurantPlain = productPlain.restaurant;
@@ -46,6 +51,7 @@ export default async function Double({ params, searchParams }) {
         product={productPlain}
         secondProduct={secondProductPlain}
         restaurant={restaurantPlain}
+        additionalIngredients={additionalIngredients}
       />
     </div>
   );

@@ -9,7 +9,12 @@ import { CartContext } from "../../app/contexts/cart";
 import ProductDescription from "../ProductDescription";
 import AddToBagButton from "../AddToBagButton";
 
-const ProductDetails = ({ product, restaurant, secondProduct }) => {
+const ProductDetails = ({
+  product,
+  restaurant,
+  secondProduct,
+  additionalIngredients,
+}) => {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useContext(CartContext);
 
@@ -74,7 +79,10 @@ const ProductDetails = ({ product, restaurant, secondProduct }) => {
         </div>
       </div>
       <div className="flex-auto">
-        <ProductDescription product={displayProduct} />
+        <ProductDescription
+          product={displayProduct}
+          additionalIngredients={additionalIngredients}
+        />
       </div>
       <AddToBagButton product={displayProduct} quantity={quantity} />
     </section>

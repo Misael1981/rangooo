@@ -2,30 +2,7 @@ import IngredientManager from "@/components/IngredientManager";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PiChefHatLight } from "react-icons/pi";
 
-const ingredientsAdd = [
-  {
-    name: "Calabresa",
-    price: 2.9,
-  },
-  {
-    name: "Cebola",
-    price: 3.9,
-  },
-  {
-    name: "Catupiry",
-    price: 3.9,
-  },
-  {
-    name: "Milho",
-    price: 3.9,
-  },
-  {
-    name: "Bacon",
-    price: 3.9,
-  },
-];
-
-const AboutProducts = ({ product, secondProduct }) => {
+const AboutProducts = ({ product, secondProduct, additionalIngredients }) => {
   return (
     <ScrollArea className="flex h-[350px] flex-col gap-4 bg-white pb-8">
       <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
@@ -45,7 +22,7 @@ const AboutProducts = ({ product, secondProduct }) => {
           </ul>
           <div className="flex flex-col items-center justify-center gap-4 p-4">
             <IngredientManager
-              ingredients={ingredientsAdd}
+              ingredients={additionalIngredients}
               title="Adicionar Ingrediente"
             />
             <IngredientManager
@@ -68,7 +45,7 @@ const AboutProducts = ({ product, secondProduct }) => {
           </ul>
           <div className="flex flex-col items-center justify-center gap-4 p-4">
             <IngredientManager
-              ingredients={ingredientsAdd}
+              ingredients={additionalIngredients}
               title="Adicionar Ingrediente"
             />
             <IngredientManager

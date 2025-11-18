@@ -1,5 +1,6 @@
 import HeaderImage from "@/components/HeaderImage";
 import ProductDetails from "@/components/ProductDetails";
+import { getAdditionalIngredientByMenuCategory } from "@/data/get-AdditionalIngredient-by-menuCategory";
 import { db } from "@/lib/prisma";
 import { toPlain } from "@/lib/utils";
 import { notFound } from "next/navigation";
@@ -40,6 +41,10 @@ export default async function ProductPage({ params, searchParams }) {
     secondProductPlain = toPlain(product2);
   }
 
+  const additionalIngredients = await getAdditionalIngredientByMenuCategory(
+    product.menuCategoryId,
+  );
+
   return (
     <div className="flex flex-col">
       <HeaderImage image={product.imageUrl} alt={product.name} />
@@ -47,6 +52,7 @@ export default async function ProductPage({ params, searchParams }) {
         product={productPlain}
         restaurant={restaurantPlain}
         secondProduct={secondProductPlain}
+        additionalIngredients={additionalIngredients}
       />
     </div>
   );

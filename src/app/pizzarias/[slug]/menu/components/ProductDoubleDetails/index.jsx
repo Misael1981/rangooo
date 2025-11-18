@@ -9,7 +9,12 @@ import { CartContext } from "@/app/contexts/cart";
 import AboutProducts from "../AboutProducts";
 import AddToBagButton from "@/components/AddToBagButton";
 
-const ProductDoubleDetails = ({ product, secondProduct, restaurant }) => {
+const ProductDoubleDetails = ({
+  product,
+  secondProduct,
+  restaurant,
+  additionalIngredients,
+}) => {
   const price = (product.price + secondProduct.price) / 2;
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useContext(CartContext);
@@ -82,7 +87,11 @@ const ProductDoubleDetails = ({ product, secondProduct, restaurant }) => {
           </Button>
         </div>
       </div>
-      <AboutProducts product={product} secondProduct={secondProduct} />
+      <AboutProducts
+        product={product}
+        secondProduct={secondProduct}
+        additionalIngredients={additionalIngredients}
+      />
       <AddToBagButton product={displayProduct} quantity={quantity} />
     </section>
   );
