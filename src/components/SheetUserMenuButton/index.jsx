@@ -7,6 +7,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { signOut, useSession } from "next-auth/react";
+import { useEffect } from "react";
 import LoginScreen from "./components/LoginScreen";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { format } from "date-fns";
@@ -16,6 +17,25 @@ import { LogOutIcon, NotebookText, ScrollTextIcon } from "lucide-react";
 
 const SheetUserMenuButton = ({ open, onOpenChange }) => {
   const { data } = useSession();
+
+  useEffect(() => {
+    if (data?.user) {
+      const raw = typeof window !== "undefined"
+        ? localStorage.getItem("prefill_user_data")
+        : null;
+      if (raw) {
+        fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: raw,
+        }).finally(() => {
+          try {
+            localStorage.removeItem("prefill_user_data");
+          } catch {}
+        });
+      }
+    }
+  }, [data?.user]);
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });

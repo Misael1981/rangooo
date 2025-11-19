@@ -1,21 +1,6 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
-import { NotebookText } from "lucide-react";
-import DialogDataUser from "../DialogDataUser";
-import { FaFacebookF, FaGoogle } from "react-icons/fa";
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import UserDataForm from "../UserDataForm";
 
 const LoginScreen = () => {
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const handleLoginWithGoogle = async () => {
-    await signIn("google");
-  };
-  const handleLoginWithFacebook = async () => {
-    await signIn("facebook");
-  };
   return (
     <div className="flex flex-col gap-4">
       <div className="space-y-1">
@@ -31,25 +16,7 @@ const LoginScreen = () => {
           experiência.
         </p>
       </div>
-      <Button
-        className="w-fit"
-        variant="ghost"
-        onClick={() => setDialogOpen(true)}
-      >
-        <NotebookText />
-        Preencha os dados
-      </Button>
-      <DialogDataUser open={dialogOpen} onOpenChange={setDialogOpen} />
-      <div className="flex w-full flex-col gap-2">
-        <Button className="bg-[#d64131]" onClick={handleLoginWithGoogle}>
-          <FaGoogle />
-          Entrar com Google
-        </Button>
-        <Button className="bg-[#3b5a9a]" onClick={handleLoginWithFacebook}>
-          <FaFacebookF />
-          Entrar com Facebook
-        </Button>
-      </div>
+      <UserDataForm />
     </div>
   );
 };

@@ -16,9 +16,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
+import { FaFacebookF, FaGoogle } from "react-icons/fa";
+import { signIn } from "next-auth/react";
 
 const formSchema = z.object({
-  email: z.string().email(),
   name: z.string().trim().min(1, {
     message: "Nome é obrigatório",
   }),
@@ -56,8 +57,8 @@ const formSchema = z.object({
 const UserDataForm = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
+    mode: "onChange",
     defaultValues: {
-      email: "",
       name: "",
       lastName: "",
       ddd: "",
@@ -71,7 +72,6 @@ const UserDataForm = () => {
   });
   const onSubmit = async (data) => {
     const payload = {
-      email: data.email,
       name: data.name,
       phone: `${data.ddd}${String(data.phoneNumber).replace(/\D/g, "")}`,
       address: {
@@ -87,6 +87,52 @@ const UserDataForm = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+  };
+  const handleLoginWithGoogle = async () => {
+    const valid = await form.trigger();
+    if (!valid) {
+      toast.error("Preencha todos os campos corretamente");
+      return;
+    }
+    const values = form.getValues();
+    const payload = {
+      name: values.name,
+      phone: `${values.ddd}${String(values.phoneNumber).replace(/\D/g, "")}`,
+      address: {
+        street: values.address,
+        number: values.number,
+        neighborhood: values.neighborhood,
+        city: values.city,
+        state: values.state,
+      },
+    };
+    try {
+      localStorage.setItem("prefill_user_data", JSON.stringify(payload));
+    } catch {}
+    await signIn("google");
+  };
+  const handleLoginWithFacebook = async () => {
+    const valid = await form.trigger();
+    if (!valid) {
+      toast.error("Preencha todos os campos corretamente");
+      return;
+    }
+    const values = form.getValues();
+    const payload = {
+      name: values.name,
+      phone: `${values.ddd}${String(values.phoneNumber).replace(/\D/g, "")}`,
+      address: {
+        street: values.address,
+        number: values.number,
+        neighborhood: values.neighborhood,
+        city: values.city,
+        state: values.state,
+      },
+    };
+    try {
+      localStorage.setItem("prefill_user_data", JSON.stringify(payload));
+    } catch {}
+    await signIn("facebook");
   };
   return (
     <div className="overflow-auto p-1">
@@ -172,24 +218,7 @@ const UserDataForm = () => {
             />
           </div>
 
-          {/* Email */}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    className="border-gray-400"
-                    placeholder="Digite seu email"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
 
           {/* Endereço */}
           <FormField
@@ -297,13 +326,22 @@ const UserDataForm = () => {
             />
           </div>
 
-          <div className="mt-4 flex justify-end">
+          <div className="flex w-full flex-col gap-2 pt-4">
             <Button
-              className="mt-4"
-              type="submit"
-              onClick={() => toast.success("Dados enviados com sucesso!")}
+              className="bg-[#d64131]"
+              onClick={handleLoginWithGoogle}
+              disabled={!form.formState.isValid}
             >
-              Enviar
+              <FaGoogle />
+              Entrar com Google
+            </Button>
+            <Button
+              className="bg-[#3b5a9a]"
+              onClick={handleLoginWithFacebook}
+              disabled={!form.formState.isValid}
+            >
+              <FaFacebookF />
+              Entrar com Facebook
             </Button>
           </div>
         </form>
