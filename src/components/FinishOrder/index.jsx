@@ -31,6 +31,16 @@ const FinishOrder = ({ isOpen, onOpenChange }) => {
   const [isFinalStep, setIsFinalStep] = useState(false);
   const [submitTrigger, setSubmitTrigger] = useState(false);
 
+  const handleSubmit = (data) => {
+    console.log("Dados da retirada:", data);
+    // Aqui você envia para a API
+    // data.customerName, data.estimatedTime
+  };
+
+  const handleCancel = () => {
+    window.history.back();
+  };
+
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <AnimationFadeIn>
@@ -51,7 +61,12 @@ const FinishOrder = ({ isOpen, onOpenChange }) => {
                 externalSubmitTrigger={submitTrigger}
               />
             )}
-            {consumptionMethod === "PICKUP" && <FinishPickup />}
+            {consumptionMethod === "PICKUP" && (
+              <FinishPickup
+                onSubmit={() => setSubmitTrigger((v) => !v)}
+                onCancel={() => setIsFinalStep(false)}
+              />
+            )}
             {consumptionMethod === "DINE_IN" && <FinishDineIn />}
           </section>
           <AnimationFadeIn>
