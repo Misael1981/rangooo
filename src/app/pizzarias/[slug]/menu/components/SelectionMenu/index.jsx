@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ViewModeToggle from "../ViewModeToggle";
 import Products from "@/components/Products";
 import SelectDoublePizza from "../SelectDoublePizza";
@@ -20,8 +20,12 @@ const SelectionMenu = ({ categories, slug, segment }) => {
     setSelectedIds([]);
   };
   const category = segmentForCategory(segment);
+  const sp = useSearchParams();
+  const cm = sp.get("consumptionMethod");
 
-  const url = `/${category}/${slug}/menu/double?flavor1=${selectedIds[0]}&flavor2=${selectedIds[1]}`;
+  const url = cm
+    ? `/${category}/${slug}/menu/double?flavor1=${selectedIds[0]}&flavor2=${selectedIds[1]}&consumptionMethod=${cm}`
+    : `/${category}/${slug}/menu/double?flavor1=${selectedIds[0]}&flavor2=${selectedIds[1]}`;
 
   return (
     <div className="bg-white">

@@ -6,12 +6,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useContext } from "react";
-import { Button } from "@/components/ui/button";
+import { useContext, useState } from "react";
 import { CartContext } from "@/app/contexts/cart";
 import CartItem from "../CartItem";
+import FinishOrder from "../FinishOrder";
+import { Button } from "../ui/button";
 
 function SheetCart() {
+  const [finishOrderOpen, setFinishOrderOpen] = useState(false);
   const { isOpen, toggleCart, products, total, extrasPrice } =
     useContext(CartContext);
   const extrasTotal = products.reduce(
@@ -21,6 +23,11 @@ function SheetCart() {
         item.quantity,
     0,
   );
+
+  const handleFinishOrderClick = () => {
+    setFinishOrderOpen(true);
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={toggleCart}>
       <SheetContent className="flex h-full w-[90%] flex-col p-0">
@@ -53,9 +60,17 @@ function SheetCart() {
           </div>
 
           <div className="border-t border-gray-300 bg-white pt-4">
-            <Button className="h-10 w-full" variant="default">
+            <Button
+              className="h-10 w-full"
+              variant="default"
+              onClick={handleFinishOrderClick}
+            >
               Finalizar pedido
             </Button>
+            <FinishOrder
+              isOpen={finishOrderOpen}
+              onOpenChange={setFinishOrderOpen}
+            />
           </div>
         </div>
       </SheetContent>

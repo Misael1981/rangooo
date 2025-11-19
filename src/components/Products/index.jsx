@@ -4,6 +4,7 @@ import { segmentForCategory } from "@/lib/routes";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 
 function Products({ slug, segment, products, viewMode, selectedIds = [], onSelectionChange }) {
   const category = segmentForCategory(segment);
@@ -25,6 +26,8 @@ function Products({ slug, segment, products, viewMode, selectedIds = [], onSelec
     [onSelectionChange, selectedIds],
   );
 
+  const searchParams = useSearchParams();
+  const cm = searchParams.get("consumptionMethod");
   return (
     <div className="space-y-6 p-4">
       {products.map((product) => {
@@ -69,10 +72,13 @@ function Products({ slug, segment, products, viewMode, selectedIds = [], onSelec
           );
         }
 
+        const href = cm
+          ? `/${category}/${slug}/menu/${product.id}?consumptionMethod=${cm}`
+          : `/${category}/${slug}/menu/${product.id}`;
         return (
           <Link
             key={product.id}
-            href={`/${category}/${slug}/menu/${product.id}`}
+            href={href}
             className="flex items-center gap-8 rounded-md border border-gray-300 p-4 shadow-lg"
           >
             {cardInner}
