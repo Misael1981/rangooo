@@ -16,6 +16,7 @@ function SheetCart() {
   const [finishOrderOpen, setFinishOrderOpen] = useState(false);
   const { isOpen, toggleCart, products, total, extrasPrice } =
     useContext(CartContext);
+
   const extrasTotal = products.reduce(
     (acc, item) =>
       acc +

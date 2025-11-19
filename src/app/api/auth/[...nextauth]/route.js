@@ -23,7 +23,19 @@ export const authOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (token?.sub) session.user.id = token.sub;
+      if (token?.sub) {
+        const u = await db.user.findUnique({
+          where: { id: token.sub },
+          select: { id: true, email: true, name: true, phone: true, address: true },
+        });
+        if (u) {
+          session.user.id = u.id;
+          session.user.email = u.email;
+          session.user.name = u.name ?? session.user.name;
+          session.user.phone = u.phone ?? null;
+          session.user.address = u.address ?? null;
+        }
+      }
       return session;
     },
   },
