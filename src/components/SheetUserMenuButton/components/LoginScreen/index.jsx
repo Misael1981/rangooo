@@ -5,7 +5,7 @@ const LoginScreen = () => {
     <div className="flex flex-col gap-4">
       <div className="space-y-1">
         <h2 className="mb-2 text-xl leading-none">
-          Olá, <strong>faça seu login</strong>
+          Olá, <strong>faça seu cadastro</strong>
         </h2>
         <p className="text-sm text-gray-500">
           Preencha o formulário, com seus dados corretamente, eles vão garantir

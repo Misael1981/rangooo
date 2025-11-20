@@ -14,15 +14,17 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "../ui/button";
 import { LogOutIcon, NotebookText, ScrollTextIcon } from "lucide-react";
+import LoginSocialMidia from "./components/LoginSocialMidia";
 
 const SheetUserMenuButton = ({ open, onOpenChange }) => {
   const { data } = useSession();
 
   useEffect(() => {
     if (data?.user) {
-      const raw = typeof window !== "undefined"
-        ? localStorage.getItem("prefill_user_data")
-        : null;
+      const raw =
+        typeof window !== "undefined"
+          ? localStorage.getItem("prefill_user_data")
+          : null;
       if (raw) {
         fetch("/api/users", {
           method: "POST",
@@ -77,7 +79,7 @@ const SheetUserMenuButton = ({ open, onOpenChange }) => {
                 </div>
               </div>
               <p className="text-sm text-gray-500">
-                Seja bem-vindo(a) ao seu cantinho! Aqui você pode ver seus
+                Seja bem-vindo(a) ao seu cantinho! Agora você pode ver seus
                 pedidos, acompanhar o status de entrega e fazer alterações em
                 seus dados.
               </p>
@@ -104,7 +106,7 @@ const SheetUserMenuButton = ({ open, onOpenChange }) => {
             </footer>
           </div>
         ) : (
-          <LoginScreen />
+          <LoginSocialMidia />
         )}
       </SheetContent>
     </Sheet>
