@@ -13,9 +13,16 @@ import { Avatar, AvatarImage } from "../ui/avatar";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "../ui/button";
-import { LogOutIcon, NotebookText, ScrollTextIcon } from "lucide-react";
+import {
+  LogOutIcon,
+  NotebookText,
+  ScrollTextIcon,
+  ShieldAlert,
+} from "lucide-react";
 import LoginSocialMidia from "./components/LoginSocialMidia";
 import AccountSettingsAccordion from "./components/AccountSettingsAccordion";
+import { Separator } from "../ui/separator";
+import Link from "next/link";
 
 const SheetUserMenuButton = ({ open, onOpenChange }) => {
   const { data } = useSession();
@@ -95,15 +102,28 @@ const SheetUserMenuButton = ({ open, onOpenChange }) => {
               </p>
             </section>
             <section className="flex flex-col gap-2">
-              <Button className="w-fit" variant="secondary">
-                <NotebookText />
-                Editar meus Dados
-              </Button>
-              <Button className="w-fit" variant="secondary">
-                <ScrollTextIcon />
-                Meus Pedidos
-              </Button>
-              <AccountSettingsAccordion />
+              <div className="flex flex-col gap-2">
+                <Link href="/" className="w-full py-2">
+                  <span className="flex items-center gap-2">
+                    <ScrollTextIcon className="text-blue-500" />
+                    Meus Pedidos
+                  </span>
+                </Link>
+                <Separator className="bg-gray-500" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Link href="/" className="w-full py-2">
+                  <span className="flex items-center gap-2">
+                    <ShieldAlert className="text-green-500" />
+                    Termos e Condições
+                  </span>
+                </Link>
+                <Separator className="bg-gray-500" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <AccountSettingsAccordion />
+                <Separator className="bg-gray-500" />
+              </div>
             </section>
             <footer className="mt-auto">
               <Button

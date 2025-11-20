@@ -2,6 +2,50 @@ import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return Response.json({ error: "unauthorized" }, { status: 401 });
+    }
+
+    let userId = session.user.id;
+
+    if (!userId && session.user.email) {
+      const found = await db.user.findUnique({
+        where: { email: session.user.email },
+        select: { id: true },
+      });
+      userId = found?.id;
+    }
+
+    if (!userId) {
+      return Response.json({ error: "unauthorized" }, { status: 401 });
+    }
+
+    // Busca usuário COMPLETO
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        address: true, // ← AGORA VEM O ENDEREÇO COMPLETO!
+      },
+    });
+
+    if (!user) {
+      return Response.json({ error: "user_not_found" }, { status: 404 });
+    }
+
+    return Response.json({ user });
+  } catch (err) {
+    console.error("GET /api/users error", err);
+    return Response.json({ error: "internal_error" }, { status: 500 });
+  }
+}
+
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions);
