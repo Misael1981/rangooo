@@ -7,8 +7,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { signOut, useSession } from "next-auth/react";
-import { useEffect } from "react";
-import LoginScreen from "./components/LoginScreen";
+import { useEffect, useState } from "react";
+import FirstRegistration from "./components/FirstRegistration";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -18,6 +18,7 @@ import LoginSocialMidia from "./components/LoginSocialMidia";
 
 const SheetUserMenuButton = ({ open, onOpenChange }) => {
   const { data } = useSession();
+  const [firstRegOpen, setFirstRegOpen] = useState(false);
 
   useEffect(() => {
     if (data?.user) {
@@ -35,6 +36,14 @@ const SheetUserMenuButton = ({ open, onOpenChange }) => {
             localStorage.removeItem("prefill_user_data");
           } catch {}
         });
+      }
+      const missingProfile = !data.user.phone || !data.user.address;
+      const skip =
+        typeof window !== "undefined"
+          ? localStorage.getItem("first_registration_skipped") === "1"
+          : false;
+      if (missingProfile && !skip) {
+        setFirstRegOpen(true);
       }
     }
   }, [data?.user]);
@@ -109,6 +118,17 @@ const SheetUserMenuButton = ({ open, onOpenChange }) => {
           <LoginSocialMidia />
         )}
       </SheetContent>
+      <FirstRegistration
+        open={firstRegOpen}
+        onOpenChange={(open) => {
+          setFirstRegOpen(open);
+          if (!open) {
+            try {
+              localStorage.setItem("first_registration_skipped", "1");
+            } catch {}
+          }
+        }}
+      />
     </Sheet>
   );
 };

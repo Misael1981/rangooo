@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { FaFacebookF, FaGoogle } from "react-icons/fa";
 import { toast } from "sonner";
+import FirstRegistration from "../FirstRegistration";
 
 const LoginSocialMidia = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -43,6 +44,7 @@ const LoginSocialMidia = () => {
           da plataforma e o histórico dos seus últimos pedidos.
         </p>
       </div>
+      <FirstRegistration />
       <div>
         <div className="flex w-full flex-col gap-2">
           <Button
