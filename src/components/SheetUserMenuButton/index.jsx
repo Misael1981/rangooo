@@ -15,6 +15,7 @@ import { ptBR } from "date-fns/locale";
 import { Button } from "../ui/button";
 import { LogOutIcon, NotebookText, ScrollTextIcon } from "lucide-react";
 import LoginSocialMidia from "./components/LoginSocialMidia";
+import AccountSettingsAccordion from "./components/AccountSettingsAccordion";
 
 const SheetUserMenuButton = ({ open, onOpenChange }) => {
   const { data } = useSession();
@@ -102,6 +103,7 @@ const SheetUserMenuButton = ({ open, onOpenChange }) => {
                 <ScrollTextIcon />
                 Meus Pedidos
               </Button>
+              <AccountSettingsAccordion />
             </section>
             <footer className="mt-auto">
               <Button
