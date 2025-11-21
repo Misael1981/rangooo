@@ -23,6 +23,7 @@ import LoginSocialMidia from "./components/LoginSocialMidia";
 import AccountSettingsAccordion from "./components/AccountSettingsAccordion";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
+import Image from "next/image";
 
 const SheetUserMenuButton = ({ open, onOpenChange }) => {
   const { data } = useSession();
@@ -102,6 +103,21 @@ const SheetUserMenuButton = ({ open, onOpenChange }) => {
               </p>
             </section>
             <section className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2">
+                <Link href="/sobre" className="w-full py-2">
+                  <span className="flex items-center gap-2">
+                    <Image
+                      src="/logo-rangooo.png"
+                      alt="Logo Rangooo"
+                      width={24}
+                      height={24}
+                    />
+                    Sobre a Plataforma{" "}
+                    <span className="font-bold text-red-500">Rangooo</span>
+                  </span>
+                </Link>
+                <Separator className="bg-gray-500" />
+              </div>
               <div className="flex flex-col gap-2">
                 <Link href="/" className="w-full py-2">
                   <span className="flex items-center gap-2">
