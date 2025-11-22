@@ -3,6 +3,7 @@
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 
 export const createOrder = async (input) => {
   if (!input?.slug) throw new Error("Missing restaurant slug");
@@ -39,7 +40,9 @@ export const createOrder = async (input) => {
     where: { id: { in: productIds } },
     select: { id: true, price: true },
   });
-  const priceMap = Object.fromEntries(productsRows.map((r) => [r.id, Number(r.price)]));
+  const priceMap = Object.fromEntries(
+    productsRows.map((r) => [r.id, Number(r.price)]),
+  );
   const itemsData = input.products
     .map((p) => {
       const pid = p.productId ?? p.id;
@@ -49,7 +52,10 @@ export const createOrder = async (input) => {
       return { productId: pid, quantity: qty, priceAtOrder: price };
     })
     .filter(Boolean);
-  const total = itemsData.reduce((acc, it) => acc + Number(it.priceAtOrder) * it.quantity, 0);
+  const total = itemsData.reduce(
+    (acc, it) => acc + Number(it.priceAtOrder) * it.quantity,
+    0,
+  );
   await db.order.create({
     data: {
       userId: user.id,
@@ -62,4 +68,5 @@ export const createOrder = async (input) => {
       deliveryFee: input.deliveryFee ?? 0,
     },
   });
+  //redirect("/orders");
 };

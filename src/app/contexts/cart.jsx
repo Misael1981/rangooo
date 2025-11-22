@@ -8,6 +8,7 @@ export const CartContext = createContext({
   toggleCart: () => {},
   openCart: () => {},
   closeCart: () => {},
+  clearCart: () => {},
 });
 
 export const CartProvider = ({ children }) => {
@@ -16,6 +17,7 @@ export const CartProvider = ({ children }) => {
   const toggleCart = () => setIsOpen((prev) => !prev);
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
+  const clearCart = () => setProducts([]);
 
   const addToCart = (product, quantity = 1, extras = []) => {
     setProducts((prevProducts) => {
@@ -87,6 +89,7 @@ export const CartProvider = ({ children }) => {
         increaseProductQuantity,
         removeProduct,
         extrasPrice,
+        clearCart,
         total,
       }}
     >
