@@ -8,11 +8,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CheckCircle, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 const OrderSuccessfulDialog = ({ isOpen, onOpenChange }) => {
-  // Radix Dialog expects the prop name `open` (not `isOpen`).
-  // Map `isOpen` -> `open` so callers using `isOpen` still work.
+  const router = useRouter();
+  const params = useParams();
+  const sp = useSearchParams();
+  const slug = params?.slug;
+  const cm = sp.get("consumptionMethod");
+
+  const goToOrders = () => {
+    onOpenChange(false);
+    router.push("/orders");
+  };
+
+  const goToMenu = () => {
+    onOpenChange(false);
+    router.push(
+      `/pizzarias/${slug}/menu${cm ? `?consumptionMethod=${cm}` : ""}`,
+    );
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="w-[350px] max-w-[95%] rounded-md bg-white p-4 shadow-md">
@@ -24,10 +41,16 @@ const OrderSuccessfulDialog = ({ isOpen, onOpenChange }) => {
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-around">
-          <Button variant="outline" className="text-red-500">
+          <Button
+            variant="outline"
+            className="text-red-500"
+            onClick={goToOrders}
+          >
             Ver Pedidos
           </Button>
-          <Button variant="outline">Continuar</Button>
+          <Button variant="outline" onClick={goToMenu}>
+            Continuar
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
