@@ -13,17 +13,9 @@ import { Avatar, AvatarImage } from "../ui/avatar";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "../ui/button";
-import {
-  LogOutIcon,
-  NotebookText,
-  ScrollTextIcon,
-  ShieldAlert,
-} from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 import LoginSocialMidia from "./components/LoginSocialMidia";
-import AccountSettingsAccordion from "./components/AccountSettingsAccordion";
-import { Separator } from "../ui/separator";
-import Link from "next/link";
-import Image from "next/image";
+import UserMenuLinks from "./components/UserMenuLinks";
 
 const SheetUserMenuButton = ({ open, onOpenChange }) => {
   const { data } = useSession();
@@ -102,45 +94,7 @@ const SheetUserMenuButton = ({ open, onOpenChange }) => {
                 seus dados.
               </p>
             </section>
-            <section className="flex flex-col gap-2">
-              <div className="flex flex-col gap-2">
-                <Link href="/sobre" className="w-full py-2">
-                  <span className="flex items-center gap-2">
-                    <Image
-                      src="/logo-rangooo.png"
-                      alt="Logo Rangooo"
-                      width={24}
-                      height={24}
-                    />
-                    Sobre a Plataforma{" "}
-                    <span className="font-bold text-red-500">Rangooo</span>
-                  </span>
-                </Link>
-                <Separator className="bg-gray-500" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Link href="/" className="w-full py-2">
-                  <span className="flex items-center gap-2">
-                    <ScrollTextIcon className="text-blue-500" />
-                    Meus Pedidos
-                  </span>
-                </Link>
-                <Separator className="bg-gray-500" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Link href="/" className="w-full py-2">
-                  <span className="flex items-center gap-2">
-                    <ShieldAlert className="text-green-500" />
-                    Termos e Condições
-                  </span>
-                </Link>
-                <Separator className="bg-gray-500" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <AccountSettingsAccordion />
-                <Separator className="bg-gray-500" />
-              </div>
-            </section>
+            <UserMenuLinks />
             <footer className="mt-auto">
               <Button
                 variant="destructive"
