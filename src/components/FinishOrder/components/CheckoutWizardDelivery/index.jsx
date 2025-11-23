@@ -15,7 +15,13 @@ const steps = [
   { id: "confirm", label: "Confirmar", icon: CheckCircle2 },
 ];
 
-const CheckoutWizardDelivery = ({ userAddress, onSubmit, onCancel, onStepChange, externalSubmitTrigger }) => {
+const CheckoutWizardDelivery = ({
+  userAddress,
+  onSubmit,
+  onCancel,
+  onStepChange,
+  externalSubmitTrigger,
+}) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     address: userAddress,
@@ -58,7 +64,6 @@ const CheckoutWizardDelivery = ({ userAddress, onSubmit, onCancel, onStepChange,
     lastTriggerRef.current = externalSubmitTrigger;
     if (externalSubmitTrigger) onSubmit(formData);
   }, [externalSubmitTrigger, isFinalStep, formData, onSubmit]);
-
 
   const prevStep = () => {
     if (currentStep > 0) {
