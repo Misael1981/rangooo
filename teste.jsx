@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Drawer,
   DrawerClose,
@@ -15,78 +13,89 @@ import FinishPickup from "./components/FinishPickup";
 import FinishDineIn from "./components/FinishDineIn";
 import { useParams, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useContext, useState, useEffect, useTransition } from "react";
+import { useContext, useState, useTransition } from "react";
 import AnimationFadeIn from "../AnimationFadeIn";
 import { createOrder } from "@/app/actions/create-order";
 import { CartContext } from "@/app/contexts/cart";
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 import OrderSuccessfulDialog from "./components/OrderSuccessfulDialog";
+import { db } from "@/lib/prisma";
 import useSWR from "swr";
-
-// Fetcher para o SWR
-const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
   // === ESTADOS ===
   const [isFinalStep, setIsFinalStep] = useState(false);
   const [submitTrigger, setSubmitTrigger] = useState(false);
   const [orderSuccessful, setOrderSuccessful] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // === Buscando dados do usuário ===
+  const { userData, isUserLoading } = useSWR("/api/users", (u) =>
+    fetch(u).then((r) => r.json()),
+  );
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await db.user.findUnique({
+          where: {
+            id: data?.user?.id,
+          },
+        });
+        setUser(user);
+        setLoading(false);
+      } catch (error) {
+        console.log("Erro ao buscar usuário:", error);
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, [data?.user?.id]);
 
   // === HOOKS ===
   const params = useParams();
   const { products, closeCart, clearCart } = useContext(CartContext);
   const sp = useSearchParams();
-  const { data: session } = useSession();
+  const { data } = useSession();
   const [isPending, startTransition] = useTransition();
-
-  // === BUSCA DADOS DO USUÁRIO (CORRETO) ===
-  const { data: userData, isLoading: userLoading } = useSWR(
-    session?.user ? "/api/users" : null,
-    fetcher,
-  );
 
   // === VARIÁVEIS COMPUTADAS ===
   const consumptionMethod = sp.get("consumptionMethod") || "DELIVERY";
   const slugParam = params?.slug ?? sp.get("slug");
   const isDelivery = consumptionMethod === "DELIVERY";
-  const isLogged = !!session?.user;
+  const isLogged = !!data?.user;
+  const hasAddress = !!data?.user?.address;
 
-  // ✅ Usa os dados do SWR ou da session como fallback
-  const user = userData?.user || session?.user;
-  const hasAddress = !!user?.address;
-
+  // ✅ CORRIGIDO: Agora isFinalStep já foi declarado
   const canFinish = !isDelivery || (isLogged && isFinalStep);
 
   // === HANDLERS ===
   const handleSubmit = async (formData) => {
-    setIsSubmitting(true);
-
     try {
-      await createOrder({
-        userId: user?.id,
-        consumptionMethod,
-        deliveryAddress: formData.address,
-        slug: slugParam,
-        products: products.map((product) => ({
-          productId: product.productId ?? product.id,
-          quantity: product.quantity,
-          extras: product.extras,
-        })),
-        paymentMethod: formData.paymentMethod,
+      startTransition(async () => {
+        await createOrder({
+          userId: data?.user?.id,
+          consumptionMethod,
+          deliveryAddress: formData.address,
+          slug: slugParam,
+          products: products.map((product) => ({
+            productId: product.productId ?? product.id,
+            quantity: product.quantity,
+            extras: product.extras,
+          })),
+          paymentMethod: formData.paymentMethod,
+        });
+        setSubmitTrigger(false);
+        closeCart();
+        clearCart();
+        onOrderSuccess();
       });
-
-      setSubmitTrigger(false);
-      closeCart();
-      clearCart();
-      onOrderSuccess();
     } catch (error) {
       setSubmitTrigger(false);
       toast.error("Erro ao criar pedido. Tente novamente.");
       console.log("Erro ao criar pedido:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -125,13 +134,11 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
               )}
               {consumptionMethod === "PICKUP" && (
                 <FinishPickup
-                  onSubmit={handleSubmit}
+                  onSubmit={() => setSubmitTrigger((v) => !v)}
                   onCancel={() => setIsFinalStep(false)}
                 />
               )}
-              {consumptionMethod === "DINE_IN" && (
-                <FinishDineIn onSubmit={handleSubmit} />
-              )}
+              {consumptionMethod === "DINE_IN" && <FinishDineIn />}
             </section>
 
             <AnimationFadeIn>
@@ -139,13 +146,11 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
                 {isFinalStep && (
                   <div className="flex w-full flex-col gap-2">
                     <Button
-                      disabled={isSubmitting || !canFinish}
+                      disabled={isPending || !canFinish}
                       onClick={handleFinalButtonClick}
                     >
-                      {isSubmitting && (
-                        <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                      )}
-                      {isSubmitting ? "Processando..." : "Finalizar Pedido"}
+                      {isPending && <Loader2Icon className="animate-spin" />}
+                      Finalizar Pedido
                     </Button>
 
                     <DrawerClose asChild>
@@ -158,7 +163,6 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
           </DrawerContent>
         </AnimationFadeIn>
       </Drawer>
-
       <OrderSuccessfulDialog
         isOpen={orderSuccessful}
         onOpenChange={(open) => {

@@ -15,7 +15,7 @@ import FinishPickup from "./components/FinishPickup";
 import FinishDineIn from "./components/FinishDineIn";
 import { useParams, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useContext, useState, useEffect, useTransition } from "react";
+import { useContext, useState, useEffect } from "react";
 import AnimationFadeIn from "../AnimationFadeIn";
 import { createOrder } from "@/app/actions/create-order";
 import { CartContext } from "@/app/contexts/cart";
@@ -39,7 +39,6 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
   const { products, closeCart, clearCart } = useContext(CartContext);
   const sp = useSearchParams();
   const { data: session } = useSession();
-  const [isPending, startTransition] = useTransition();
 
   // === BUSCA DADOS DO USUÁRIO (CORRETO) ===
   const { data: userData, isLoading: userLoading } = useSWR(
@@ -64,7 +63,7 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
     setIsSubmitting(true);
 
     try {
-      await createOrder({
+      const result = await createOrder({
         userId: user?.id,
         consumptionMethod,
         deliveryAddress: formData.address,
@@ -77,16 +76,16 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
         paymentMethod: formData.paymentMethod,
       });
 
-      setSubmitTrigger(false);
-      closeCart();
-      clearCart();
-      onOrderSuccess();
+      if (result) {
+        setSubmitTrigger(false);
+        closeCart();
+        clearCart();
+        onOrderSuccess();
+      }
     } catch (error) {
       setSubmitTrigger(false);
       toast.error("Erro ao criar pedido. Tente novamente.");
       console.log("Erro ao criar pedido:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -143,7 +142,7 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
                       onClick={handleFinalButtonClick}
                     >
                       {isSubmitting && (
-                        <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2Icon className="mr-2 animate-spin" />
                       )}
                       {isSubmitting ? "Processando..." : "Finalizar Pedido"}
                     </Button>

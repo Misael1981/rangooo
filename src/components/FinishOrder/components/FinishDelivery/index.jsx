@@ -15,14 +15,18 @@ const userAddress = {
   zipCode: "01234-567",
 };
 
-const FinishDelivery = ({ isLogged, onStepChange, externalSubmitTrigger, onSubmit }) => {
+const FinishDelivery = ({
+  isLogged,
+  onStepChange,
+  externalSubmitTrigger,
+  onSubmit,
+  userData = {},
+}) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleOpenDialogClick = () => {
     setDialogOpen(true);
   };
-
-
 
   const handleCancel = () => {
     // Voltar para a página anterior
@@ -46,7 +50,7 @@ const FinishDelivery = ({ isLogged, onStepChange, externalSubmitTrigger, onSubmi
       ) : (
         <div>
           <CheckoutWizardDelivery
-            userAddress={userAddress}
+            userAddress={userData?.address || {}}
             onSubmit={onSubmit}
             onCancel={handleCancel}
             onStepChange={onStepChange}

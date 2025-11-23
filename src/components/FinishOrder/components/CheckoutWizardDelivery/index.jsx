@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, CreditCard, CheckCircle2 } from "lucide-react";
@@ -51,10 +51,12 @@ const CheckoutWizardDelivery = ({ userAddress, onSubmit, onCancel, onStepChange,
     }
   }, [isFinalStep, onStepChange]);
 
+  const lastTriggerRef = useRef(null);
   useEffect(() => {
-    if (externalSubmitTrigger && isFinalStep) {
-      onSubmit(formData);
-    }
+    if (!isFinalStep) return;
+    if (externalSubmitTrigger === lastTriggerRef.current) return;
+    lastTriggerRef.current = externalSubmitTrigger;
+    if (externalSubmitTrigger) onSubmit(formData);
   }, [externalSubmitTrigger, isFinalStep, formData, onSubmit]);
 
 
