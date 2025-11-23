@@ -15,62 +15,89 @@ import FinishPickup from "./components/FinishPickup";
 import FinishDineIn from "./components/FinishDineIn";
 import { useParams, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useContext, useState, useTransition } from "react";
+import { useContext, useState, useEffect } from "react";
 import AnimationFadeIn from "../AnimationFadeIn";
 import { createOrder } from "@/app/actions/create-order";
 import { CartContext } from "@/app/contexts/cart";
 import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 import OrderSuccessfulDialog from "./components/OrderSuccessfulDialog";
+import useSWR from "swr";
+
+// Fetcher para o SWR
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
   // === ESTADOS ===
   const [isFinalStep, setIsFinalStep] = useState(false);
   const [submitTrigger, setSubmitTrigger] = useState(false);
   const [orderSuccessful, setOrderSuccessful] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // === HOOKS ===
   const params = useParams();
   const { products, closeCart, clearCart } = useContext(CartContext);
   const sp = useSearchParams();
-  const { data } = useSession();
-  const [isPending, startTransition] = useTransition();
+  const { data: session } = useSession();
+
+  // === BUSCA DADOS DO USUÁRIO (CORRETO) ===
+  const { data: userData, isLoading: userLoading } = useSWR(
+    session?.user ? "/api/users" : null,
+    fetcher,
+  );
 
   // === VARIÁVEIS COMPUTADAS ===
   const consumptionMethod = sp.get("consumptionMethod") || "DELIVERY";
   const slugParam = params?.slug ?? sp.get("slug");
   const isDelivery = consumptionMethod === "DELIVERY";
-  const isLogged = !!data?.user;
-  const hasAddress = !!data?.user?.address;
+  const isLogged = !!session?.user;
 
-  // ✅ CORRIGIDO: Agora isFinalStep já foi declarado
+  // ✅ Usa os dados do SWR ou da session como fallback
+  const user = userData?.user || session?.user;
+  const hasAddress = !!user?.address;
+
   const canFinish = !isDelivery || (isLogged && isFinalStep);
 
   // === HANDLERS ===
   const handleSubmit = async (formData) => {
+    setIsSubmitting(true);
+
     try {
-      startTransition(async () => {
-        await createOrder({
-          userId: data?.user?.id,
-          consumptionMethod,
-          deliveryAddress: formData.address,
-          slug: slugParam,
-          products: products.map((product) => ({
-            productId: product.productId ?? product.id,
-            quantity: product.quantity,
-            extras: product.extras,
-          })),
-          paymentMethod: formData.paymentMethod,
-        });
-        setSubmitTrigger(false);
-        closeCart();
-        clearCart();
-        onOrderSuccess();
+      const result = await createOrder({
+        userId: user?.id,
+        consumptionMethod,
+        deliveryAddress: formData.address,
+        slug: slugParam,
+        products: products.map((product) => ({
+          productId: product.productId ?? product.id,
+          quantity: product.quantity,
+          extras: product.extras,
+        })),
+        paymentMethod: formData.paymentMethod,
       });
+
+      if (result) {
+        // Fecha o carrinho
+        closeCart?.();
+        clearCart?.();
+
+        // Fecha o drawer do checkout
+        onOpenChange(false);
+
+        // Abre o dialog de sucesso
+        setOrderSuccessful(true);
+
+        // Chama callback de sucesso se existir
+        onOrderSuccess?.();
+
+        toast.success("Pedido realizado com sucesso!");
+      }
     } catch (error) {
-      setSubmitTrigger(false);
-      toast.error("Erro ao criar pedido. Tente novamente.");
       console.log("Erro ao criar pedido:", error);
+      toast.error("Erro ao criar pedido. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+      setSubmitTrigger(false);
     }
   };
 
@@ -101,6 +128,7 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
               {consumptionMethod === "DELIVERY" && (
                 <FinishDelivery
                   isLogged={isLogged}
+                  userData={user} // ✅ Passa os dados do usuário
                   onStepChange={setIsFinalStep}
                   externalSubmitTrigger={submitTrigger}
                   onSubmit={handleSubmit}
@@ -108,11 +136,13 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
               )}
               {consumptionMethod === "PICKUP" && (
                 <FinishPickup
-                  onSubmit={() => setSubmitTrigger((v) => !v)}
+                  onSubmit={handleSubmit}
                   onCancel={() => setIsFinalStep(false)}
                 />
               )}
-              {consumptionMethod === "DINE_IN" && <FinishDineIn />}
+              {consumptionMethod === "DINE_IN" && (
+                <FinishDineIn onSubmit={handleSubmit} />
+              )}
             </section>
 
             <AnimationFadeIn>
@@ -120,11 +150,13 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
                 {isFinalStep && (
                   <div className="flex w-full flex-col gap-2">
                     <Button
-                      disabled={isPending || !canFinish}
+                      disabled={isSubmitting || !canFinish}
                       onClick={handleFinalButtonClick}
                     >
-                      {isPending && <Loader2Icon className="animate-spin" />}
-                      Finalizar Pedido
+                      {isSubmitting && (
+                        <Loader2Icon className="mr-2 animate-spin" />
+                      )}
+                      {isSubmitting ? "Processando..." : "Finalizar Pedido"}
                     </Button>
 
                     <DrawerClose asChild>
@@ -137,14 +169,10 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
           </DrawerContent>
         </AnimationFadeIn>
       </Drawer>
+
       <OrderSuccessfulDialog
         isOpen={orderSuccessful}
-        onOpenChange={(open) => {
-          setOrderSuccessful(open);
-          if (!open) {
-            onOpenChange(true);
-          }
-        }}
+        onOpenChange={setOrderSuccessful}
       />
     </>
   );
