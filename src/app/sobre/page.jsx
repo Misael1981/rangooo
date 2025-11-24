@@ -1,20 +1,22 @@
 // app/para-estabelecimentos/page.jsx
 import Image from "next/image";
 import Link from "next/link";
+import AboutHeader from "./components/AboutHeader";
 
 export default function ParaEstabelecimentosPage() {
   return (
     <div className="min-h-screen">
+      {/* Header */}
+      <AboutHeader />
+
       {/* Hero Section */}
       <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-orange-500 via-red-500 to-purple-600">
         <div className="absolute inset-0 bg-black/40" />
-
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute left-0 top-0 h-64 w-64 rounded-full bg-white/20 blur-3xl"></div>
           <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-yellow-300/20 blur-3xl"></div>
         </div>
-
         <div className="relative z-10 mx-auto max-w-7xl px-4 pt-20">
           <div className="grid min-h-[80vh] items-center gap-12 lg:grid-cols-2">
             {/* Conteúdo Principal */}
@@ -23,7 +25,6 @@ export default function ParaEstabelecimentosPage() {
                 <span className="h-2 w-2 animate-pulse rounded-full bg-green-400"></span>
                 <span className="text-sm">Plataforma de Delivery Completa</span>
               </div>
-
               <h1 className="mb-6 text-5xl font-bold leading-tight lg:text-6xl">
                 Aumente suas{" "}
                 <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
@@ -31,14 +32,12 @@ export default function ParaEstabelecimentosPage() {
                 </span>{" "}
                 com nossa tecnologia
               </h1>
-
               <p className="mb-8 text-xl leading-relaxed text-white/90">
                 O <strong>Rangooo</strong> oferece uma experiência única para
                 cada tipo de estabelecimento. Hamburguerias, pizzarias e
                 restaurantes com funcionalidades específicas para aumentar a
                 conversão.
               </p>
-
               <div className="mb-8 flex flex-col gap-4 sm:flex-row">
                 <Link
                   href="/cadastro-estabelecimento"
@@ -53,7 +52,6 @@ export default function ParaEstabelecimentosPage() {
                   Ver Planos
                 </Link>
               </div>
-
               <div className="flex items-center gap-6 text-white/80">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-green-400"></div>
@@ -65,7 +63,6 @@ export default function ParaEstabelecimentosPage() {
                 </div>
               </div>
             </div>
-
             {/* Mockup/Ilustração */}
             <div className="relative">
               <div className="relative z-10 rounded-3xl border border-white/20 bg-white/10 p-8 backdrop-blur-lg">
@@ -86,7 +83,6 @@ export default function ParaEstabelecimentosPage() {
                   </div>
                 </div>
               </div>
-
               {/* Elementos flutuantes */}
               <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-yellow-400/20 blur-xl"></div>
               <div className="absolute -bottom-4 -left-4 h-32 w-32 rounded-full bg-purple-400/20 blur-xl"></div>
