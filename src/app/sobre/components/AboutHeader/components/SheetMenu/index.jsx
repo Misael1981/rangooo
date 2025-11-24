@@ -1,5 +1,6 @@
 "use client";
 
+import { linksPage } from "@/app/sobre/helpers/links-page";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { linksPage } from "../../helpers/links-page";
 
 const SheetMenu = () => {
   return (

@@ -1,5 +1,5 @@
+import { linksPage } from "@/app/sobre/helpers/links-page";
 import Link from "next/link";
-import { linksPage } from "../../helpers/links-page";
 
 const NavMenu = () => {
   return (

@@ -1,5 +1,5 @@
 // app/para-estabelecimentos/page.jsx
-import Image from "next/image";
+
 import Link from "next/link";
 import AboutHeader from "./components/AboutHeader";
 

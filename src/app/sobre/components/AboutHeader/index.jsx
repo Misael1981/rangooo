@@ -1,6 +1,6 @@
 import Image from "next/image";
-import SheetMenu from "../SheetMenu";
-import NavMenu from "../NavMenu";
+import NavMenu from "./components/NavMenu";
+import SheetMenu from "./components/SheetMenu";
 
 const AboutHeader = () => {
   return (
