@@ -4,6 +4,7 @@ import Link from "next/link";
 import AboutHeader from "./components/AboutHeader";
 import HeroSectionAbout from "./components/HeroSectionAbout";
 import AboutUs from "./components/AboutUs";
+import Plans from "./components/Plans";
 
 export default function ParaEstabelecimentosPage() {
   return (
@@ -17,8 +18,11 @@ export default function ParaEstabelecimentosPage() {
       {/* Sobre Nós */}
       <AboutUs />
 
+      {/* Seção de Planos */}
+      <Plans />
+
       {/* Seção de Diferenciais */}
-      <section className="bg-white py-20">
+      {/* <section className="bg-white py-20">
         <div className="mx-auto max-w-7xl px-4">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-4xl font-bold text-gray-900 lg:text-5xl">
@@ -105,7 +109,7 @@ export default function ParaEstabelecimentosPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Seção de Funcionalidades */}
       <section className="bg-gray-50 py-20">
