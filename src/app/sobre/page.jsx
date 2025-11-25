@@ -3,6 +3,7 @@
 import Link from "next/link";
 import AboutHeader from "./components/AboutHeader";
 import HeroSectionAbout from "./components/HeroSectionAbout";
+import AboutUs from "./components/AboutUs";
 
 export default function ParaEstabelecimentosPage() {
   return (
@@ -12,6 +13,9 @@ export default function ParaEstabelecimentosPage() {
 
       {/* HeroSection */}
       <HeroSectionAbout />
+
+      {/* Sobre Nós */}
+      <AboutUs />
 
       {/* Seção de Diferenciais */}
       <section className="bg-white py-20">
