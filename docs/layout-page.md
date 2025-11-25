@@ -1,203 +1,94 @@
 ### Page
 
 ```
-'use client';
-
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-
-export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
-  const [isVisible, setIsVisible] = useState({});
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-
-      // Detectar elementos visíveis para animações
-      const elements = document.querySelectorAll('[data-animate]');
-      elements.forEach((el, index) => {
-        const rect = el.getBoundingClientRect();
-        const isInView = rect.top < window.innerHeight && rect.bottom > 0;
-        setIsVisible(prev => ({ ...prev, [index]: isInView }));
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Executar uma vez no mount
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <div className="min-h-screen">
-      {/* Hero Section com Parallax */}
-      <section className="relative h-screen overflow-hidden">
-        {/* Background com efeito parallax */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat parallax-smooth"
-          style={{
-            backgroundImage: 'url(/fundo.png)',
-            transform: `translateY(${scrollY * 0.5}px)`,
-          }}
-        />
-
-        {/* Camada de partículas/textura com parallax diferente */}
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            background: 'radial-gradient(circle at 20% 50%, rgba(255,165,0,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,69,0,0.3) 0%, transparent 50%)',
-            transform: `translateY(${scrollY * 0.3}px)`,
-          }}
-        />
-
-        {/* Overlay escuro para melhor legibilidade */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
-
-        {/* Conteúdo principal */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-white px-4">
-          {/* Logo com efeito parallax mais lento */}
-          <div
-            className="mb-8 parallax-smooth"
-            style={{
-              transform: `translateY(${scrollY * 0.2}px)`,
-            }}
-          >
-            <Image
-              src="/logo-rangooo.png"
-              alt="Rangooo Logo"
-              width={200}
-              height={200}
-              className="w-32 h-32 md:w-48 md:h-48 object-contain drop-shadow-2xl"
-            />
+<section className="bg-white py-20">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-4xl font-bold text-gray-900 lg:text-5xl">
+              Feito para <span className="text-orange-500">crescer</span> seu
+              negócio
+            </h2>
+            <p className="mx-auto max-w-3xl text-xl text-gray-600">
+              Tecnologia que entende as necessidades específicas do seu tipo de
+              estabelecimento
+            </p>
           </div>
 
-          {/* Título principal */}
-          <h1
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-center mb-6 parallax-smooth"
-            style={{
-              transform: `translateY(${scrollY * 0.3}px)`,
-            }}
-          >
-            Rangooo
-          </h1>
-
-          {/* Subtítulo */}
-          <p
-            className="text-lg md:text-xl lg:text-2xl text-center max-w-3xl leading-relaxed parallax-smooth"
-            style={{
-              transform: `translateY(${scrollY * 0.4}px)`,
-            }}
-          >
-            A plataforma que conecta você aos melhores sabores da sua cidade.
-            Descubra, peça e saboreie experiências gastronômicas únicas.
-          </p>
-
-          {/* CTA Button */}
-          <button
-            className="mt-8 px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-2xl parallax-smooth"
-            style={{
-              transform: `translateY(${scrollY * 0.1}px)`,
-            }}
-          >
-            Começar Agora
-          </button>
-        </div>
-
-        {/* Indicador de scroll */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </div>
-      </section>
-
-      {/* Seção de conteúdo com parallax reverso */}
-      <section className="relative py-20 px-4 bg-white overflow-hidden">
-        {/* Background com parallax reverso */}
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: 'url(/logo-rangooo.png)',
-            backgroundSize: '200px',
-            backgroundRepeat: 'repeat',
-            transform: `translateY(${scrollY * -0.2}px)`,
-          }}
-        />
-
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2
-            className={`text-3xl md:text-4xl font-bold text-gray-800 mb-8 transition-all duration-700 ${
-              isVisible[0] ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
-            }`}
-            data-animate
-          >
-            Por que escolher o Rangooo?
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8 mt-12">
+          <div className="grid gap-8 md:grid-cols-3">
             {[
               {
-                icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
-                title: "Entrega Rápida",
-                description: "Receba seus pratos favoritos em tempo recorde"
+                icon: "🍔",
+                title: "Hamburguerias",
+                features: [
+                  "Montador visual de hambúrguer",
+                  "Combos personalizáveis",
+                  "Gestão de ingredientes",
+                  "Promoções especiais",
+                ],
+                color: "from-orange-400 to-red-500",
               },
               {
-                icon: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z",
-                title: "Qualidade Garantida",
-                description: "Parceiros selecionados com os melhores ingredientes"
+                icon: "🍕",
+                title: "Pizzarias",
+                features: [
+                  "Montador de pizza redonda",
+                  "Sistema meia-meia",
+                  "Seleção de bordas",
+                  "Gestão de sabores",
+                ],
+                color: "from-yellow-400 to-orange-500",
               },
               {
-                icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1",
-                title: "Preços Justos",
-                description: "Transparência total sem taxas escondidas"
-              }
-            ].map((item, index) => (
+                icon: "🍽️",
+                title: "Restaurantes",
+                features: [
+                  "Cardápio por cursos",
+                  "Sugestões do chef",
+                  "Sistema de reservas",
+                  "Experiência premium",
+                ],
+                color: "from-purple-400 to-pink-500",
+              },
+            ].map((tipo, index) => (
               <div
-                key={index}
-                className={`p-6 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all duration-500 hover:transform hover:scale-105 ${
-                  isVisible[index + 1] ? 'animate-fade-in-up' : 'opacity-0 translate-y-8'
-                }`}
-                data-animate
-                style={{ animationDelay: `${index * 200}ms` }}
+                key={tipo.title}
+                className="group relative rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white p-8 shadow-lg transition-all duration-500 hover:scale-105 hover:border-orange-300 hover:shadow-xl"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-                  </svg>
+                <div
+                  className={`inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r ${tipo.color} mb-6 text-2xl text-white transition-transform duration-300 group-hover:scale-110`}
+                >
+                  {tipo.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
+
+                <h3 className="mb-4 text-2xl font-bold text-gray-900">
+                  {tipo.title}
+                </h3>
+
+                <ul className="space-y-3">
+                  {tipo.features.map((feature, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-center gap-3 text-gray-600"
+                    >
+                      <div className="h-2 w-2 rounded-full bg-orange-400"></div>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-6 border-t border-gray-200 pt-6">
+                  <Link
+                    href={`/cadastro-${tipo.title.toLowerCase()}`}
+                    className="font-semibold text-orange-500 transition-colors hover:text-orange-600"
+                  >
+                    Saiba mais →
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
-
-      {/* Seção adicional com parallax horizontal */}
-      <section className="relative h-96 overflow-hidden bg-gradient-to-r from-orange-500 to-red-500">
-        <div
-          className="absolute inset-0 flex items-center justify-center text-white"
-          style={{
-            transform: `translateX(${scrollY * 0.1}px)`,
-          }}
-        >
-          <div className="text-center">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">
-              Pronto para começar?
-            </h3>
-            <p className="text-xl mb-8">
-              Junte-se a milhares de pessoas que já descobriram o sabor da praticidade
-            </p>
-            <button className="px-8 py-4 bg-white text-orange-500 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105">
-              Baixar App
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
 ```
 
 ### Global
