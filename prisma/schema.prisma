@@ -77,6 +77,28 @@ model VerificationToken {
 }
 
 // ===============================================
+// Lead Application (Aplicação de Lead)
+// ===============================================
+
+model LeadApplication {
+  id             String     @id @default(cuid())
+  name           String
+  email          String
+  phone          String
+  restaurantName String
+  city           String
+  state          String
+  notes          String?
+  status         LeadStatus @default(PENDING)
+  approvedAt     DateTime?
+  approvedBy     String?    // admin user id
+
+  createdAt      DateTime   @default(now())
+  @@index([status, createdAt])
+  @@unique([email, status]) // evita múltiplos PENDING por email
+}
+
+// ===============================================
 // Restaurantes (Parceiro)
 // ===============================================
 
@@ -107,13 +129,15 @@ model Restaurant {
   isOpen Boolean @default(true) // Aberto ou Fechado
 
   // Relações
-  owner                 User                   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner                 User                   @relation(fields: [ownerId], references: [id], onDelete: Restrict)
   products              Product[]
   menuCategories        MenuCategory[]
   orders                Order[]
 
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
+
+  @@index([ownerId])
 }
 
 // ===============================================
@@ -243,6 +267,15 @@ model OrderItem {
 // ===============================================
 // ENUMS DE APOIO
 // ===============================================
+
+// Enum para Status da Aplicação de Lead
+enum LeadStatus {
+  PENDING // Pendente (acabou de ser feito)
+  APPROVED // Aprovado
+  REJECTED // Rejeitado
+}
+
+
 
 // Enum para Categorias de Restaurantes
 enum RestaurantCategory {
