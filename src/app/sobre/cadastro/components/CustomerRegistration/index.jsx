@@ -290,9 +290,6 @@ const CustomerRegistration = () => {
               type="submit"
               className="h-12 w-full text-lg font-semibold"
               disabled={isSubmitting}
-              onClick={() => {
-                form.handleSubmit();
-              }}  
             >
               {isSubmitting ? (
                 <>
