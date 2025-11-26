@@ -31,13 +31,13 @@ const HeroSectionAbout = () => {
             </p>
             <div className="mb-8 flex flex-col gap-4 sm:flex-row">
               <Link
-                href="/cadastro-estabelecimento"
+                href="/sobre/cadastro"
                 className="transform rounded-xl bg-white px-8 py-4 text-center text-lg font-bold text-orange-600 shadow-2xl transition-all duration-300 hover:scale-105 hover:bg-gray-100"
               >
                 Começar Agora - Grátis
               </Link>
               <Link
-                href="#planos"
+                href="#plans"
                 className="rounded-xl border-2 border-white px-8 py-4 text-center text-lg font-bold text-white transition-all duration-300 hover:bg-white/10"
               >
                 Ver Planos

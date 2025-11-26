@@ -1,4 +1,5 @@
 import { linksPage } from "@/app/sobre/helpers/links-page";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const NavMenu = () => {
@@ -25,6 +26,21 @@ const NavMenu = () => {
             </a>
           </li>
         ))}
+        <li>
+          <Button
+            variant="ghost"
+            className="group relative w-full transform overflow-hidden rounded-xl bg-gradient-to-r from-orange-500 to-red-500 py-4 text-lg font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:from-orange-600 hover:to-red-600 hover:shadow-2xl active:scale-95"
+            asChild
+          >
+            <Link href="/para-estabelecimentos">
+              {/* Efeito de brilho no hover */}
+              <span className="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-white/50 to-transparent transition-transform duration-700 group-hover:translate-x-[100%]" />
+
+              {/* Texto do botão */}
+              <span className="relative z-10">Teste Grátis</span>
+            </Link>
+          </Button>
+        </li>
       </ul>
     </nav>
   );

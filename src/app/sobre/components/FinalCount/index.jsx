@@ -1,4 +1,8 @@
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
+
+const msgWhatsapp =
+  "Olá, gostaria de saber mais sobre o cadastro de estabelecimento no Rangooo!";
 
 const FinalCount = () => {
   return (
@@ -17,17 +21,26 @@ const FinalCount = () => {
 
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <Link
-            href="/cadastro-estabelecimento"
+            href="/sobre/cadastro"
             className="rounded-xl bg-white px-8 py-4 text-lg font-bold text-orange-600 shadow-2xl transition-all duration-300 hover:bg-gray-100"
           >
             Testar Grátis por 7 Dias
           </Link>
-          <Link
-            href="/contato"
-            className="rounded-xl border-2 border-white px-8 py-4 text-lg font-bold text-white transition-all duration-300 hover:bg-white/10"
+          <Button
+            asChild
+            variant="ghost"
+            className="rounded-xl border-2 border-white px-8 py-8 text-lg font-bold text-white transition-all duration-300 hover:bg-white/10"
           >
-            Falar com Especialista
-          </Link>
+            <a
+              href={`https://wa.me/5535999110933?text=${encodeURIComponent(
+                msgWhatsapp,
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Falar com Especialista
+            </a>
+          </Button>
         </div>
 
         <p className="mt-6 text-white/80">

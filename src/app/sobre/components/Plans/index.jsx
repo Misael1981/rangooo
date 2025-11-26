@@ -1,4 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 const features = [
   "Site de delivery completo",
@@ -16,7 +18,7 @@ const features = [
 
 const Plans = () => {
   return (
-    <section className="bg-gray-50 py-20">
+    <section className="bg-gray-50 py-20" id="plans">
       <div className="mx-auto max-w-7xl p-4 text-center">
         <h2 className="mb-4 text-4xl font-bold text-orange-500 lg:text-5xl">
           Aproveite 7 dias grátis...
@@ -33,9 +35,9 @@ const Plans = () => {
 
           <CardContent className="relative z-10 p-8">
             {/* Badge de Destaque */}
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold uppercase text-white shadow-lg">
               <span className="h-2 w-2 animate-pulse rounded-full bg-white"></span>
-              MAIS VENDIDO
+              promoção de lançamento
             </div>
 
             {/* Título */}
@@ -89,9 +91,12 @@ const Plans = () => {
             </ul>
 
             {/* Botão CTA */}
-            <button className="w-full rounded-xl bg-orange-500 py-4 text-lg font-bold text-white transition-all duration-300 hover:bg-orange-600 hover:shadow-xl active:scale-95 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-red-500">
-              Começar Agora
-            </button>
+            <Button
+              className="w-full rounded-xl bg-orange-500 py-4 text-lg font-bold text-white transition-all duration-300 hover:bg-orange-600 hover:shadow-xl active:scale-95 group-hover:bg-gradient-to-r group-hover:from-orange-500 group-hover:to-red-500"
+              asChild
+            >
+              <Link href="/sobre/cadastro">Começar Agora</Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
