@@ -17,12 +17,12 @@ import Link from "next/link";
 const items = [
   {
     title: "Home",
-    url: "/admin-rangooo",
+    url: "/pizzarias/pizzaria-jk/admin",
     icon: Home,
   },
   {
-    title: "Gerenciar Estabelecimentos",
-    url: "/admin-rangooo/establishments",
+    title: "Gerenciar Pedidos",
+    url: "/pizzarias/pizzaria-jk/admin/pedidos",
     icon: Inbox,
   },
   {

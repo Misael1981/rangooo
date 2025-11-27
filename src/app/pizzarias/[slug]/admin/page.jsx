@@ -1,3 +1,4 @@
+import DailyOrdersChart from "./components/DailyOrdersChart";
 import StatsCards from "./components/StatsCards";
 import StatusOpenSwitch from "./components/StatusOpenSwitch";
 
@@ -62,6 +63,8 @@ export default function AdminDashboardPizzaria() {
 
       {/* Stats Cards */}
       <StatsCards statsOrders={dashboardData} />
+      {/* Daily Orders Chart */}
+      {/* <DailyOrdersChart /> */}
     </div>
   );
 }
