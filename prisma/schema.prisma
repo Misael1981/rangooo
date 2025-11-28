@@ -93,9 +93,33 @@ model LeadApplication {
   approvedAt     DateTime?
   approvedBy     String?    // admin user id
 
+  invites        EnrollmentInvite[]
+
   createdAt      DateTime   @default(now())
   @@index([status, createdAt])
   @@unique([email, status]) // evita múltiplos PENDING por email
+}
+
+enum InviteStatus {
+  PENDING
+  USED
+  EXPIRED
+}
+
+model EnrollmentInvite {
+  id         String       @id @default(cuid())
+  leadId     String
+  email      String
+  token      String       @unique
+  expiresAt  DateTime
+  usedAt     DateTime?
+  status     InviteStatus @default(PENDING)
+
+  lead       LeadApplication @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime     @default(now())
+
+  @@index([status, expiresAt])
 }
 
 // ===============================================

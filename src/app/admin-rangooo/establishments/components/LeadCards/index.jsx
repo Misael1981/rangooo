@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Calendar,
+  Calendar1Icon,
   CheckCircle,
   Clock,
   Mail,
@@ -14,6 +16,28 @@ import {
 } from "lucide-react";
 
 const LeadCards = ({ leads }) => {
+  const [loadingId, setLoadingId] = useState(null);
+  const handleApprove = async (id) => {
+    setLoadingId(id);
+    try {
+      const res = await fetch("/api/leads/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "Erro ao aprovar");
+      const token = json?.invite?.token;
+      const link = token
+        ? `/sobre/cadastro/novo-cadastro?token=${token}`
+        : null;
+      toast.success(link ? "Convite gerado" : "Lead aprovado");
+    } catch (e) {
+      toast.error("Erro ao aprovar");
+    } finally {
+      setLoadingId(null);
+    }
+  };
   const getStatusBadge = (leadStatus) => {
     const statusConfig = {
       PENDING: { variant: "secondary", icon: Clock, label: "Pendente" },
@@ -110,7 +134,7 @@ const LeadCards = ({ leads }) => {
               {/* Data e ações */}
               <div className="flex items-center justify-between border-t border-gray-100 pt-4">
                 <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Calendar className="h-3 w-3" />
+                  <Calendar1Icon className="h-3 w-3" />
                   {formatDate(lead.createdAt)}
                 </div>
 
@@ -127,10 +151,11 @@ const LeadCards = ({ leads }) => {
                       </Button>
                       <Button
                         size="sm"
-                        onClick={() => onApprove?.(lead.id)}
+                        onClick={() => handleApprove(lead.id)}
                         className="h-8 text-xs"
+                        disabled={loadingId === lead.id}
                       >
-                        Aprovar
+                        {loadingId === lead.id ? "Aprovando..." : "Aprovar"}
                       </Button>
                     </>
                   )}
