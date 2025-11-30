@@ -3,7 +3,7 @@ import { CheckCircle } from "lucide-react";
 const ProgressSteps = ({ steps, currentStep }) => {
   return (
     <div className="mb-12 flex justify-center">
-      <div className="flex items-center space-x-8">
+      <div className="flex flex-wrap items-center justify-center gap-8">
         {steps.map((step, index) => {
           const StepIcon = step.icon;
           const isActive = step.number === currentStep;

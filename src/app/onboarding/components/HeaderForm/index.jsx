@@ -5,7 +5,7 @@ const HeaderForm = () => {
         Complete seu Cadastro
       </h1>
       <p className="text-lg text-gray-600">
-        Preencha os dados da sua pizzaria para começar a vender
+        Preencha os dados da seu estabelecimento para começar a vender
       </p>
     </header>
   );
