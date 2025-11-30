@@ -334,9 +334,9 @@ const EstablishmentData = ({ form }) => {
           </FormItem>
         )}
       />
-      {/* Logo do Estabelecimento */}
-      <div className="flex w-full items-center gap-4">
-        <div className="w-full">
+      {/* Imagens do Estabelecimento */}
+      <div className="mb-4 flex w-full flex-wrap items-center gap-4">
+        <div className="min-w-[200px] flex-1">
           <FormField
             control={form.control}
             name="logo"
@@ -354,7 +354,7 @@ const EstablishmentData = ({ form }) => {
             )}
           />
         </div>
-        <div className="w-full">
+        <div className="min-w-[200px] flex-1">
           <FormField
             control={form.control}
             name="logo"

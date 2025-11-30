@@ -10,8 +10,8 @@ import {
   ArrowRight,
   Building,
   User,
-  Pizza,
   CheckCircle,
+  BookOpenCheck,
 } from "lucide-react";
 import OwnerData from "./components/OwnerData";
 import EstablishmentData from "./components/EstablishmentData";
@@ -120,8 +120,8 @@ const OnboardingPage = () => {
   // Steps do formulário
   const steps = [
     { number: 1, title: "Dados do Dono", icon: User },
-    { number: 2, title: "Dados da Pizzaria", icon: Building },
-    { number: 3, title: "Cardápio", icon: Pizza },
+    { number: 2, title: "Dados da Estabelecimento", icon: Building },
+    { number: 3, title: "Cardápio", icon: BookOpenCheck },
     { number: 4, title: "Confirmação", icon: CheckCircle },
   ];
 

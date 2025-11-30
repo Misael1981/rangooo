@@ -18,7 +18,7 @@ const ImageUpload = ({ form, field, onChange }) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-slate-200">
       <input
         type="file"
         accept="image/*"
