@@ -55,6 +55,26 @@ const formSchema = z.object({
   emailEstablishment: z
     .string({ required_error: "Campo obrigatório." })
     .email({ message: "Email inválido." }),
+  contacts: z
+    .array(z.string().min(1, "Contato é obrigatório"))
+    .min(1, "Pelo menos um contato é necessário"),
+  socialMedia: z.object({
+    facebook: z.string().url({ message: "URL inválida" }).optional(),
+    instagram: z.string().url({ message: "URL inválida" }).optional(),
+  }),
+  street: z.string().min(2, {
+    message: "Campo obrigatório.",
+  }),
+  number: z.string().min(2, {
+    message: "Campo obrigatório.",
+  }),
+  complement: z.string().optional(),
+  city: z.string().min(2, {
+    message: "Campo obrigatório.",
+  }),
+  state: z.string().min(2, {
+    message: "Campo obrigatório.",
+  }),
 });
 
 const OnboardingPage = () => {
@@ -75,6 +95,16 @@ const OnboardingPage = () => {
       slogan: "",
       category: "",
       emailEstablishment: "",
+      contacts: [""],
+      socialMedia: {
+        facebook: "",
+        instagram: "",
+      },
+      street: "",
+      number: "",
+      complement: "",
+      city: "",
+      state: "",
     },
   });
 

@@ -140,11 +140,20 @@ model Restaurant {
 
   latitude  Decimal
   longitude Decimal
-  address   String // Endereço físicos
+  address   String // Lembrar de tirar esse campo quando eu apagar o seed
+
+  street         String?
+  number         String?
+  complement     String?
+  neighborhood   String?
+  city           String?
+  state          String?            @db.VarChar(2)
+  zipCode        String?
 
   // Contatos
   contacts    ContactNumber[]
   socialMedia Json? // Redes sociais (ex: Facebook, Instagram, Twitter)
+  email       String?
 
   // Paleta de cores da marca (array JSON de strings HEX/HSL)
   brandColors Json?
