@@ -166,11 +166,34 @@ model Restaurant {
   products              Product[]
   menuCategories        MenuCategory[]
   orders                Order[]
+  businessHours         BusinessHours[]
+  paymentMethods        RestaurantPaymentMethod[]
+  consumptionMethods    RestaurantConsumptionMethod[]
 
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
 
   @@index([ownerId])
+}
+
+// ===============================================
+// Métodos de Consumo
+// ===============================================
+
+model RestaurantConsumptionMethod {
+  id           String            @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  method       ConsumptionMethod
+  isActive     Boolean           @default(true)
+  displayOrder Int               @default(0)
+
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@unique([restaurantId, method])
+  @@index([restaurantId, isActive])
 }
 
 // ===============================================
@@ -190,6 +213,63 @@ model ContactNumber {
   updatedAt DateTime @updatedAt
 
   @@index([restaurantId, type])
+}
+
+// ===============================================
+// Horários de Funcionamento
+// ===============================================
+
+model BusinessHours {
+  id           String   @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  
+  // Dia da semana (0 = Domingo, 1 = Segunda, ..., 6 = Sábado)
+  dayOfWeek    Int     // 0-6 (Domingo-Sábado)
+  
+  // Horários de abertura/fechamento (pode ter múltiplos períodos por dia)
+  timeSlots    Json     // Array de { open: "HH:MM", close: "HH:MM", type: "LUNCH" | "DINNER" | "BREAKFAST" }
+  
+  // Se o estabelecimento está fechado neste dia
+  isClosed     Boolean  @default(false)
+  
+  // Ordem para exibição (opcional)
+  displayOrder Int      @default(0)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([restaurantId, dayOfWeek])
+  @@index([restaurantId, dayOfWeek])
+}
+
+// ===============================================
+// Métodos de Pagamento do Estabelecimento
+// ===============================================
+
+model RestaurantPaymentMethod {
+  id           String  @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  
+  // Método principal (Dinheiro, PIX, Cartão)
+  method       PaymentMethod
+  
+  // Para cartões: quais bandeiras são aceitas
+  cardBrands   CardBrand[] // Array de bandeiras aceitas
+  
+  // Configurações específicas
+  isActive     Boolean @default(true)
+  description  String? // Ex: "PIX - Chave: 11999999999"
+  
+  // Ordem de exibição
+  displayOrder Int     @default(0)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([restaurantId, method])
+  @@index([restaurantId, isActive])
 }
 
 // ===============================================
@@ -350,4 +430,25 @@ enum ConsumptionMethod {
 enum ContactType {
   PHONE
   WHATSAPP
+}
+
+enum PaymentMethod {
+  CASH       // Dinheiro
+  PIX        // PIX
+  CREDIT_CARD // Cartão de Crédito
+  DEBIT_CARD  // Cartão de Débito
+  MEAL_VOUCHER // Vale Refeição
+  FOOD_VOUCHER // Vale Alimentação
+  ONLINE      // Pagamento Online (ifood, etc)
+}
+
+enum CardBrand {
+  VISA
+  MASTERCARD
+  ELO
+  AMERICAN_EXPRESS
+  HIPERCARD
+  DINERS_CLUB
+  DISCOVER
+  AURA
 }

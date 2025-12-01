@@ -32,7 +32,12 @@ const schedules = [
   },
 ];
 
-export default function Horarios() {
+// const hours = await db.businessHours.findMany({
+//   where: { restaurantId },
+//   orderBy: { displayOrder: "asc" },
+// });
+
+export default function HorariosPage() {
   return (
     <div className="w-full">
       <HeaderInfosPage title="Horários" />

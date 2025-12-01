@@ -19,6 +19,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus } from "lucide-react";
 import ImageUpload from "../ImageUpload";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import OpeningHours from "../OpeningHours";
 
 const EstablishmentData = ({ form }) => {
   // Função para adicionar novo campo de contato
@@ -69,6 +72,78 @@ const EstablishmentData = ({ form }) => {
             <FormControl>
               <Input placeholder="Digite o nome..." {...field} />
             </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      {/* Categoria do Estabelecimento */}
+      <FormField
+        control={form.control}
+        name="category"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Categoria do Estabelecimento</FormLabel>
+            <FormControl>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger className="w-[300px] max-w-full">
+                  <SelectValue placeholder="Selecione uma categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Categorias</SelectLabel>
+                    <SelectItem value="restaurant">Restaurante</SelectItem>
+                    <SelectItem value="pizzaria">Pizzaria</SelectItem>
+                    <SelectItem value="hamburgueria">Hamburgueria</SelectItem>
+                    <SelectItem value="sorveteria">Sorveteria</SelectItem>
+                    <SelectItem value="acai">Açai</SelectItem>
+                    <SelectItem value="saudavel">Saudável</SelectItem>
+                    <SelectItem value="doces">Doces</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      {/* Métodos de Pagamento */}
+      <FormField
+        control={form.control}
+        name="paymentMethods"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Métodos de Pagamento</FormLabel>
+            <div className="mt-3 space-y-2">
+              {[
+                { value: "CREDIT_CARD", label: "Cartão de Crédito" },
+                { value: "DEBIT_CARD", label: "Cartão de Débito" },
+                { value: "PIX", label: "PIX" },
+                { value: "BANK_TRANSFER", label: "Transferência Bancária" },
+                { value: "CASH", label: "Dinheiro" },
+              ].map((opt) => {
+                const checked =
+                  Array.isArray(field.value) && field.value.includes(opt.value);
+                return (
+                  <div key={opt.value} className="flex items-center gap-3">
+                    <Checkbox
+                      id={opt.value}
+                      checked={checked}
+                      onCheckedChange={(isChecked) => {
+                        const prev = Array.isArray(field.value)
+                          ? field.value
+                          : [];
+                        field.onChange(
+                          isChecked
+                            ? [...prev, opt.value]
+                            : prev.filter((v) => v !== opt.value),
+                        );
+                      }}
+                    />
+                    <Label htmlFor={opt.value}>{opt.label}</Label>
+                  </div>
+                );
+              })}
+            </div>
             <FormMessage />
           </FormItem>
         )}
@@ -131,6 +206,20 @@ const EstablishmentData = ({ form }) => {
           )}
         />
       </div>
+      {/* Email do Estabelecimento */}
+      <FormField
+        control={form.control}
+        name="emailEstablishment"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Email do Estabelecimento</FormLabel>
+            <FormControl>
+              <Input placeholder="Digite o email..." {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       {/* Redes Sociais */}
       <div className="space-y-4">
         <FormField
@@ -171,20 +260,48 @@ const EstablishmentData = ({ form }) => {
           )}
         />
       </div>
-      {/* Email do Estabelecimento */}
+      {/* Métodos de Consumo */}
       <FormField
         control={form.control}
-        name="emailEstablishment"
+        name="consumptionMethods"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Email do Estabelecimento</FormLabel>
-            <FormControl>
-              <Input placeholder="Digite o email..." {...field} />
-            </FormControl>
+            <FormLabel>Métodos de Consumo</FormLabel>
+            <div className="mt-3 space-y-2">
+              {[
+                { value: "DINE_IN", label: "Comer no local" },
+                { value: "PICKUP", label: "Pegar no local" },
+                { value: "DELIVERY", label: "Entrega" },
+              ].map((opt) => {
+                const checked =
+                  Array.isArray(field.value) && field.value.includes(opt.value);
+                return (
+                  <div key={opt.value} className="flex items-center gap-3">
+                    <Checkbox
+                      id={opt.value}
+                      checked={checked}
+                      onCheckedChange={(isChecked) => {
+                        const prev = Array.isArray(field.value)
+                          ? field.value
+                          : [];
+                        field.onChange(
+                          isChecked
+                            ? [...prev, opt.value]
+                            : prev.filter((v) => v !== opt.value),
+                        );
+                      }}
+                    />
+                    <Label htmlFor={opt.value}>{opt.label}</Label>
+                  </div>
+                );
+              })}
+            </div>
             <FormMessage />
           </FormItem>
         )}
       />
+      {/* Horário de Funcionamento */}
+      <OpeningHours form={form} />
       {/* Endereço */}
       <div className="space-y-4">
         <h3 className="text-lg font-bold text-gray-800">Endereço</h3>
@@ -304,36 +421,7 @@ const EstablishmentData = ({ form }) => {
           </FormItem>
         )}
       />
-      {/* Categoria do Estabelecimento */}
-      <FormField
-        control={form.control}
-        name="category"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Categoria do Estabelecimento</FormLabel>
-            <FormControl>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-[300px] max-w-full">
-                  <SelectValue placeholder="Selecione uma categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Categorias</SelectLabel>
-                    <SelectItem value="restaurant">Restaurante</SelectItem>
-                    <SelectItem value="pizzaria">Pizzaria</SelectItem>
-                    <SelectItem value="hamburgueria">Hamburgueria</SelectItem>
-                    <SelectItem value="sorveteria">Sorveteria</SelectItem>
-                    <SelectItem value="acai">Açai</SelectItem>
-                    <SelectItem value="saudavel">Saudável</SelectItem>
-                    <SelectItem value="doces">Doces</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+
       {/* Imagens do Estabelecimento */}
       <div className="mb-4 flex w-full flex-wrap items-center gap-4">
         <div className="min-w-[200px] flex-1">

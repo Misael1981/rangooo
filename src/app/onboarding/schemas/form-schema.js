@@ -74,7 +74,38 @@ export const formSchema = z
         message: "Categorias duplicadas não são permitidas",
       }),
     products: z.array(productSchema).min(1, "Adicione pelo menos um produto"),
+    businessHours: z
+      .array(
+        z.object({
+          dayOfWeek: z.number().int().min(0).max(6),
+          isClosed: z.boolean().default(false),
+          timeSlots: z
+            .array(
+              z.object({
+                open: z.string().regex(/^\d{2}:\d{2}$/),
+                close: z.string().regex(/^\d{2}:\d{2}$/),
+                type: z.enum(["BREAKFAST", "LUNCH", "DINNER"]).optional(),
+              }),
+            )
+            .default([]),
+        }),
+      )
+      .length(7),
     additionalIngredients: z.array(additionalIngredientsSchema).default([]),
+    paymentMethods: z
+      .array(
+        z.enum(["CREDIT_CARD", "DEBIT_CARD", "PIX", "BANK_TRANSFER", "CASH"], {
+          required_error: "Método de pagamento é obrigatório",
+        }),
+      )
+      .min(1, "Selecione pelo menos um método de pagamento"),
+    consumptionMethods: z
+      .array(
+        z.enum(["DINE_IN", "PICKUP", "DELIVERY"], {
+          required_error: "Método de consumo é obrigatório",
+        }),
+      )
+      .min(1, "Selecione pelo menos um método de consumo"),
   })
   .superRefine((val, ctx) => {
     const allowed = new Set(val.menuCategory);
@@ -110,4 +141,11 @@ export const defaultValues = {
   menuCategory: [],
   products: [],
   additionalIngredients: [],
+  consumptionMethods: ["DINE_IN"],
+  paymentMethods: ["CASH"],
+  businessHours: Array.from({ length: 7 }).map((_, i) => ({
+    dayOfWeek: i,
+    isClosed: false,
+    timeSlots: [],
+  })),
 };

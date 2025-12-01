@@ -3,7 +3,12 @@ import { FaMoneyBillWave, FaCreditCard } from "react-icons/fa";
 import { MdOutlinePix } from "react-icons/md";
 import HeaderInfosPage from "../../components/HeaderInfosPage";
 
-export default function ModosPagamento() {
+// const restaurant = await db.restaurant.findUnique({
+//   where: { slug },
+//   include: { paymentMethods: true },
+// });
+
+export default function ModosPagamentoPage() {
   return (
     <div className="w-full">
       <HeaderInfosPage title="Formas de Pagamento" />
