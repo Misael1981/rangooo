@@ -75,6 +75,7 @@ const LeadCards = ({ leads }) => {
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "UTC",
     }).format(new Date(date));
   };
 
@@ -147,7 +148,7 @@ const LeadCards = ({ leads }) => {
               <div className="flex items-center justify-between border-t border-gray-100 pt-4">
                 <div className="flex items-center gap-1 text-xs text-gray-500">
                   <Calendar1Icon className="h-3 w-3" />
-                  {formatDate(lead.createdAt)}
+                  <span suppressHydrationWarning>{formatDate(lead.createdAt)}</span>
                 </div>
 
                 <div className="flex gap-2">
