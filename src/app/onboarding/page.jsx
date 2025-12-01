@@ -1,7 +1,7 @@
 // app/onboarding/page.jsx
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { defaultValues, formSchema } from "./schemas/form-schema";
 
-const OnboardingPage = () => {
+export default function OnboardingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -55,67 +55,67 @@ const OnboardingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 py-8">
-      <div className="mx-auto max-w-4xl px-4">
-        {/* HeaderForm */}
-        <HeaderForm />
+    <Suspense fallback={<div>Carregando...</div>}>
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 py-8">
+        <div className="mx-auto max-w-4xl px-4">
+          {/* HeaderForm */}
+          <HeaderForm />
 
-        {/* ProgressSteps */}
-        <ProgressSteps steps={steps} currentStep={currentStep} />
+          {/* ProgressSteps */}
+          <ProgressSteps steps={steps} currentStep={currentStep} />
 
-        {/* Form Content */}
-        <Card className="border-2 border-orange-100 shadow-lg">
-          <CardContent className="p-8">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                {/* Step 1: Dados do Dono */}
-                {currentStep === 1 && <OwnerData form={form} />}
+          {/* Form Content */}
+          <Card className="border-2 border-orange-100 shadow-lg">
+            <CardContent className="p-8">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                  {/* Step 1: Dados do Dono */}
+                  {currentStep === 1 && <OwnerData form={form} />}
 
-                {/* Step 2: Dados da Pizzaria */}
-                {currentStep === 2 && <EstablishmentData form={form} />}
+                  {/* Step 2: Dados da Pizzaria */}
+                  {currentStep === 2 && <EstablishmentData form={form} />}
 
-                {/* Step 3: Cardápio */}
-                {currentStep === 3 && <MenuEstablishment form={form} />}
+                  {/* Step 3: Cardápio */}
+                  {currentStep === 3 && <MenuEstablishment form={form} />}
 
-                {/* Step 4: Confirmação */}
-                {currentStep === 4 && <Confirmation />}
+                  {/* Step 4: Confirmação */}
+                  {currentStep === 4 && <Confirmation />}
 
-                {/* Navigation Buttons */}
-                <div className="flex justify-between border-t border-gray-200 pt-8">
-                  <Button
-                    variant="outline"
-                    onClick={() => setCurrentStep((prev) => prev - 1)}
-                    disabled={currentStep === 1 || isLoading}
-                  >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Voltar
-                  </Button>
-
-                  {currentStep < 4 ? (
+                  {/* Navigation Buttons */}
+                  <div className="flex justify-between border-t border-gray-200 pt-8">
                     <Button
-                      onClick={() => setCurrentStep((prev) => prev + 1)}
-                      disabled={isLoading}
+                      variant="outline"
+                      onClick={() => setCurrentStep((prev) => prev - 1)}
+                      disabled={currentStep === 1 || isLoading}
                     >
-                      Próximo
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                      Voltar
                     </Button>
-                  ) : (
-                    <Button
-                      onClick={handleSubmit}
-                      disabled={isLoading}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      {isLoading ? "Finalizando..." : "Finalizar Cadastro"}
-                    </Button>
-                  )}
-                </div>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+
+                    {currentStep < 4 ? (
+                      <Button
+                        onClick={() => setCurrentStep((prev) => prev + 1)}
+                        disabled={isLoading}
+                      >
+                        Próximo
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleSubmit}
+                        disabled={isLoading}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        {isLoading ? "Finalizando..." : "Finalizar Cadastro"}
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </Suspense>
   );
-};
-
-export default OnboardingPage;
+}
