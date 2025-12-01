@@ -57,6 +57,7 @@ export async function POST(request) {
         { status: 422 },
       );
     }
+
     return Response.json({ error: "Erro interno" }, { status: 500 });
   }
 }

@@ -17,6 +17,7 @@ import {
 
 const LeadCards = ({ leads }) => {
   const [loadingId, setLoadingId] = useState(null);
+  const [inviteLinks, setInviteLinks] = useState({});
   const handleApprove = async (id) => {
     setLoadingId(id);
     try {
@@ -26,12 +27,23 @@ const LeadCards = ({ leads }) => {
         body: JSON.stringify({ id }),
       });
       const json = await res.json();
+
       if (!res.ok) throw new Error(json?.error || "Erro ao aprovar");
       const token = json?.invite?.token;
-      const link = token
-        ? `/sobre/cadastro/novo-cadastro?token=${token}`
-        : null;
-      toast.success(link ? "Convite gerado" : "Lead aprovado");
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "";
+      const link = token ? `${origin}/onboarding?token=${token}` : null;
+      if (link) {
+        toast.success("Convite gerado", {
+          action: {
+            label: "Copiar link",
+            onClick: () => navigator.clipboard.writeText(link),
+          },
+        });
+        setInviteLinks((prev) => ({ ...prev, [String(id)]: link }));
+      } else {
+        toast.success("Lead aprovado");
+      }
     } catch (e) {
       toast.error("Erro ao aprovar");
     } finally {
@@ -159,8 +171,58 @@ const LeadCards = ({ leads }) => {
                       </Button>
                     </>
                   )}
+
+                  {lead.status === "APPROVED" && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={async () => {
+                        const key = String(lead.id);
+                        const cached = inviteLinks[key];
+                        if (cached) {
+                          navigator.clipboard.writeText(cached);
+                          toast.success("Link copiado");
+                          return;
+                        }
+                        try {
+                          const res = await fetch(
+                            `/api/leads/invite?leadId=${encodeURIComponent(lead.id)}`,
+                          );
+                          const json = await res.json();
+                          const token = json?.invite?.token;
+                          const origin =
+                            typeof window !== "undefined"
+                              ? window.location.origin
+                              : "";
+                          const link = token
+                            ? `${origin}/onboarding?token=${token}`
+                            : null;
+                          if (link) {
+                            setInviteLinks((prev) => ({
+                              ...prev,
+                              [key]: link,
+                            }));
+                            navigator.clipboard.writeText(link);
+                            toast.success("Link copiado");
+                          } else {
+                            toast.error("Nenhum convite pendente");
+                          }
+                        } catch (e) {
+                          toast.error("Erro ao recuperar link");
+                        }
+                      }}
+                      className="h-8 text-xs"
+                    >
+                      Copiar Link
+                    </Button>
+                  )}
                 </div>
               </div>
+              {inviteLinks[String(lead.id)] && (
+                <span className="inline-block max-w-full truncate text-[10px] text-gray-500">
+                  {inviteLinks[String(lead.id)]}
+                </span>
+              )}
             </CardContent>
           </Card>
         ))}
