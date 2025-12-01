@@ -19,3 +19,6 @@ FinishOrderButton
 EnrollmentInvite 123
 
 Mano IA, essas duas, eu vou pedir pra vc fazer pra mim, eu não sei msm!!! Eu gostaria de enviar as imagens pro cloudinary,
+
+Boas novas!!!! Seu pedido de cadastro na plataforma Rangooo foi realizado com sucesso! Esse é o link para você criar sua página e ter uma nova experiência em gestão de vendas! Vamos lá?!
+https://rangooo.vercel.app/onboarding?token=dcc3f4bf-93b9-49c1-a64b-56dfea2a0313
