@@ -15,7 +15,13 @@ export default async function AdminDashboardPizzaria({ params }) {
   const p = await params;
   const restaurant = await prisma.restaurant.findUnique({
     where: { slug: p.slug },
-    select: { id: true, ownerId: true, name: true, avatarImageUrl: true },
+    select: {
+      id: true,
+      ownerId: true,
+      name: true,
+      avatarImageUrl: true,
+      isOpen: true,
+    },
   });
 
   if (!restaurant) notFound();
@@ -81,7 +87,11 @@ export default async function AdminDashboardPizzaria({ params }) {
           </h1>
           <p className="text-gray-600">Gerencie seus pedidos e usuários</p>
         </div>
-        <StatusOpenSwitch />
+        <StatusOpenSwitch
+          initialIsOpen={restaurant.isOpen} // ← PROP DO SERVER
+          restaurantId={restaurant.id}
+          restaurantSlug={p.slug}
+        />
       </header>
 
       {/* Stats Cards */}
