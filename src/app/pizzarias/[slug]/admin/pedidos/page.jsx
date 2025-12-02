@@ -1,8 +1,10 @@
-import { Badge } from "@/components/ui/badge";
 import FiltersOrders from "./components/FiltersOrders";
 import CardOrder from "./components/CardOrder";
 import FilterConsumptionMethods from "./components/FilterConsumptionMethods";
 import prisma from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import HeaderOrders from "./components/HeaderOrders";
+import { buildWindows, mapBusinessHoursToByDay } from "@/lib/operating-hours";
 
 export default async function RestaurantOrdersPage({ params }) {
   const p = await params;
@@ -12,111 +14,51 @@ export default async function RestaurantOrdersPage({ params }) {
   });
 
   if (!restaurant) notFound();
-  // Dados mockados - depois conecta com sua API
-  const ordersData = [
-    {
-      id: "1",
-      user: {
-        name: "João Silva",
-        phone: "(11) 99999-9999",
-      },
-      totalAmount: 89.9,
-      deliveryFee: 8.5,
-      status: "PENDING",
-      consumptionMethod: "DELIVERY",
-      deliveryAddress: {
-        street: "Rua das Flores, 123",
-        neighborhood: "Centro",
-        city: "São Paulo",
-        state: "SP",
-      },
-      items: [
-        { name: "Pizza Calabresa", quantity: 1, price: 45.9 },
-        { name: "Coca-Cola 2L", quantity: 2, price: 22.0 },
-      ],
-      createdAt: new Date(),
-      estimatedTime: "40-50 min",
-    },
-    {
-      id: "2",
-      user: {
-        name: "Maria Santos",
-        phone: "(11) 98888-8888",
-      },
-      totalAmount: 67.8,
-      deliveryFee: 0,
-      status: "CONFIRMED",
-      consumptionMethod: "PICKUP",
-      items: [
-        { name: "Pizza Margherita", quantity: 1, price: 39.9 },
-        { name: "Suco de Laranja", quantity: 1, price: 12.9 },
-        { name: "Brownie", quantity: 1, price: 15.0 },
-      ],
-      createdAt: new Date(Date.now() - 15 * 60 * 1000), // 15 min atrás
-      estimatedTime: "25-35 min",
-    },
-    {
-      id: "3",
-      user: {
-        name: "Carlos Oliveira",
-        phone: "(11) 97777-7777",
-      },
-      totalAmount: 120.5,
-      deliveryFee: 10.0,
-      status: "PREPARING",
-      consumptionMethod: "DELIVERY",
-      deliveryAddress: {
-        street: "Av. Paulista, 1000",
-        neighborhood: "Bela Vista",
-        city: "São Paulo",
-        state: "SP",
-      },
-      items: [
-        { name: "Pizza Frango Catupiry", quantity: 1, price: 52.9 },
-        { name: "Pizza Portuguesa", quantity: 1, price: 48.9 },
-        { name: "Guaraná 2L", quantity: 1, price: 8.7 },
-      ],
-      createdAt: new Date(Date.now() - 30 * 60 * 1000), // 30 min atrás
-      estimatedTime: "15-25 min",
-    },
-    {
-      id: "4",
-      user: {
-        name: "Ana Costa",
-        phone: "(11) 96666-6666",
-      },
-      totalAmount: 35.9,
-      deliveryFee: 0,
-      status: "READY_FOR_PICKUP",
-      consumptionMethod: "PICKUP",
-      items: [{ name: "Pizza Mussarela", quantity: 1, price: 35.9 }],
-      createdAt: new Date(Date.now() - 45 * 60 * 1000), // 45 min atrás
-      estimatedTime: "Pronto",
-    },
-  ];
 
+  const bh = await prisma.businessHours.findMany({
+    where: { restaurantId: restaurant.id },
+    select: { dayOfWeek: true, timeSlots: true, isClosed: true },
+  });
+
+  const byDay = mapBusinessHoursToByDay(bh);
+  const windows = buildWindows(byDay, new Date());
+
+  const orders = await prisma.order.findMany({
+    where: {
+      restaurantId: restaurant.id,
+      OR: windows.map(({ start, end }) => ({
+        createdAt: { gte: start, lt: end },
+      })),
+    },
+    select: {
+      id: true,
+      user: { select: { name: true, phone: true } },
+      totalAmount: true,
+      deliveryFee: true,
+      status: true,
+      consumptionMethod: true,
+      createdAt: true,
+      deliveryAddress: true,
+      items: {
+        select: { quantity: true, product: { select: { name: true } } },
+      },
+    },
+    orderBy: { createdAt: "asc" },
+  });
+
+  const viewOrders = orders.map((o) => ({
+    ...o,
+    items:
+      o.items?.map((i) => ({ name: i.product?.name, quantity: i.quantity })) ??
+      [],
+  }));
+  const ordersData = viewOrders;
+
+  console.log("orders: ", orders);
   return (
     <div className="min-h-screen p-6">
       {/* Header */}
-      <header className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Gerenciar Pedidos
-            </h1>
-            <p className="text-gray-600">Controle os pedidos da sua pizzaria</p>
-          </div>
-          <div className="flex gap-4">
-            <Badge variant="outline" className="bg-white">
-              Total: {ordersData.length}
-            </Badge>
-            <Badge variant="outline" className="bg-amber-50">
-              Pendentes:{" "}
-              {ordersData.filter((o) => o.status === "PENDING").length}
-            </Badge>
-          </div>
-        </div>
-      </header>
+      <HeaderOrders totalOrders="23" pendingOrders="5" />
 
       {/* Métodos de Consumo */}
       <FilterConsumptionMethods
