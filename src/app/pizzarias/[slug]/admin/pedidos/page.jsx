@@ -23,38 +23,56 @@ export default async function RestaurantOrdersPage({ params }) {
   const byDay = mapBusinessHoursToByDay(bh);
   const windows = buildWindows(byDay, new Date());
 
-  const orders = await prisma.order.findMany({
-    where: {
-      restaurantId: restaurant.id,
-      OR: windows.map(({ start, end }) => ({
-        createdAt: { gte: start, lt: end },
-      })),
-    },
-    select: {
-      id: true,
-      user: { select: { name: true, phone: true } },
-      totalAmount: true,
-      deliveryFee: true,
-      status: true,
-      consumptionMethod: true,
-      createdAt: true,
-      deliveryAddress: true,
-      items: {
-        select: { quantity: true, product: { select: { name: true } } },
-      },
-    },
-    orderBy: { createdAt: "asc" },
-  });
+  console.log("windows", windows);
+
+  const now = new Date();
+  const activeWindow =
+    windows.find((w) => w.start <= now && now < w.end) ||
+    windows.filter((w) => w.end <= now).sort((a, b) => b.end - a.end)[0] ||
+    null;
+
+  const whereDate = activeWindow
+    ? { createdAt: { gte: activeWindow.start, lt: now } }
+    : windows.length > 0
+      ? {
+          OR: windows.map(({ start, end }) => ({
+            createdAt: { gte: start, lt: end },
+          })),
+        }
+      : {};
+
+  const orders =
+    windows.length === 0
+      ? []
+      : await prisma.order.findMany({
+          where: { restaurantId: restaurant.id, ...whereDate },
+          select: {
+            id: true,
+            user: { select: { name: true, phone: true } },
+            totalAmount: true,
+            deliveryFee: true,
+            status: true,
+            consumptionMethod: true,
+            createdAt: true,
+            deliveryAddress: true,
+            items: { select: { quantity: true, product: { select: { name: true } } } },
+          },
+          orderBy: { createdAt: "desc" },
+        });
 
   const viewOrders = orders.map((o) => ({
     ...o,
+    totalAmount: Number(o.totalAmount ?? 0),
+    deliveryFee: Number(o.deliveryFee ?? 0),
+    createdAt:
+      o.createdAt instanceof Date ? o.createdAt.toISOString() : o.createdAt,
     items:
       o.items?.map((i) => ({ name: i.product?.name, quantity: i.quantity })) ??
       [],
   }));
+
   const ordersData = viewOrders;
 
-  console.log("orders: ", orders);
   return (
     <div className="min-h-screen p-6">
       {/* Header */}
