@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useFieldArray } from "react-hook-form";
 import ImageUpload from "../ImageUpload";
+import { uploadImageToCloudinary } from "@/lib/cloudinary";
 
 const MenuEstablishment = ({ form }) => {
   const { control } = form;
@@ -178,14 +179,17 @@ const MenuEstablishment = ({ form }) => {
             <div className="min-w-[200px] flex-1">
               <FormField
                 control={form.control}
-                name="imageProduct"
+                name={`products.${index}.imageUrl`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Imagem do Produto</FormLabel>
                     <FormControl>
                       <ImageUpload
                         field={field}
-                        onChange={(file) => form.setValue(`imageProducy`, file)}
+                        onChange={async (file) => {
+                          const url = await uploadImageToCloudinary(file);
+                          form.setValue(`products.${index}.imageUrl`, url ?? "");
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -226,6 +230,7 @@ const MenuEstablishment = ({ form }) => {
               description: "",
               price: 0,
               category: "",
+              imageUrl: "",
               ingredients: [""],
             })
           }

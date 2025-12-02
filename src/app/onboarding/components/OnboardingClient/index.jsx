@@ -39,7 +39,20 @@ export default function OnboardingClient({ token }) {
   };
 
   const handleSubmit = async () => {
-    console.log("Handle Submit");
+    try {
+      setIsLoading(true);
+      const data = form.getValues();
+      const res = await fetch("/api/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, data }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "Falha no cadastro");
+    } catch (e) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const steps = [
@@ -61,7 +74,7 @@ export default function OnboardingClient({ token }) {
                 {currentStep === 1 && <OwnerData form={form} />}
                 {currentStep === 2 && <EstablishmentData form={form} />}
                 {currentStep === 3 && <MenuEstablishment form={form} />}
-                {currentStep === 4 && <Confirmation />}
+                {currentStep === 4 && <Confirmation form={form} />}
 
                 <div className="flex justify-between border-t border-gray-200 pt-8">
                   <Button

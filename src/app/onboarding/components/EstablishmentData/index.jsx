@@ -21,6 +21,7 @@ import { Trash2, Plus } from "lucide-react";
 import ImageUpload from "../ImageUpload";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { uploadImageToCloudinary } from "@/lib/cloudinary";
 import OpeningHours from "../OpeningHours";
 
 const EstablishmentData = ({ form }) => {
@@ -427,14 +428,17 @@ const EstablishmentData = ({ form }) => {
         <div className="min-w-[200px] flex-1">
           <FormField
             control={form.control}
-            name="logo"
+            name="logoUrl"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Logo do Estabelecimento</FormLabel>
                 <FormControl>
                   <ImageUpload
                     field={field}
-                    onChange={(file) => form.setValue("logo", file)}
+                    onChange={async (file) => {
+                      const url = await uploadImageToCloudinary(file);
+                      form.setValue("logoUrl", url ?? "");
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -445,14 +449,17 @@ const EstablishmentData = ({ form }) => {
         <div className="min-w-[200px] flex-1">
           <FormField
             control={form.control}
-            name="logo"
+            name="coverImageUrl"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Imagem do Estabelecimento</FormLabel>
                 <FormControl>
                   <ImageUpload
                     field={field}
-                    onChange={(file) => form.setValue("imagem", file)}
+                    onChange={async (file) => {
+                      const url = await uploadImageToCloudinary(file);
+                      form.setValue("coverImageUrl", url ?? "");
+                    }}
                   />
                 </FormControl>
                 <FormMessage />

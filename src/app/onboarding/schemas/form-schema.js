@@ -15,6 +15,7 @@ const productSchema = z.object({
   description: z.string().trim().min(10, "Descrição é obrigatória"),
   price: z.coerce.number().min(0.01, "Preço inválido"),
   category: z.string().trim().min(1, "Categoria do produto é obrigatória"),
+  imageUrl: z.string().url({ message: "URL inválida" }).optional().or(z.literal("")),
   ingredients: z
     .array(z.string().trim().min(1, "Ingrediente é obrigatório"))
     .min(1, "Adicione pelo menos um ingrediente"),
@@ -67,6 +68,8 @@ export const formSchema = z
     state: z.string().min(2, {
       message: "Campo obrigatório.",
     }),
+    logoUrl: z.string().url({ message: "URL inválida" }).optional().or(z.literal("")),
+    coverImageUrl: z.string().url({ message: "URL inválida" }).optional().or(z.literal("")),
     menuCategory: z
       .array(z.string().trim().min(1, "Categoria é obrigatória"))
       .min(1, "Selecione pelo menos uma categoria")
@@ -138,6 +141,8 @@ export const defaultValues = {
   complement: "",
   city: "",
   state: "",
+  logoUrl: "",
+  coverImageUrl: "",
   menuCategory: [],
   products: [],
   additionalIngredients: [],
