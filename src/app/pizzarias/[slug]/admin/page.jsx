@@ -1,8 +1,31 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import prisma from "@/lib/prisma";
+import { notFound, redirect } from "next/navigation";
 import DailyOrdersChart from "./components/DailyOrdersChart";
 import StatsCards from "./components/StatsCards";
 import StatusOpenSwitch from "./components/StatusOpenSwitch";
 
-export default function AdminDashboardPizzaria() {
+export default async function AdminDashboardPizzaria({ params }) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    redirect("/api/auth/signin"); // ou página de login custom
+  }
+
+  const p = await params;
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { slug: p.slug },
+    select: { id: true, ownerId: true, name: true, avatarImageUrl: true },
+  });
+
+  if (!restaurant) notFound();
+
+  const isOwner = restaurant.ownerId === session.user.id;
+  const isAdmin = session.user.role === "ADMIN";
+  if (!isOwner && !isAdmin) {
+    redirect("/"); // ou 403/404
+  }
+
   // Dados mockados - depois substitui pela API real
   const dashboardData = {
     stats: {

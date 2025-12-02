@@ -1,8 +1,10 @@
 import { Separator } from "@/components/ui/separator";
-import { ScrollTextIcon, ShieldAlert } from "lucide-react";
+import { ScrollTextIcon, ShieldAlert, UserStar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import AccountSettingsAccordion from "../AccountSettingsAccordion";
+
+const slug = "pizzaria-jk";
 
 const UserMenuLinks = () => {
   return (
@@ -36,6 +38,15 @@ const UserMenuLinks = () => {
           <span className="flex items-center gap-2">
             <ShieldAlert className="text-green-500" />
             Termos e Condições
+          </span>
+        </Link>
+        <Separator className="bg-gray-500" />
+      </div>
+      <div className="flex flex-col gap-2">
+        <Link href={`/pizzarias/${slug}/admin`} className="w-full py-2">
+          <span className="flex items-center gap-2">
+            <UserStar className="text-yellow-500" />
+            Admin
           </span>
         </Link>
         <Separator className="bg-gray-500" />

@@ -1,10 +1,11 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebarPizzaria from "./components/AppSidebarPizzaria";
 
-export default function AdminPizzariaLayout({ children }) {
+export default async function AdminPizzariaLayout({ children, params }) {
+  const p = await params;
   return (
     <SidebarProvider>
-      <AppSidebarPizzaria />
+      <AppSidebarPizzaria slug={p.slug} />
       <main className="w-full">
         <SidebarTrigger />
         {children}

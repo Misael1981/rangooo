@@ -10,48 +10,49 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import prisma from "@/lib/prisma";
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const items = [
-  {
-    title: "Home",
-    url: "/pizzarias/pizzaria-jk/admin",
-    icon: Home,
-  },
-  {
-    title: "Gerenciar Pedidos",
-    url: "/pizzarias/pizzaria-jk/admin/pedidos",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-];
-
-const AppSidebarPizzaria = () => {
+const AppSidebarPizzaria = async ({ slug }) => {
+  const items = [
+    { title: "Home", url: `/pizzarias/${slug}/admin`, icon: Home },
+    {
+      title: "Gerenciar Pedidos",
+      url: `/pizzarias/${slug}/admin/pedidos`,
+      icon: Inbox,
+    },
+    { title: "Calendar", url: "#", icon: Calendar },
+    { title: "Search", url: "#", icon: Search },
+    { title: "Settings", url: "#", icon: Settings },
+  ];
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { slug },
+    select: {
+      id: true,
+      ownerId: true,
+      name: true,
+      avatarImageUrl: true,
+      brandColors: true,
+    },
+  });
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="relative h-[150px] w-full rounded-md border-2 border-red-600 bg-white p-6">
+        <div
+          className="relative h-[150px] w-full rounded-md border-2 border-red-600 p-6"
+          style={{
+            backgroundColor: Array.isArray(restaurant.brandColors)
+              ? (restaurant.brandColors[0] ?? "#ffffff")
+              : (restaurant.brandColors ?? "#ffffff"),
+          }}
+        >
           <Image
-            src="/logo-rangooo.png"
-            alt="logo"
+            src={restaurant.avatarImageUrl}
+            alt={restaurant.name}
             fill
-            className="object-contain"
+            className="object-contain p-4"
           />
         </div>
       </SidebarHeader>
