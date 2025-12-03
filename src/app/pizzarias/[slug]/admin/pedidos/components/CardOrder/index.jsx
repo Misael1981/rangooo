@@ -13,6 +13,15 @@ import {
   XCircle,
 } from "lucide-react";
 import { formatCurrency } from "@/helpers/format-currency";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const getMethodConfig = (method) => {
   const configs = {
@@ -82,6 +91,32 @@ const getStatusConfig = (status) => {
   return configs[status] || configs.PENDING;
 };
 
+async function handleChangeStatus(router, orderId, status) {
+  try {
+    const res = await fetch(`/api/orders`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        id: orderId,
+        status: status,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || `Erro HTTP: ${res.status}`);
+    }
+
+    toast.success("Status atualizado!");
+    router.refresh();
+  } catch (error) {
+    console.error("Erro ao atualizar status:", error);
+    toast.error(`Erro: ${error.message || "Falha ao atualizar status"}`);
+  }
+}
+
 const formatDateTime = (date) =>
   new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
@@ -89,6 +124,7 @@ const formatDateTime = (date) =>
   }).format(new Date(date));
 
 const CardOrder = ({ order }) => {
+  const router = useRouter();
   const methodConfig = getMethodConfig(order?.consumptionMethod);
   const MethodIcon = methodConfig.icon;
   const statusConfig = getStatusConfig(order?.status);
@@ -103,28 +139,55 @@ const CardOrder = ({ order }) => {
   return (
     <Card className="w-[800px] max-w-[95%] border-2">
       <CardContent className="space-y-3 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex w-full items-center justify-between gap-2 sm:w-fit">
             <Badge variant="outline" className={methodConfig.color}>
-              <MethodIcon className="mr-1 h-3 w-3" />
+              <MethodIcon className="mr-1 h-6 w-6" />
               {methodConfig.label}
             </Badge>
             <Badge
               variant={statusConfig.variant}
               className="flex items-center gap-1"
             >
-              <StatusIcon className="h-3 w-3" />
+              <StatusIcon className="h-6 w-6" />
               {statusConfig.label}
             </Badge>
           </div>
+          <Select
+            onValueChange={(value) =>
+              handleChangeStatus(router, order.id, value)
+            }
+            defaultValue={order.status}
+          >
+            <SelectTrigger className="w-full sm:w-fit">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              {[
+                "PENDING",
+                "CONFIRMED",
+                "PREPARING",
+                "READY_FOR_PICKUP",
+                "OUT_FOR_DELIVERY",
+                "DELIVERED",
+                "CANCELED",
+              ].map((status) => (
+                <SelectItem key={status} value={status}>
+                  {getStatusConfig(status).label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center justify-between">
+          {itemsText && (
+            <div className="text-xs text-muted-foreground">{itemsText}</div>
+          )}
           <div className="text-sm font-semibold text-green-600">
             {formatCurrency(total)}
           </div>
         </div>
-
-        {itemsText && (
-          <div className="text-xs text-muted-foreground">{itemsText}</div>
-        )}
 
         <Separator />
 
