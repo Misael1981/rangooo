@@ -14,9 +14,6 @@ const HeaderOrders = ({ totalOrders, pendingOrders }) => {
           <Badge variant="outline" className="bg-white">
             Total: {totalOrders}
           </Badge>
-          <Badge variant="outline" className="bg-amber-50">
-            Pendentes: {pendingOrders}
-          </Badge>
         </div>
       </div>
     </header>

@@ -439,6 +439,7 @@ const main = async () => {
       brandColors: ["#000000", "#8c110e", "#e1a432"],
     },
   });
+
   console.log("Criando números de contato Pizzaria JK...");
   await prismaClient.contactNumber.createMany({
     data: [
@@ -455,6 +456,15 @@ const main = async () => {
         isPrimary: false,
       },
     ],
+  });
+
+  await prismaClient.restaurantConsumptionMethod.createMany({
+    data: [
+      { restaurantId: pizzaRestaurant.id, method: "DELIVERY" },
+      { restaurantId: pizzaRestaurant.id, method: "PICKUP" },
+      { restaurantId: pizzaRestaurant.id, method: "DINE_IN" },
+    ],
+    skipDuplicates: true,
   });
 
   console.log("Criando categoria de pizzas grandes Pizzaria JK...");

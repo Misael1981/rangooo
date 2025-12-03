@@ -5,8 +5,28 @@ import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import HeaderOrders from "./components/HeaderOrders";
 
-export default async function RestaurantOrdersPage({ params }) {
+export default async function RestaurantOrdersPage({ params, searchParams }) {
   const p = await params;
+  const sp = await searchParams;
+  const statusParam = String(sp?.status || "");
+  const methodParam = String(sp?.consumptionMethod || "");
+
+  const allowedStatuses = [
+    "PENDING",
+    "CONFIRMED",
+    "PREPARING",
+    "READY_FOR_PICKUP",
+    "OUT_FOR_DELIVERY",
+    "DELIVERED",
+  ];
+  const statusFilter = allowedStatuses.includes(statusParam.toUpperCase())
+    ? statusParam.toUpperCase()
+    : null;
+  const methodFilter = ["DELIVERY", "PICKUP", "DINE_IN"].includes(
+    methodParam.toUpperCase(),
+  )
+    ? methodParam.toUpperCase()
+    : null;
   const restaurant = await prisma.restaurant.findUnique({
     where: { slug: p.slug },
     select: { id: true, name: true, consumptionMethods: true },
@@ -40,6 +60,8 @@ export default async function RestaurantOrdersPage({ params }) {
 
   // --- FIM DA NOVA LÓGICA ---
 
+  const whereStatus = statusFilter ? { status: statusFilter } : {};
+  const whereMethod = methodFilter ? { consumptionMethod: methodFilter } : {};
   const orders = await prisma.order.findMany({
     where: {
       restaurantId: restaurant.id,
@@ -47,6 +69,8 @@ export default async function RestaurantOrdersPage({ params }) {
         gte: startOfShift,
         lt: endOfShift, // Pega tudo até o corte da manhã seguinte
       },
+      ...whereStatus,
+      ...whereMethod,
     },
     select: {
       id: true,
@@ -77,7 +101,7 @@ export default async function RestaurantOrdersPage({ params }) {
 
   return (
     <div className="min-h-screen p-6">
-      <HeaderOrders totalOrders={viewOrders.length} pendingOrders="0" />
+      <HeaderOrders totalOrders={viewOrders.length} />
 
       <FilterConsumptionMethods
         consumptionMethods={restaurant.consumptionMethods}
