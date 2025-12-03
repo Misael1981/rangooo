@@ -11,7 +11,16 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import prisma from "@/lib/prisma";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  Calendar,
+  Home,
+  Inbox,
+  Search,
+  Settings,
+  ShoppingBasket,
+  Users,
+  Warehouse,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -23,9 +32,21 @@ const AppSidebarPizzaria = async ({ slug }) => {
       url: `/pizzarias/${slug}/admin/pedidos`,
       icon: Inbox,
     },
-    { title: "Calendar", url: "#", icon: Calendar },
-    { title: "Search", url: "#", icon: Search },
-    { title: "Settings", url: "#", icon: Settings },
+    {
+      title: "Dados do Estabelecimento",
+      url: `/pizzarias/${slug}/admin/establishment`,
+      icon: Warehouse,
+    },
+    {
+      title: "Gerenciar Produtos",
+      url: `/pizzarias/${slug}/admin/products`,
+      icon: ShoppingBasket,
+    },
+    {
+      title: "Gerenciar Usuários",
+      url: `/pizzarias/${slug}/admin/users`,
+      icon: Users,
+    },
   ];
   const restaurant = await prisma.restaurant.findUnique({
     where: { slug },
