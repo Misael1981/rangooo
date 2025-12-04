@@ -20,10 +20,7 @@ import ProgressSteps from "../ProgressSteps";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
-import {
-  formSchema,
-  defaultValues,
-} from "@/app/onboarding/schemas/form-schema";
+import { formSchema, defaultValues } from "@/app/schemas/form-schema";
 
 export default function OnboardingClient({ token }) {
   const [currentStep, setCurrentStep] = useState(1);

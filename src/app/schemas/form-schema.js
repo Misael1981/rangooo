@@ -15,7 +15,11 @@ const productSchema = z.object({
   description: z.string().trim().min(10, "Descrição é obrigatória"),
   price: z.coerce.number().min(0.01, "Preço inválido"),
   category: z.string().trim().min(1, "Categoria do produto é obrigatória"),
-  imageUrl: z.string().url({ message: "URL inválida" }).optional().or(z.literal("")),
+  imageUrl: z
+    .string()
+    .url({ message: "URL inválida" })
+    .optional()
+    .or(z.literal("")),
   ingredients: z
     .array(z.string().trim().min(1, "Ingrediente é obrigatório"))
     .min(1, "Adicione pelo menos um ingrediente"),
@@ -40,7 +44,7 @@ export const formSchema = z
     establishmentName: z.string().min(2, {
       message: "Campo obrigatório.",
     }),
-    slogan: z
+    description: z
       .string({ required_error: "Campo obrigatório." })
       .min(10, { message: "Mínimo de 10 caracteres." })
       .max(25, { message: "Máximo de 25 caracteres." }),
@@ -51,9 +55,17 @@ export const formSchema = z
     contacts: z
       .array(z.string().min(1, "Contato é obrigatório"))
       .min(1, "Pelo menos um contato é necessário"),
-    socialMedia: z.object({
-      facebook: z.string().url({ message: "URL inválida" }).optional(),
-      instagram: z.string().url({ message: "URL inválida" }).optional(),
+    socialMedia: z
+      .array(
+        z.object({
+          platform: z.enum(["facebook", "instagram", "tiktok", "x", "youtube"]),
+          url: z.string().url({ message: "URL inválida" }),
+        }),
+      )
+      .default([])
+      .optional(),
+    slug: z.string().min(2, {
+      message: "Campo obrigatório.",
     }),
     street: z.string().min(2, {
       message: "Campo obrigatório.",
@@ -68,8 +80,16 @@ export const formSchema = z
     state: z.string().min(2, {
       message: "Campo obrigatório.",
     }),
-    logoUrl: z.string().url({ message: "URL inválida" }).optional().or(z.literal("")),
-    coverImageUrl: z.string().url({ message: "URL inválida" }).optional().or(z.literal("")),
+    logoUrl: z
+      .string()
+      .url({ message: "URL inválida" })
+      .optional()
+      .or(z.literal("")),
+    coverImageUrl: z
+      .string()
+      .url({ message: "URL inválida" })
+      .optional()
+      .or(z.literal("")),
     menuCategory: z
       .array(z.string().trim().min(1, "Categoria é obrigatória"))
       .min(1, "Selecione pelo menos uma categoria")
@@ -128,7 +148,7 @@ export const defaultValues = {
   phone: "",
   email: "",
   establishmentName: "",
-  slogan: "",
+  description: "",
   category: "",
   emailEstablishment: "",
   contacts: [""],
