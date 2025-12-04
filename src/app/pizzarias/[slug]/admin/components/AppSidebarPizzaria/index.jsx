@@ -38,7 +38,7 @@ const AppSidebarPizzaria = async ({ slug }) => {
       icon: Warehouse,
     },
     {
-      title: "Gerenciar Produtos",
+      title: "Gerenciar Cardápio",
       url: `/pizzarias/${slug}/admin/products`,
       icon: ShoppingBasket,
     },
