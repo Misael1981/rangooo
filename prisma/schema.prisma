@@ -30,6 +30,7 @@ model User {
 
   // Relação com Restaurante (para donos de restaurante)
   restaurants Restaurant[]
+  restaurantRoles RestaurantUser[]
 
   accounts Account[]
   sessions Session[]
@@ -122,6 +123,8 @@ model EnrollmentInvite {
   @@index([status, expiresAt])
 }
 
+
+
 // ===============================================
 // Restaurantes (Parceiro)
 // ===============================================
@@ -169,11 +172,32 @@ model Restaurant {
   businessHours         BusinessHours[]
   paymentMethods        RestaurantPaymentMethod[]
   consumptionMethods    RestaurantConsumptionMethod[]
+  users                 RestaurantUser[]
 
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
 
   @@index([ownerId])
+}
+
+// ===============================================
+// Tabela para vincular usuários a restaurantes com permissões específicas
+// ===============================================
+
+model RestaurantUser {
+  id           String   @id @default(uuid())
+  userId       String
+  restaurantId String
+  role         RestaurantRole @default(MANAGER) // OWNER, MANAGER, EMPLOYEE, VIEWER
+  
+  user       User       @relation(fields: [userId], references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, restaurantId])
+  @@index([restaurantId])
 }
 
 // ===============================================
@@ -451,4 +475,11 @@ enum CardBrand {
   DINERS_CLUB
   DISCOVER
   AURA
+}
+
+enum RestaurantRole {
+  OWNER     // Dono principal (único ou múltiplos?)
+  MANAGER   // Gerente do estabelecimento
+  EMPLOYEE  // Funcionário comum
+  VIEWER    // Apenas visualização
 }
