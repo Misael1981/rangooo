@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 
-const HeaderOrders = ({ totalOrders, pendingOrders }) => {
+const HeaderOrders = ({ totalOrders }) => {
   return (
     <header className="mb-8">
       <div className="flex items-center justify-between">

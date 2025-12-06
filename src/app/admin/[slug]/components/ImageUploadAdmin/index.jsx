@@ -3,7 +3,12 @@
 import { ImageUp, X } from "lucide-react";
 import { useState } from "react";
 
-const ImageUploadAdmin = ({ form, onChange, name = "logo", initialUrl = null }) => {
+const ImageUploadAdmin = ({
+  form,
+  onChange,
+  name = "logo",
+  initialUrl = null,
+}) => {
   const [preview, setPreview] = useState(initialUrl || null);
   // Função para tratar mudanças no campo de logo
   const handleLogoChange = (e) => {

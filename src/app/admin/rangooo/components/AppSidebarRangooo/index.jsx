@@ -23,7 +23,7 @@ const items = [
   },
   {
     title: "Gerenciar Estabelecimentos",
-    url: "/admin-rangooo/establishments",
+    url: "/admin/rangooo/establishments",
     icon: Inbox,
   },
   {
@@ -43,7 +43,7 @@ const items = [
   },
 ];
 
-const AppSidebar = () => {
+const AppSidebarRangooo = () => {
   return (
     <Sidebar>
       <SidebarHeader>
@@ -80,4 +80,4 @@ const AppSidebar = () => {
   );
 };
 
-export default AppSidebar;
+export default AppSidebarRangooo;

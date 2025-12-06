@@ -1,19 +1,17 @@
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import prisma from "@/lib/prisma";
-import { notFound, redirect } from "next/navigation";
-import DailyOrdersChart from "./components/DailyOrdersChart";
-import StatsCards from "./components/StatsCards";
+import { db } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
 import StatusOpenSwitch from "./components/StatusOpenSwitch";
+import StatsCards from "./components/StatsCards";
 
-export default async function AdminDashboardPizzaria({ params }) {
+export default async function AdminPage({ params }) {
+  const p = await params;
+
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     redirect("/api/auth/signin"); // ou página de login custom
   }
-
-  const p = await params;
-  const restaurant = await prisma.restaurant.findUnique({
+  const restaurant = await db.restaurant.findUnique({
     where: { slug: p.slug },
     select: {
       id: true,
@@ -78,12 +76,11 @@ export default async function AdminDashboardPizzaria({ params }) {
   };
 
   return (
-    <div className="min-h-screen p-6">
-      {/* Header */}
+    <div className="container mx-auto min-h-screen px-6">
       <header className="mb-8 flex flex-wrap items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Dashboard Administrativo
+            Dashboard Administrativo - {restaurant.name}
           </h1>
           <p className="text-gray-600">Gerencie seus pedidos e usuários</p>
         </div>
@@ -96,6 +93,7 @@ export default async function AdminDashboardPizzaria({ params }) {
 
       {/* Stats Cards */}
       <StatsCards statsOrders={dashboardData} />
+
       {/* Daily Orders Chart */}
       {/* <DailyOrdersChart /> */}
     </div>

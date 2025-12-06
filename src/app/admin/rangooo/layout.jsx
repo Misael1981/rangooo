@@ -1,10 +1,10 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import AppSidebar from "./components/AppSidebar";
+import AppSidebarRangooo from "./components/AppSidebarRangooo";
 
 export default function AdminRangoooLayout({ children }) {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebarRangooo />
       <main className="w-full">
         <SidebarTrigger />
         {children}
