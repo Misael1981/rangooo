@@ -446,8 +446,8 @@ enum OrderStatus {
 // Enum para Método de Consumo
 enum ConsumptionMethod {
   DELIVERY // Entrega
-  PICKUP // Retirada no local
-  DINE_IN // Consumo no local
+  PICKUP // Retirada no local pickup
+  DINE_IN // Consumo no local dine-in
 }
 
 enum ContactType {

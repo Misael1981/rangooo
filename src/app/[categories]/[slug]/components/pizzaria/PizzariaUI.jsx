@@ -10,12 +10,12 @@ const METHOD_OPTIONS_MAP = {
     buttonText: "Entregar",
   },
   PICKUP: {
-    imageUrl: "/images/takeaway.png",
+    imageUrl: "/images/pickup-pizza.png",
     alt: "Pegar no local",
     buttonText: "Pegar no local",
   },
   DINE_IN: {
-    imageUrl: "/images/dine_in.png",
+    imageUrl: "/images/dine-in-pizza.png",
     alt: "Comer no local",
     buttonText: "Comer no local",
   },
@@ -28,7 +28,7 @@ const PizzariaUI = ({ establishment }) => {
 
   return (
     <div>
-      <div className="relative min-h-screen bg-white sm:py-8">
+      <div className="relative min-h-screen bg-white sm:pt-6">
         <div className="fixed bottom-8 left-8 hidden lg:block">
           <QrCode />
         </div>
