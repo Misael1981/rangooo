@@ -131,12 +131,12 @@ model EnrollmentInvite {
 
 model Restaurant {
   id             String  @id @default(uuid())
-  ownerId        String // ID do User que é dono deste restaurante
+  ownerId        String 
   name           String
-  slug           String  @unique // Nome amigável para a URL (ex: /restaurante/hamburgueria-gourmet)
+  slug           String  @unique 
   description    String?
-  avatarImageUrl String? // URL da imagem de logo do restaurante
-  coverImageUrl  String? // URL da imagem de capa do restaurante
+  avatarImageUrl String? // imagem de logo
+  coverImageUrl  String? // imagem de capa
 
   // CAMPO DE CATEGORIA PARA FILTRAR
   category RestaurantCategory @default(RESTAURANT)
@@ -155,13 +155,12 @@ model Restaurant {
 
   // Contatos
   contacts    ContactNumber[]
-  socialMedia Json? // Redes sociais (ex: Facebook, Instagram, Twitter)
+  socialMedia Json? 
   email       String?
 
   // Paleta de cores da marca (array JSON de strings HEX/HSL)
   brandColors Json?
 
-  // Status
   isOpen Boolean @default(true) // Aberto ou Fechado
 
   // Relações

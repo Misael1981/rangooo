@@ -2,12 +2,17 @@
 
 import { db } from "@/lib/prisma";
 
-export async function getEstablishmentBySlug(slug) {
+export async function getEstablishmentWelcomeData(slug) {
   try {
     const establishment = await db.restaurant.findUnique({
       where: { slug },
-      include: {
-        products: true,
+
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        avatarImageUrl: true,
+        category: true,
         consumptionMethods: {
           orderBy: {
             displayOrder: "asc",
@@ -21,7 +26,7 @@ export async function getEstablishmentBySlug(slug) {
 
     return establishment;
   } catch (err) {
-    console.error("Erro ao buscar estabelecimento por slug:", err);
+    console.error("Erro ao buscar dados de boas-vindas:", err);
     return null;
   }
 }

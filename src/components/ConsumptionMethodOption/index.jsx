@@ -12,7 +12,7 @@ const ConsumptionMethodOption = ({
 }) => {
   return (
     <Card>
-      <CardContent>
+      <CardContent className="h-fit w-fit rounded-lg p-4 shadow-lg transition-shadow hover:shadow-xl">
         <Link
           href={`/${segment}/${slug}/menu?consumptionMethod=${option}`}
           className="flex flex-col items-center justify-center gap-2"
