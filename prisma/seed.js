@@ -56,7 +56,7 @@ const main = async () => {
         slug: "congo-burger",
         description: "O melhor fast food do mundo",
         avatarImageUrl:
-          "https://res.cloudinary.com/dsxpenevq/image/upload/v1761599120/logo-congoBurger-Photoroom_gtebnp.png",
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1765128048/logo-congoBurger_gtkxcy.png",
         coverImageUrl:
           "https://res.cloudinary.com/dsxpenevq/image/upload/v1761659324/fachada-C_B_bvdctz.png",
         ownerId: congoOwner.id,
@@ -467,7 +467,7 @@ const main = async () => {
         description:
           "A melhor pizza de Congonhal, melhor recheio e mais saboroso do país!",
         avatarImageUrl:
-          "https://res.cloudinary.com/dsxpenevq/image/upload/v1761599121/logo_jk_alpgnl.svg",
+          "https://res.cloudinary.com/dsxpenevq/image/upload/v1765128030/logo-jk_zx3cxw.png",
         coverImageUrl:
           "https://res.cloudinary.com/dsxpenevq/image/upload/v1761659324/fachada-JK_y8evr0.jpg",
         ownerId: pizzaOwner.id,
