@@ -6,8 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ViewModeToggle from "../ViewModeToggle";
-import Products from "@/components/Products";
 import SelectDoublePizza from "../SelectDoublePizza";
+import Products from "@/components/Products";
 import { segmentForCategory } from "@/lib/routes";
 
 const SelectionMenu = ({ categories, slug, segment }) => {

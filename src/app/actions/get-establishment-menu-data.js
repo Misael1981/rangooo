@@ -30,12 +30,25 @@ export async function getEstablishmentMenuData(slug) {
             isActive: true,
           },
         },
-        products: {
+        menuCategories: {
           select: {
             id: true,
             name: true,
-            price: true,
-            description: true,
+            updatedAt: true,
+            createdAt: true,
+            products: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                description: true,
+                imageUrl: true,
+                ingredients: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "asc",
           },
         },
       },

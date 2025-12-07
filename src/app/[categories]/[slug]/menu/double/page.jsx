@@ -1,8 +1,8 @@
 import { db } from "@/lib/prisma";
 import { toPlain } from "@/lib/utils";
 import { notFound } from "next/navigation";
-import HeaderDoubleImages from "../components/HeaderDoubleImages";
-import ProductDoubleDetails from "../components/ProductDoubleDetails";
+import HeaderDoubleImages from "../../../../[categories]/[slug]/menu/components/HeaderDoubleImages";
+import ProductDoubleDetails from "../../../../[categories]/[slug]/menu/components/ProductDoubleDetails";
 import { getAdditionalIngredientByMenuCategory } from "@/data/get-AdditionalIngredient-by-menuCategory";
 
 export default async function Double({ params, searchParams }) {

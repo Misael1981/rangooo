@@ -94,7 +94,11 @@ const ProductDoubleDetails = ({
         additionalIngredients={additionalIngredients}
         onExtrasChange={setExtras}
       />
-      <AddToBagButton product={displayProduct} quantity={quantity} extras={extras} />
+      <AddToBagButton
+        product={displayProduct}
+        quantity={quantity}
+        extras={extras}
+      />
     </section>
   );
 };
