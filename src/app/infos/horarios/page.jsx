@@ -1,5 +1,5 @@
+import HeaderInfosPage from "@/components/HeaderInfosPage";
 import { Separator } from "@/components/ui/separator";
-import HeaderInfosPage from "../../components/HeaderInfosPage";
 
 const schedules = [
   {

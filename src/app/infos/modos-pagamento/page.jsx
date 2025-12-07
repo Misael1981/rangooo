@@ -1,7 +1,7 @@
+import HeaderInfosPage from "@/components/HeaderInfosPage";
 import Image from "next/image";
 import { FaMoneyBillWave, FaCreditCard } from "react-icons/fa";
 import { MdOutlinePix } from "react-icons/md";
-import HeaderInfosPage from "../../components/HeaderInfosPage";
 
 // const restaurant = await db.restaurant.findUnique({
 //   where: { slug },

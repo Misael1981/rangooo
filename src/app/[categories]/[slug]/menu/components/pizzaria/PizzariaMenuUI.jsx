@@ -1,6 +1,7 @@
 import BusinessInfo from "@/components/BusinessInfo";
 import EstablishmentDescription from "@/components/EstablishmentDescription";
 import HeaderImage from "@/components/HeaderImage";
+import { Separator } from "@/components/ui/separator";
 
 const PizzariaMenuUI = ({ menuData }) => {
   const {
@@ -13,6 +14,7 @@ const PizzariaMenuUI = ({ menuData }) => {
     neighborhood,
     city,
     state,
+    slug,
   } = menuData;
 
   const descriptionData = {
@@ -31,7 +33,8 @@ const PizzariaMenuUI = ({ menuData }) => {
     <div>
       <HeaderImage image={menuData.coverImageUrl} alt={menuData.name} />
       <EstablishmentDescription establishment={descriptionData} />
-      <BusinessInfo restaurant={menuData} />
+      <BusinessInfo slug={slug} />
+      <Separator className="my-4 bg-gray-300" />
       {/* <SelectionMenu
         categories={categories}
         slug={slug}

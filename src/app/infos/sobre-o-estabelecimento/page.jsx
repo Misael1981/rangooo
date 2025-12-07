@@ -11,7 +11,7 @@ import {
 import HeaderInfosPage from "@/components/HeaderInfosPage";
 import MapsLocation from "./components/MapsLocation";
 
-export default async function InfosEstabelecimento({ searchParams }) {
+export default async function SobreEstabelecimentoPage({ searchParams }) {
   const { slug } = await searchParams;
   if (!slug) {
     return notFound();
