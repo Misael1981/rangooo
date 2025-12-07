@@ -1,3 +1,4 @@
+import { enumCategoryToRoute } from "@/app/utils/constants";
 import ConsumptionMethodOption from "@/components/ConsumptionMethodOption";
 import LogoImage from "@/components/LogoImage";
 import QrCode from "@/components/QrCode";
@@ -24,7 +25,7 @@ const METHOD_OPTIONS_MAP = {
 const PizzariaUI = ({ establishment }) => {
   const slug = establishment.slug;
   const availableMethods = establishment.consumptionMethods;
-  const segment = "pizzarias";
+  const segment = enumCategoryToRoute(establishment.category);
 
   return (
     <div>

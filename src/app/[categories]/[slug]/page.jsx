@@ -4,6 +4,7 @@ export const revalidate = 0;
 import { redirect } from "next/navigation";
 import AppUI from "./components/AppUI";
 import { getEstablishmentWelcomeData } from "@/app/actions/get-establishment-welcome-data";
+import { enumCategoryToRoute } from "@/app/utils/constants";
 
 const CATEGORIES = [
   "pizzarias",
@@ -14,19 +15,6 @@ const CATEGORIES = [
   "saudavel",
   "doces",
 ];
-
-function enumCategoryToRoute(categoryEnum) {
-  const map = {
-    RESTAURANT: "restaurantes",
-    PIZZARIA: "pizzarias",
-    HAMBURGUERIA: "hamburguerias",
-    SORVETERIA: "sorveterias",
-    ACAI: "acai",
-    SAUDAVEL: "saudavel",
-    DOCES: "doces",
-  };
-  return map[categoryEnum] ?? "restaurantes";
-}
 
 export default async function EstabelecimentoPage({ params }) {
   const { categories, slug } = await params;

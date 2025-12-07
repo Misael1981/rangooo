@@ -1,15 +1,18 @@
+import { enumCategoryToRoute } from "@/app/utils/constants";
 import { Card, CardContent } from "../ui/card";
 import Image from "next/image";
 import Link from "next/link";
 
 const ClientsCards = ({ clients }) => {
+  const segment = enumCategoryToRoute(clients[0]?.category);
+
   return (
     <section className="flex flex-wrap justify-center gap-4">
       {clients.map((client) => (
-        <Link key={client.slug} href={`/restaurantes/${client.slug}`}>
+        <Link key={client.slug} href={`/${segment}/${client.slug}`}>
           <Card className="p-0">
             <CardContent
-              className="bg-[var(--brand-primary)] relative flex h-[200px] w-[300px] flex-col items-center justify-center gap-4 rounded-lg p-4"
+              className="relative flex h-[200px] w-[300px] flex-col items-center justify-center gap-4 rounded-lg bg-[var(--brand-primary)] p-4"
               style={{
                 ["--brand-primary"]:
                   Array.isArray(client.brandColors) && client.brandColors[0]

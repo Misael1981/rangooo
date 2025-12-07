@@ -2,6 +2,7 @@ import LogoImage from "@/components/LogoImage";
 import WelcomeSection from "@/components/WelcomeSection";
 import ConsumptionMethodOption from "@/components/ConsumptionMethodOption";
 import QrCode from "@/components/QrCode";
+import { enumCategoryToRoute } from "@/app/utils/constants";
 
 const METHOD_OPTIONS_MAP = {
   DELIVERY: {
@@ -24,7 +25,7 @@ const METHOD_OPTIONS_MAP = {
 const HamburgueriaUI = ({ establishment }) => {
   const slug = establishment.slug;
   const availableMethods = establishment.consumptionMethods;
-  const segment = "hamburguerias";
+  const segment = enumCategoryToRoute(establishment.category);
 
   return (
     <div className="relative min-h-screen bg-white sm:py-8">

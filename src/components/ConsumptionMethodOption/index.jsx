@@ -8,7 +8,7 @@ const ConsumptionMethodOption = ({
   buttonText,
   option,
   slug,
-  segment = "restaurantes",
+  segment,
 }) => {
   return (
     <Card>
