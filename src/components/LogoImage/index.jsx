@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 const LogoImage = ({
-  restaurant,
+  establishment,
   size = 120,
   width,
   height,
@@ -12,8 +12,8 @@ const LogoImage = ({
   const w = width ?? size;
   const h = height ?? size;
   const bg =
-    Array.isArray(restaurant.brandColors) && restaurant.brandColors[0]
-      ? restaurant.brandColors[0]
+    Array.isArray(establishment.brandColors) && establishment.brandColors[0]
+      ? establishment.brandColors[0]
       : "#111827";
 
   return (
@@ -23,8 +23,8 @@ const LogoImage = ({
       {...divProps}
     >
       <Image
-        src={restaurant.avatarImageUrl}
-        alt={restaurant.name}
+        src={establishment.avatarImageUrl}
+        alt={establishment.name}
         fill
         className="object-contain p-2"
       />

@@ -11,8 +11,16 @@ export async function getEstablishmentMenuData(slug) {
         name: true,
         slug: true,
         coverImageUrl: true,
-
+        avatarImageUrl: true,
+        description: true,
+        address: true,
+        street: true,
+        number: true,
+        neighborhood: true,
+        city: true,
+        state: true,
         category: true,
+        brandColors: true,
 
         consumptionMethods: {
           orderBy: {

@@ -67,6 +67,11 @@ const main = async () => {
         latitude: -23.5505,
         longitude: -46.6333,
         address: "Praca Comendador José Ferreira Matos, s/n, Congonhal - MG",
+        street: "Praça Comendador José Ferreira Matos",
+        number: "s/n",
+        neighborhood: "Centro",
+        city: "Congonhal",
+        state: "MG",
         socialMedia: {
           instagram: "https://www.instagram.com/congo_burger/",
           facebook: "https://www.facebook.com/congo.burger",
@@ -475,6 +480,11 @@ const main = async () => {
         },
         address:
           "Rod. Juscelino Kubitschek de Oliveira, 989 - Centro, Congonhal - MG",
+        street: "Rod. Juscelino Kubitschek de Oliveira",
+        number: "989",
+        neighborhood: "Centro",
+        city: "Congonhal",
+        state: "MG",
         brandColors: ["#000000", "#8c110e", "#e1a432"],
       },
     });
