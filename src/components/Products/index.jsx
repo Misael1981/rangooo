@@ -39,7 +39,7 @@ function Products({
     <div className="space-y-6 p-4">
       {products.map((product) => {
         const cardInner = (
-          <>
+          <div className="flex w-full items-center justify-between gap-4">
             <div className="space-y-1">
               <h3 className="text-sm font-medium">{product.name}</h3>
               <p className="line-clamp-2 text-xs text-muted-foreground">
@@ -60,7 +60,7 @@ function Products({
                 className="rounded-lg object-contain"
               />
             </div>
-          </>
+          </div>
         );
 
         if (isDouble) {
