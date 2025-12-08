@@ -6,7 +6,14 @@ import Link from "next/link";
 import { useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 
-function Products({ slug, segment, products, viewMode, selectedIds = [], onSelectionChange }) {
+function Products({
+  slug,
+  segment,
+  products,
+  viewMode,
+  selectedIds = [],
+  onSelectionChange,
+}) {
   const category = segmentForCategory(segment);
   const isDouble = String(viewMode) === "double";
 
@@ -64,7 +71,9 @@ function Products({ slug, segment, products, viewMode, selectedIds = [], onSelec
               type="button"
               onClick={() => toggleSelect(product.id)}
               className={`flex w-full items-center gap-8 rounded-md border p-4 shadow-lg ${
-                selected ? "border-green-500 ring-2 ring-green-200" : "border-gray-300"
+                selected
+                  ? "border-green-500 ring-2 ring-green-200"
+                  : "border-gray-300"
               }`}
             >
               {cardInner}

@@ -1,16 +1,16 @@
-// src\components\LogoImage\index.jsx
-
 import Image from "next/image";
 
-const LogoImage = ({ establishment, size = 120, width, height, className }) => {
-  // 🚨 CORREÇÃO: EARLY RETURN (Retorno Rápido)
-  if (!establishment) {
-    console.error("LogoImage: establishment prop is undefined.");
-    return null; // Retorna nulo para quebrar a renderização se os dados não existirem.
+const LogoImage = ({ establishment, restaurant, size = 120, className }) => {
+  // Aceita tanto 'establishment' quanto 'restaurant' como prop (alias)
+  const data = establishment || restaurant;
+
+  if (!data || !data.avatarImageUrl || !data.name) {
+    console.log("Invalid establishment/restaurant prop in LogoImage:", data);
+    return null;
   }
 
-  const w = width ?? size;
-  const h = height ?? size;
+  const w = size;
+  const h = size;
 
   return (
     <div
@@ -18,9 +18,8 @@ const LogoImage = ({ establishment, size = 120, width, height, className }) => {
       style={{ width: w, height: h }}
     >
       <Image
-        // 🚨 O erro acontecia aqui: establishment era undefined
-        src={establishment.avatarImageUrl}
-        alt={establishment.name}
+        src={data.avatarImageUrl}
+        alt={data.name}
         fill
         className="rounded-lg object-contain"
       />

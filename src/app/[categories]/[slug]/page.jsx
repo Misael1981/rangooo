@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import AppUI from "./components/AppUI";
 import { getEstablishmentWelcomeData } from "@/app/actions/get-establishment-welcome-data";
 import { enumCategoryToRoute } from "@/app/utils/constants";
+import QrCode from "@/components/QrCode";
 
 const CATEGORIES = [
   "pizzarias",
@@ -34,5 +35,19 @@ export default async function EstabelecimentoPage({ params }) {
     return redirect(`/${dbCategoriaSlug}/${slug}`);
   }
 
-  return <AppUI category={categories} establishment={establishment} />;
+  return (
+    <div className="relative min-h-screen bg-white sm:py-6">
+      <div className="fixed bottom-8 left-8 hidden lg:block">
+        <QrCode />
+      </div>
+      <div className="mx-auto max-w-xl shadow-all-sides">
+        <AppUI category={categories} establishment={establishment} />
+      </div>
+      <div className="fixed bottom-8 right-8 hidden lg:block">
+        <QrCode />
+      </div>
+    </div>
+  );
 }
+
+// <AppUI category={categories} establishment={establishment} />

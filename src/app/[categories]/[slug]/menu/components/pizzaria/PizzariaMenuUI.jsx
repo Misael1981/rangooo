@@ -30,33 +30,7 @@ const PizzariaMenuUI = ({ menuData }) => {
     state,
   };
 
-  const categoriesRaw = menuData.menuCategories || [];
-  const categories = categoriesRaw.map((cat) => ({
-    ...cat,
-    createdAt:
-      typeof cat.createdAt?.toISOString === "function"
-        ? cat.createdAt.toISOString()
-        : (cat.createdAt ?? null),
-    updatedAt:
-      typeof cat.updatedAt?.toISOString === "function"
-        ? cat.updatedAt.toISOString()
-        : (cat.updatedAt ?? null),
-    products: cat.products.map((p) => ({
-      ...p,
-      price:
-        typeof p.price?.toNumber === "function"
-          ? p.price.toNumber()
-          : Number(p.price),
-      createdAt:
-        typeof p.createdAt?.toISOString === "function"
-          ? p.createdAt.toISOString()
-          : (p.createdAt ?? null),
-      updatedAt:
-        typeof p.updatedAt?.toISOString === "function"
-          ? p.updatedAt.toISOString()
-          : (p.updatedAt ?? null),
-    })),
-  }));
+  const categories = menuData.menuCategories;
 
   return (
     <div>
