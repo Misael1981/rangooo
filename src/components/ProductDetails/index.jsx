@@ -1,6 +1,5 @@
 "use client";
 
-import LogoImage from "@/components/LogoImage";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/helpers/format-currency";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
@@ -8,6 +7,7 @@ import { useContext, useState } from "react";
 import AddToBagButton from "../AddToBagButton";
 import { CartContext } from "@/app/contexts/cart";
 import ProductDescription from "../ProductDescription";
+import Image from "next/image";
 
 const ProductDetails = ({
   product,
@@ -42,15 +42,16 @@ const ProductDetails = ({
     addToCart(displayProduct, quantity);
   };
   return (
-    <section className="">
+    <section className="relative">
       <div className="relative -top-5 z-50 rounded-t-3xl bg-white px-4">
         <div className="pt-4">
           <div className="flex items-center gap-2">
-            <LogoImage
-              restaurant={restaurant}
-              width={32}
-              height={32}
-              className="rounded-full"
+            <Image
+              src={restaurant.avatarImageUrl}
+              alt={restaurant.name}
+              width={24}
+              height={24}
+              className="rounded-lg"
             />
             <p className="text-sm text-muted-foreground">{restaurant.name}</p>
           </div>

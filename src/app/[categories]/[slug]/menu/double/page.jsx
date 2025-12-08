@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import HeaderDoubleImages from "../../../../[categories]/[slug]/menu/components/HeaderDoubleImages";
 import ProductDoubleDetails from "../../../../[categories]/[slug]/menu/components/ProductDoubleDetails";
 import { getAdditionalIngredientByMenuCategory } from "@/data/get-AdditionalIngredient-by-menuCategory";
+import QrCode from "@/components/QrCode";
 
 export default async function Double({ params, searchParams }) {
   const { slug } = await params;
@@ -40,19 +41,27 @@ export default async function Double({ params, searchParams }) {
   const restaurantPlain = productPlain.restaurant;
 
   return (
-    <div className="flex flex-col">
-      <HeaderDoubleImages
-        imageUrl1={productPlain.imageUrl}
-        imageUrl2={secondProductPlain.imageUrl}
-        alt1={productPlain.name}
-        alt2={secondProductPlain.name}
-      />
-      <ProductDoubleDetails
-        product={productPlain}
-        secondProduct={secondProductPlain}
-        restaurant={restaurantPlain}
-        additionalIngredients={additionalIngredients}
-      />
+    <div className="relative min-h-screen bg-yellow-50 sm:py-6">
+      <div className="fixed bottom-8 left-8 hidden lg:block">
+        <QrCode />
+      </div>
+      <div className="mx-auto flex max-w-xl flex-col bg-white shadow-all-sides">
+        <HeaderDoubleImages
+          imageUrl1={productPlain.imageUrl}
+          imageUrl2={secondProductPlain.imageUrl}
+          alt1={productPlain.name}
+          alt2={secondProductPlain.name}
+        />
+        <ProductDoubleDetails
+          product={productPlain}
+          secondProduct={secondProductPlain}
+          restaurant={restaurantPlain}
+          additionalIngredients={additionalIngredients}
+        />
+      </div>
+      <div className="fixed bottom-8 right-8 hidden lg:block">
+        <QrCode />
+      </div>
     </div>
   );
 }

@@ -47,7 +47,7 @@ const SelectionMenu = ({ categories, slug, segment }) => {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
       <Separator className="my-4 bg-gray-300" />
-      <section className="pb-16">
+      <section className="relative pb-16">
         {/pizza/i.test(String(selectedCategory?.name)) && (
           <>
             <ViewModeToggle value={viewMode} onChange={setViewMode} />

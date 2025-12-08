@@ -14,12 +14,12 @@ const AddToBagButton = ({ product, quantity, extras = [] }) => {
   };
 
   return (
-    <section className="fixed bottom-0 left-0 right-0 px-4 py-2">
+    <section className="absolute bottom-0 left-0 right-0 px-4 py-2">
       <Button
         onClick={() => {
           handleClick();
         }}
-        className="w-full rounded-md bg-primary px-4 py-2 text-primary-foreground"
+        className="w-full rounded-md px-4 py-2 text-primary-foreground"
       >
         Adicionar à sacola
       </Button>
