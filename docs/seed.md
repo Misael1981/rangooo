@@ -4,29 +4,29 @@ const bcrypt = require("bcryptjs");
 const prismaClient = new PrismaClient();
 
 const main = async () => {
-  // Limpeza segura (ignora erros pontuais de FK/ausência de tabela)
-  const safeDelete = async (model, name) => {
-    try {
-      await model.deleteMany();
-    } catch (e) {
-      console.warn(`warn: deleteMany(${name})`, e?.code || e?.message);
-    }
-  };
+// Limpeza segura (ignora erros pontuais de FK/ausência de tabela)
+const safeDelete = async (model, name) => {
+try {
+await model.deleteMany();
+} catch (e) {
+console.warn(`warn: deleteMany(${name})`, e?.code || e?.message);
+}
+};
 
-  await safeDelete(prismaClient.orderItem, "orderItem");
-  await safeDelete(prismaClient.order, "order");
-  await safeDelete(prismaClient.account, "account");
-  await safeDelete(prismaClient.session, "session");
-  await safeDelete(prismaClient.verificationToken, "verificationToken");
-  await safeDelete(prismaClient.product, "product");
-  await safeDelete(prismaClient.menuCategory, "menuCategory");
-  await safeDelete(prismaClient.contactNumber, "contactNumber");
-  await safeDelete(prismaClient.restaurant, "restaurant");
-  await safeDelete(prismaClient.user, "user");
+await safeDelete(prismaClient.orderItem, "orderItem");
+await safeDelete(prismaClient.order, "order");
+await safeDelete(prismaClient.account, "account");
+await safeDelete(prismaClient.session, "session");
+await safeDelete(prismaClient.verificationToken, "verificationToken");
+await safeDelete(prismaClient.product, "product");
+await safeDelete(prismaClient.menuCategory, "menuCategory");
+await safeDelete(prismaClient.contactNumber, "contactNumber");
+await safeDelete(prismaClient.restaurant, "restaurant");
+await safeDelete(prismaClient.user, "user");
 
-  {
-    // 1. Defina os métodos de consumo em um array de Enums
-    const enumMethods = ["DELIVERY", "PICKUP", "DINE_IN"];
+{
+// 1. Defina os métodos de consumo em um array de Enums
+const enumMethods = ["DELIVERY", "PICKUP", "DINE_IN"];
 
     // 2. Mapeie os Enums para a sintaxe de 'create' do Prisma
     const consumptionMethodsData = enumMethods.map((method, index) => ({
@@ -431,13 +431,14 @@ const main = async () => {
         },
       ],
     });
-  }
 
-  // --- 2. SETUP DA PIZZARIA JK ---
+}
 
-  {
-    // 1. Defina os métodos de consumo em um array de Enums
-    const enumMethods = ["DELIVERY", "PICKUP"];
+// --- 2. SETUP DA PIZZARIA JK ---
+
+{
+// 1. Defina os métodos de consumo em um array de Enums
+const enumMethods = ["DELIVERY", "PICKUP"];
 
     // 2. Mapeie os Enums para a sintaxe de 'create' do Prisma
     const consumptionMethodsData = enumMethods.map((method, index) => ({
@@ -873,14 +874,20 @@ const main = async () => {
         },
       ],
     });
-  }
+
+}
 };
 
 main()
-  .catch((e) => {
-    console.error(e);
-    throw e;
-  })
-  .finally(async () => {
-    await prismaClient.$disconnect();
-  });
+.catch((e) => {
+console.error(e);
+throw e;
+})
+.finally(async () => {
+await prismaClient.$disconnect();
+});
+
+"prisma": {
+"seed": "node prisma/seed.js"
+},
+"seed": "prisma db seed"
