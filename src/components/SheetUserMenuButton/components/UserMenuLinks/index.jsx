@@ -3,8 +3,7 @@ import { ScrollTextIcon, ShieldAlert, UserStar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import AccountSettingsAccordion from "../AccountSettingsAccordion";
-
-const slug = "pizzaria-jk";
+import { ClientAdminLink } from "@/components/ClientAdminLink";
 
 const UserMenuLinks = () => {
   return (
@@ -42,15 +41,7 @@ const UserMenuLinks = () => {
         </Link>
         <Separator className="bg-gray-500" />
       </div>
-      <div className="flex flex-col gap-2">
-        <Link href={`/pizzarias/${slug}/admin`} className="w-full py-2">
-          <span className="flex items-center gap-2">
-            <UserStar className="text-yellow-500" />
-            Admin
-          </span>
-        </Link>
-        <Separator className="bg-gray-500" />
-      </div>
+      <ClientAdminLink />
       <div className="flex flex-col gap-2">
         <AccountSettingsAccordion />
         <Separator className="bg-gray-500" />

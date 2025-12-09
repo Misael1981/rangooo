@@ -94,7 +94,7 @@ const SheetUserMenuButton = ({ open, onOpenChange }) => {
                 seus dados.
               </p>
             </section>
-            <UserMenuLinks />
+            <UserMenuLinks user={data.user} />
             <footer className="mt-auto">
               <Button
                 variant="destructive"
