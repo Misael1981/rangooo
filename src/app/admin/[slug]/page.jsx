@@ -1,18 +1,39 @@
+// src/app/admin/[slug]/page.jsx
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import StatusOpenSwitch from "./components/StatusOpenSwitch";
 import StatsCards from "./components/StatsCards";
+import { notFound, redirect } from "next/navigation";
 
 export default async function AdminPage({ params }) {
   const p = await params;
-
   const session = await getServerSession(authOptions);
+
   if (!session?.user) {
-    redirect("/api/auth/signin"); // ou página de login custom
+    redirect("/api/auth/signin");
   }
+
+  const userId = session.user.id;
+  const userRole = session.user.role;
+  const restaurantSlug = p.slug;
+
+  const isAdmin = userRole === "ADMIN";
+
   const restaurant = await db.restaurant.findUnique({
-    where: { slug: p.slug },
+    where: {
+      slug: restaurantSlug,
+      ...(!isAdmin && {
+        OR: [
+          { ownerId: userId },
+          {
+            users: {
+              some: { userId: userId },
+            },
+          },
+        ],
+      }),
+    },
     select: {
       id: true,
       ownerId: true,
@@ -22,12 +43,11 @@ export default async function AdminPage({ params }) {
     },
   });
 
-  if (!restaurant) notFound();
-
-  const isOwner = restaurant.ownerId === session.user.id;
-  const isAdmin = session.user.role === "ADMIN";
-  if (!isOwner && !isAdmin) {
-    redirect("/"); // ou 403/404
+  if (!restaurant) {
+    console.log(
+      `[AUTH FAIL] Usuário ${userId} (${userRole}) tentou acessar slug ${restaurantSlug}.`,
+    );
+    notFound();
   }
 
   // Dados mockados - depois substitui pela API real
@@ -85,7 +105,7 @@ export default async function AdminPage({ params }) {
           <p className="text-gray-600">Gerencie seus pedidos e usuários</p>
         </div>
         <StatusOpenSwitch
-          initialIsOpen={restaurant.isOpen} // ← PROP DO SERVER
+          initialIsOpen={restaurant.isOpen}
           restaurantId={restaurant.id}
           restaurantSlug={p.slug}
         />

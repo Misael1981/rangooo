@@ -135,6 +135,7 @@ model Restaurant {
   name           String
   slug           String  @unique 
   description    String?
+  // outros campos
   avatarImageUrl String? // imagem de logo
   coverImageUrl  String? // imagem de capa
 
