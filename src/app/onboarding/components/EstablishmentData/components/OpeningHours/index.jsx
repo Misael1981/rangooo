@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  FormField,
-  FormItem,
-  FormMessage,
-  FormLabel,
-} from "@/components/ui/form";
+import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,8 +13,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, Trash2, UtensilsCrossed, Coffee, Moon } from "lucide-react";
+import { useFormContext } from "react-hook-form";
 
-const OpeningHours = ({ form }) => {
+const OpeningHours = () => {
+  const form = useFormContext();
+
   const days = [
     { index: 0, name: "Domingo" },
     { index: 1, name: "Segunda-feira" },
@@ -43,12 +41,37 @@ const OpeningHours = ({ form }) => {
     return <Icon className="h-4 w-4" />;
   };
 
+  // ✅ Função para obter timeSlots do dia específico
+  const getTimeSlots = (dayIndex) => {
+    return form.watch(`openingHours.businessHours.${dayIndex}.timeSlots`) || [];
+  };
+
+  // ✅ Função para adicionar timeSlot
+  const addTimeSlot = (dayIndex) => {
+    const currentSlots = getTimeSlots(dayIndex);
+    const newSlot = {
+      type: currentSlots.length === 0 ? "LUNCH" : "DINNER",
+      open: "",
+      close: "",
+    };
+
+    const newSlots = [...currentSlots, newSlot];
+    form.setValue(`openingHours.businessHours.${dayIndex}.timeSlots`, newSlots);
+  };
+
+  // ✅ Função para remover timeSlot
+  const removeTimeSlot = (dayIndex, slotIndex) => {
+    const currentSlots = getTimeSlots(dayIndex);
+    const newSlots = currentSlots.filter((_, index) => index !== slotIndex);
+    form.setValue(`openingHours.businessHours.${dayIndex}.timeSlots`, newSlots);
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Horários de Funcionamento
-        </h3>
+    <section className="space-y-4 rounded-md border border-gray-200 p-4 shadow-md">
+      <div>
+        <h2 className="text-xl font-semibold text-gray-800">
+          Horário de Funcionamento
+        </h2>
         <p className="text-sm text-gray-600">
           Configure os horários para cada dia da semana. Adicione múltiplos
           períodos se necessário.
@@ -56,8 +79,9 @@ const OpeningHours = ({ form }) => {
       </div>
 
       {days.map(({ index, name }) => {
-        const slots = form.watch(`businessHours.${index}.timeSlots`) || [];
-        const isClosed = form.watch(`businessHours.${index}.isClosed`) || false;
+        const slots = getTimeSlots(index);
+        const isClosed =
+          form.watch(`openingHours.businessHours.${index}.isClosed`) || false;
 
         return (
           <div
@@ -77,13 +101,22 @@ const OpeningHours = ({ form }) => {
 
               <FormField
                 control={form.control}
-                name={`businessHours.${index}.isClosed`}
+                name={`openingHours.businessHours.${index}.isClosed`}
                 render={({ field }) => (
                   <FormItem className="flex items-center gap-2">
                     <Checkbox
                       id={`closed-${index}`}
                       checked={!!field.value}
-                      onCheckedChange={field.onChange}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                        // Se marcar como fechado, limpa os timeSlots
+                        if (checked) {
+                          form.setValue(
+                            `openingHours.businessHours.${index}.timeSlots`,
+                            [],
+                          );
+                        }
+                      }}
                     />
                     <Label
                       htmlFor={`closed-${index}`}
@@ -109,7 +142,7 @@ const OpeningHours = ({ form }) => {
                     <div className="w-40">
                       <FormField
                         control={form.control}
-                        name={`businessHours.${index}.timeSlots.${j}.type`}
+                        name={`openingHours.businessHours.${index}.timeSlots.${j}.type`}
                         render={({ field }) => (
                           <FormItem>
                             <Select
@@ -150,7 +183,7 @@ const OpeningHours = ({ form }) => {
                       <div className="w-32">
                         <FormField
                           control={form.control}
-                          name={`businessHours.${index}.timeSlots.${j}.open`}
+                          name={`openingHours.businessHours.${index}.timeSlots.${j}.open`}
                           render={({ field }) => (
                             <FormItem>
                               <Input
@@ -170,7 +203,7 @@ const OpeningHours = ({ form }) => {
                       <div className="w-32">
                         <FormField
                           control={form.control}
-                          name={`businessHours.${index}.timeSlots.${j}.close`}
+                          name={`openingHours.businessHours.${index}.timeSlots.${j}.close`}
                           render={({ field }) => (
                             <FormItem>
                               <Input
@@ -190,16 +223,7 @@ const OpeningHours = ({ form }) => {
                         type="button"
                         variant="ghost"
                         size="icon"
-                        onClick={() => {
-                          const cur =
-                            form.getValues(
-                              `businessHours.${index}.timeSlots`,
-                            ) || [];
-                          form.setValue(
-                            `businessHours.${index}.timeSlots`,
-                            cur.filter((_, k) => k !== j),
-                          );
-                        }}
+                        onClick={() => removeTimeSlot(index, j)}
                         className="h-10 w-10 text-gray-500 hover:text-red-600"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -212,18 +236,7 @@ const OpeningHours = ({ form }) => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => {
-                    const cur =
-                      form.getValues(`businessHours.${index}.timeSlots`) || [];
-                    form.setValue(`businessHours.${index}.timeSlots`, [
-                      ...cur,
-                      {
-                        type: cur.length === 0 ? "LUNCH" : "DINNER",
-                        open: "",
-                        close: "",
-                      },
-                    ]);
-                  }}
+                  onClick={() => addTimeSlot(index)}
                   className="w-full border-dashed"
                 >
                   <Plus className="mr-2 h-4 w-4" />
@@ -268,14 +281,10 @@ const OpeningHours = ({ form }) => {
                           size="sm"
                           className="h-7 text-xs"
                           onClick={() => {
-                            const slots =
-                              form.getValues(
-                                `businessHours.${index}.timeSlots`,
-                              ) || [];
                             if (idx === 2) {
                               // Almoço e Janta
                               form.setValue(
-                                `businessHours.${index}.timeSlots`,
+                                `openingHours.businessHours.${index}.timeSlots`,
                                 [
                                   {
                                     type: "LUNCH",
@@ -292,7 +301,7 @@ const OpeningHours = ({ form }) => {
                             } else {
                               // Período único
                               form.setValue(
-                                `businessHours.${index}.timeSlots`,
+                                `openingHours.businessHours.${index}.timeSlots`,
                                 [
                                   {
                                     type: example.type,
@@ -356,7 +365,7 @@ const OpeningHours = ({ form }) => {
           })}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

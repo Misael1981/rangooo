@@ -1,294 +1,240 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useFieldArray } from "react-hook-form";
-import ImageUpload from "../ImageUpload";
-import { uploadImageToCloudinary } from "@/lib/cloudinary";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { Trash2, Plus } from "lucide-react";
+import { useImageUpload } from "@/app/hooks/useImageUpload";
+import ProductCard from "./components/ProductCard";
+import AdditionalIngredientCard from "./components/AdditionalIngredientCard";
 
-const MenuEstablishment = ({ form }) => {
-  const { control } = form;
-  const { fields, append, remove } = useFieldArray({
+const MenuEstablishment = () => {
+  const form = useFormContext();
+  const { control, watch } = form;
+
+  const { uploadToCloudinary } = useImageUpload();
+
+  const {
+    fields: categoryFields,
+    append: appendCategory,
+    remove: removeCategory,
+  } = useFieldArray({
     control,
-    name: "menuCategory",
+    name: "menu.menuCategory",
   });
+
   const {
     fields: productFields,
     append: appendProduct,
     remove: removeProduct,
   } = useFieldArray({
     control,
-    name: "products",
+    name: "menu.products",
   });
+
   const {
     fields: addIngFields,
     append: appendAddIng,
     remove: removeAddIng,
   } = useFieldArray({
     control,
-    name: "additionalIngredients",
+    name: "menu.additionalIngredients",
   });
-  const categories = form.watch("menuCategory") || [];
+
+  const categories = watch("menu.menuCategory") || [];
 
   return (
-    <div className="space-y-6">
-      <div className="border-b-2 border-gray-200 pb-2">
-        <h2 className="flex items-center gap-2 text-2xl font-bold text-gray-900">
-          Cardápio
-        </h2>
-      </div>
-      {/* Categoria do Cardápio */}
-
-      <div className="space-y-4">
-        <Label>Categorias do Cardápio</Label>
+    <div className="space-y-8">
+      {/* Cabeçalho */}
+      <div className="border-b-2 border-gray-200 pb-4">
+        <h2 className="text-2xl font-bold text-gray-900">Cardápio</h2>
         <p className="text-sm text-gray-500">
-          Crie tabelas para agrupar os itens do cardápio. Serão exibidas no app
-          do cliente.
+          Configure as categorias, produtos e ingredientes extras do seu
+          cardápio
         </p>
-
-        {fields.map((f, index) => (
-          <FormField
-            key={f.id}
-            control={control}
-            name={`menuCategory.${index}`}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="flex gap-2">
-                    <Input placeholder="Ex: Pizzas, Bebidas..." {...field} />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={() => remove(index)}
-                    >
-                      Remover
-                    </Button>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
-
-        <Button type="button" onClick={() => append("")}>
-          Adicionar Categoria
-        </Button>
       </div>
-      {/* Produtos */}
-      <div className="space-y-4">
-        <Label>Produtos</Label>
-        {productFields.map((pf, index) => (
-          <div key={pf.id} className="space-y-3 rounded-md border p-3">
-            <div className="flex gap-2">
-              <FormField
-                control={control}
-                name={`products.${index}.name`}
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormControl>
-                      <Input placeholder="Nome do produto" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={control}
-                name={`products.${index}.price`}
-                render={({ field }) => (
-                  <FormItem className="w-40">
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        placeholder="Preço"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            {/* Ingredientes */}
-            {(() => {
-              const ing = form.watch(`products.${index}.ingredients`) || [];
-              return (
-                <div className="space-y-2">
-                  <Label>Ingredientes</Label>
-                  {ing.map((_, ingIdx) => (
-                    <FormField
-                      key={`ing-${pf.id}-${ingIdx}`}
-                      control={control}
-                      name={`products.${index}.ingredients.${ingIdx}`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input placeholder="Ingrediente" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  ))}
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        const cur =
-                          form.getValues(`products.${index}.ingredients`) || [];
-                        form.setValue(`products.${index}.ingredients`, [
-                          ...cur,
-                          "",
-                        ]);
-                      }}
-                    >
-                      Adicionar Ingrediente
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      onClick={() => {
-                        const cur =
-                          form.getValues(`products.${index}.ingredients`) || [];
-                        if (cur.length > 0) {
-                          form.setValue(
-                            `products.${index}.ingredients`,
-                            cur.slice(0, -1),
-                          );
-                        }
-                      }}
-                    >
-                      Remover Ingrediente
-                    </Button>
-                  </div>
-                </div>
-              );
-            })()}
-            {/* Imagem do Produto */}
-            <div className="min-w-[200px] flex-1">
-              <FormField
-                control={form.control}
-                name={`products.${index}.imageUrl`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Imagem do Produto</FormLabel>
-                    <FormControl>
-                      <ImageUpload
-                        field={field}
-                        onChange={async (file) => {
-                          const url = await uploadImageToCloudinary(file);
-                          form.setValue(`products.${index}.imageUrl`, url ?? "");
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            {/* Descrição do Produto */}
+
+      {/* SEÇÃO 1: CATEGORIAS */}
+      <div className="space-y-4 rounded-lg border p-6">
+        <div>
+          <Label className="text-lg font-semibold">
+            Categorias do Cardápio
+          </Label>
+          <p className="text-sm text-gray-500">
+            Crie as categorias que vão organizar seus produtos (ex: Pizzas,
+            Bebidas, Sobremesas)
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {categoryFields.map((f, index) => (
             <FormField
+              key={f.id}
               control={control}
-              name={`products.${index}.description`}
+              name={`menu.menuCategory.${index}`}
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea placeholder="Descrição do produto" {...field} />
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder={`Categoria ${index + 1}`}
+                        {...field}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          // Remove a categoria e todos os ingredientes vinculados a ela
+                          removeCategory(index);
+
+                          // Atualiza produtos que usavam essa categoria
+                          const products = watch("menu.products") || [];
+                          products.forEach((_, prodIndex) => {
+                            const prodCat = watch(
+                              `menu.products.${prodIndex}.category`,
+                            );
+                            if (prodCat === field.value) {
+                              form.setValue(
+                                `menu.products.${prodIndex}.category`,
+                                "",
+                              );
+                            }
+                          });
+                        }}
+                        className="h-10 w-10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          ))}
+        </div>
 
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => removeProduct(index)}
-              >
-                Remover produto
-              </Button>
-            </div>
-          </div>
-        ))}
         <Button
           type="button"
-          onClick={() =>
-            appendProduct({
-              name: "",
-              description: "",
-              price: 0,
-              category: "",
-              imageUrl: "",
-              ingredients: [""],
-            })
-          }
+          variant="outline"
+          onClick={() => appendCategory("")}
+          className="w-full border-dashed"
         >
-          Adicionar Produto
+          <Plus className="mr-2 h-4 w-4" />
+          Adicionar Nova Categoria
         </Button>
       </div>
 
-      {/* Ingredientes adicionais */}
-      <div className="space-y-4">
-        <Label>Ingredientes adicionais (aplicados a todas as categorias)</Label>
-        {addIngFields.map((af, index) => (
-          <div key={af.id} className="flex gap-2">
-            <FormField
-              control={control}
-              name={`additionalIngredients.${index}.name`}
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormControl>
-                    <Input placeholder="Nome do ingrediente" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name={`additionalIngredients.${index}.price`}
-              render={({ field }) => (
-                <FormItem className="w-40">
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="Preço"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      {/* SEÇÃO 2: PRODUTOS */}
+      <div className="space-y-6 rounded-lg border p-6">
+        <div>
+          <Label className="text-lg font-semibold">Produtos</Label>
+          <p className="text-sm text-gray-500">
+            Adicione os produtos em suas respectivas categorias
+          </p>
+        </div>
+
+        {productFields.length === 0 && (
+          <div className="rounded-lg border border-dashed p-8 text-center">
+            <p className="text-gray-500">
+              Adicione categorias primeiro, depois seus produtos
+            </p>
+          </div>
+        )}
+
+        {productFields.map((pf, index) => (
+          <ProductCard
+            key={pf.id}
+            index={index}
+            form={form}
+            control={control}
+            categories={categories}
+            removeProduct={removeProduct}
+            uploadToCloudinary={uploadToCloudinary}
+          />
+        ))}
+
+        {categories.length > 0 && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() =>
+              appendProduct({
+                name: "",
+                description: "",
+                price: 0,
+                category: categories[0],
+                imageUrl: "",
+                ingredients: [""],
+              })
+            }
+            className="w-full border-dashed"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Adicionar Novo Produto
+          </Button>
+        )}
+      </div>
+
+      {/* SEÇÃO 3: INGREDIENTES ADICIONAIS (POR CATEGORIA) */}
+      <div className="space-y-6 rounded-lg border p-6">
+        <div>
+          <Label className="text-lg font-semibold">Ingredientes Extras</Label>
+          <p className="text-sm text-gray-500">
+            Configure ingredientes que podem ser adicionados aos produtos de
+            categorias específicas
+          </p>
+          <p className="mt-1 text-xs text-gray-400">
+            Ex: "Bacon Extra" pode ser adicionado a pizzas e hambúrgueres
+          </p>
+        </div>
+
+        {categories.length === 0 ? (
+          <div className="rounded-lg bg-yellow-50 p-4 text-center">
+            <p className="text-yellow-700">
+              Adicione categorias primeiro para configurar ingredientes extras
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-4">
+              {addIngFields.map((af, index) => (
+                <AdditionalIngredientCard
+                  key={af.id}
+                  index={index}
+                  control={control}
+                  categories={categories}
+                  removeAddIng={removeAddIng}
+                />
+              ))}
+            </div>
+
             <Button
               type="button"
-              variant="ghost"
-              onClick={() => removeAddIng(index)}
+              variant="outline"
+              onClick={() =>
+                appendAddIng({
+                  name: "",
+                  price: 0,
+                  categories: [],
+                })
+              }
+              className="w-full border-dashed"
             >
-              Remover
+              <Plus className="mr-2 h-4 w-4" />
+              Adicionar Novo Ingrediente Extra
             </Button>
-          </div>
-        ))}
-        <Button
-          type="button"
-          onClick={() => appendAddIng({ name: "", price: 0 })}
-        >
-          Adicionar Ingrediente Adicional
-        </Button>
+          </>
+        )}
       </div>
     </div>
   );
