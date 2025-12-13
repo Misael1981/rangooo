@@ -12,13 +12,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input"; // ✅ CORREÇÃO AQUI!
 import { Checkbox } from "@/components/ui/checkbox"; // ✅ Adicionar esta importação
 import { Trash2 } from "lucide-react";
+import { useFormContext } from "react-hook-form";
 
-const AdditionalIngredientCard = ({
-  index,
-  control,
-  categories,
-  removeAddIng,
-}) => {
+const AdditionalIngredientCard = ({ index, categories, removeAddIng }) => {
+  const form = useFormContext(); // ⭐⭐ USA useContext EM VEZ DE PROP
+  const { control } = form;
   // Não use control._formValues diretamente - use watch do useFormContext
   // Mas para simplificar, vamos ajustar o código:
 
