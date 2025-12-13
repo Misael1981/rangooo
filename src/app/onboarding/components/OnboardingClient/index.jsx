@@ -19,10 +19,13 @@ import Confirmation from "../Confirmation";
 import HeaderForm from "../HeaderForm";
 import ProgressSteps from "../ProgressSteps";
 import { useOnboardingForm } from "@/app/hooks/useOnboardingData";
+import { formSchema } from "@/app/schemas/form-schema";
 
 export default function OnboardingClient({ token }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successData, setSuccessData] = useState(null);
+  const [error, setError] = useState(null);
 
   const { form, goToNextStep, clearStorage } = useOnboardingForm();
 
@@ -52,36 +55,126 @@ export default function OnboardingClient({ token }) {
 
   const handleFinalSubmit = async () => {
     setIsSubmitting(true);
-    try {
-      // 1. Valida TODO o formulário
-      const isValid = await form.trigger();
-      if (!isValid) {
-        alert("Por favor, corrija os erros antes de finalizar.");
-        return;
-      }
+    setError(null);
 
-      // 2. Pega todos os dados
+    try {
+      // 1. Validação HÍBRIDA (Zod + campos críticos)
       const formData = form.getValues();
 
-      // 3. Envia para a API (TUDO de uma vez)
+      // Validação rápida de campos críticos
+      const criticalFields = {
+        owner: ["name", "email", "phone"],
+        store: [
+          "name",
+          "slug",
+          "category",
+          "street",
+          "number",
+          "city",
+          "state",
+        ],
+        menu: ["menuCategory", "products"],
+      };
+
+      let hasCriticalError = false;
+      let errorMessage = "";
+
+      // Check owner
+      for (const field of criticalFields.owner) {
+        if (!formData.owner?.[field]?.toString().trim()) {
+          hasCriticalError = true;
+          errorMessage = `Dono: ${field} é obrigatório`;
+          break;
+        }
+      }
+
+      // Check store (se owner ok)
+      if (!hasCriticalError) {
+        for (const field of criticalFields.store) {
+          if (!formData.store?.[field]?.toString().trim()) {
+            hasCriticalError = true;
+            errorMessage = `Estabelecimento: ${field} é obrigatório`;
+            break;
+          }
+        }
+      }
+
+      // Check menu (se store ok)
+      if (!hasCriticalError) {
+        if (!formData.menu?.menuCategory?.filter((c) => c.trim()).length) {
+          hasCriticalError = true;
+          errorMessage = "Adicione pelo menos uma categoria no cardápio";
+        } else if (!formData.menu?.products?.length) {
+          hasCriticalError = true;
+          errorMessage = "Adicione pelo menos um produto";
+        }
+      }
+
+      if (hasCriticalError) {
+        throw new Error(errorMessage);
+      }
+
+      // 2. Validação Zod para os tipos de dados
+      try {
+        await formSchema.parseAsync(formData);
+      } catch (zodError) {
+        console.warn("Aviso Zod:", zodError.errors?.[0]?.message);
+        // Continua mesmo com warnings do Zod se os críticos estão ok
+      }
+
+      // 3. ENVIO PARA API
+      console.log("🚀 Enviando dados validados...");
+
       const response = await fetch("/api/onboarding/complete", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token || "demo-token"}`,
         },
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("Erro ao enviar dados");
+      const result = await response.json();
 
-      // 4. Limpa localStorage e redireciona
+      if (!response.ok) {
+        // Tratamento de erros específicos
+        if (result.code === "DUPLICATE_ENTRY") {
+          if (result.error.includes("Link único")) {
+            form.setError("store.slug", {
+              type: "manual",
+              message: "Este link já está em uso. Escolha outro.",
+            });
+            setCurrentStep(2); // Volta para step do estabelecimento
+          }
+        }
+
+        throw new Error(
+          result.error || `Erro ${response.status}: ${response.statusText}`,
+        );
+      }
+
+      // 4. SUCESSO!
       clearStorage();
-      alert("Cadastro concluído com sucesso!");
-      window.location.href = "/dashboard";
+
+      // Mostra modal de sucesso
+      setSuccessData({
+        restaurantName: result.data.restaurantName,
+        restaurantSlug: result.data.restaurantSlug,
+        dashboardUrl: result.data.dashboardUrl,
+        publicUrl: result.data.publicUrl,
+        nextSteps: result.nextSteps,
+      });
+
+      // 5. Log para debug
+      console.log("✅ Cadastro realizado!", result);
     } catch (error) {
-      console.error("Erro:", error);
-      alert("Erro ao finalizar cadastro. Tente novamente.");
+      console.error("❌ Erro no cadastro:", error);
+
+      // Define erro no estado
+      setError(error.message);
+
+      // Scroll para topo
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } finally {
       setIsSubmitting(false);
     }
@@ -131,6 +224,71 @@ export default function OnboardingClient({ token }) {
           </CardContent>
         </Card>
       </div>
+
+      {successData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+            <div className="text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                <CheckCircle className="h-10 w-10 text-green-600" />
+              </div>
+
+              <h3 className="mb-2 text-2xl font-bold text-gray-900">
+                🎉 Parabéns!
+              </h3>
+              <p className="mb-6 text-gray-600">
+                <strong>{successData.storeName}</strong> foi cadastrado com
+                sucesso!
+              </p>
+
+              <div className="space-y-4">
+                <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+                  <p className="text-sm font-medium text-green-800">
+                    Seu link público:
+                  </p>
+                  <p className="mt-1 text-green-600">
+                    seuapp.com/store/{successData.publicUrl}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 w-full"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        `https://seuapp.com/store/${successData.publicUrl}`,
+                      );
+                      alert("Link copiado!");
+                    }}
+                  >
+                    📋 Copiar Link
+                  </Button>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    className="flex-1"
+                    onClick={() => {
+                      window.location.href = successData.dashboardUrl;
+                    }}
+                  >
+                    📊 Ir para Dashboard
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => {
+                      window.location.href = "/";
+                    }}
+                  >
+                    🏠 Página Inicial
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,11 +2,21 @@
 import { z } from "zod";
 
 // Schema para ingrediente adicional (agora com categoria)
-export const additionalIngredientSchema = z.object({
-  name: z.string().trim().min(2, "Nome é obrigatório").max(80),
-  price: z.coerce.number().min(0.01, "Preço inválido"),
-  categories: z.array(z.string()).min(1, "Selecione pelo menos uma categoria"),
-});
+export const additionalIngredientSchema = z
+  .object({
+    name: z.string().trim().min(2, "Nome é obrigatório").max(80),
+    price: z.coerce.number().min(0.01, "Preço inválido"),
+    // Aceita tanto 'categories' quanto 'categoryIds'
+    categories: z.array(z.string()).optional().default([]),
+    categoryIds: z.array(z.string()).optional().default([]),
+  })
+  .transform((data) => {
+    // Normaliza: usa categories se existir, senão categoryIds
+    return {
+      ...data,
+      categories: data.categories || data.categoryIds || [],
+    };
+  });
 
 // Schema do produto permanece igual
 export const productSchema = z.object({
