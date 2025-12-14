@@ -12,7 +12,6 @@ export default async function ModosPagamentoPage({ searchParams }) {
     include: { paymentMethods: true },
   });
   const { paymentMethods } = restaurant;
-  console.log("Metodos de pagamento: ", paymentMethods);
 
   return (
     <div className="w-full">
