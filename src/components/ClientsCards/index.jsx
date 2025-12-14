@@ -2,6 +2,7 @@ import { enumCategoryToRoute } from "@/app/utils/constants";
 import { Card, CardContent } from "../ui/card";
 import Image from "next/image";
 import Link from "next/link";
+import { Badge } from "../ui/badge";
 
 const ClientsCards = ({ clients }) => {
   const segment = enumCategoryToRoute(clients[0]?.category);
@@ -20,17 +21,25 @@ const ClientsCards = ({ clients }) => {
                     : "#111827",
               }}
             >
-              <div className="relative h-[120px] w-[250px]">
+              <div className="relative h-[120px] w-[120px] rounded-lg">
                 <Image
                   src={client.avatarImageUrl}
                   alt={client.name}
                   fill
-                  className="object-contain"
+                  className="rounded-lg object-contain"
                 />
               </div>
               <p className="text-center text-lg font-bold text-white">
                 {client.name}
               </p>
+              <Badge
+                className="absolute right-2 top-2 px-4 py-1 text-white"
+                style={{
+                  backgroundColor: client.isOpen ? "green" : "red",
+                }}
+              >
+                {client.isOpen ? "Aberto" : "Fechado"}
+              </Badge>
             </CardContent>
           </Card>
         </Link>

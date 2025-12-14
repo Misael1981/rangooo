@@ -15,6 +15,7 @@ export default async function Home() {
       avatarImageUrl: true,
       brandColors: true,
       category: true,
+      isOpen: true,
     },
     orderBy: { name: "asc" },
   });
