@@ -1,57 +1,33 @@
 import HeaderInfosPage from "@/components/HeaderInfosPage";
-import { Separator } from "@/components/ui/separator";
+import { db } from "@/lib/prisma";
+import BusinessHoursSection from "./components/BusinessHoursSection";
+import QrCode from "@/components/QrCode";
+import formatBusinessHours from "@/helpers/format-business-hours";
 
-const schedules = [
-  {
-    day: "Domingo",
-    hours: "17:50 - 22:50",
-  },
-  {
-    day: "Segunda-feira",
-    hours: "fechado",
-  },
-  {
-    day: "Terça-feira",
-    hours: "fechado",
-  },
-  {
-    day: "Quarta-feira",
-    hours: "17:50 - 22:50",
-  },
-  {
-    day: "Quinta-feira",
-    hours: "17:50 - 22:50",
-  },
-  {
-    day: "Sexta-feira",
-    hours: "17:50 - 22:50",
-  },
-  {
-    day: "Sábado",
-    hours: "17:50 - 22:50",
-  },
-];
+export default async function HorariosPage({ searchParams }) {
+  const { slug } = await searchParams;
 
-// const hours = await db.businessHours.findMany({
-//   where: { restaurantId },
-//   orderBy: { displayOrder: "asc" },
-// });
+  const restaurant = await db.restaurant.findUnique({
+    where: { slug },
+    include: { businessHours: true },
+  });
 
-export default function HorariosPage() {
+  const schedules = formatBusinessHours(restaurant?.businessHours ?? []);
+
   return (
-    <div className="w-full">
-      <HeaderInfosPage title="Horários" />
-      <section className="p-4">
-        {schedules.map((schedule) => (
-          <div key={schedule.day}>
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-bold">{schedule.day}</p>
-              <p className="text-lg">{schedule.hours}</p>
-            </div>
-            <Separator className="my-4 bg-gray-300" />
-          </div>
-        ))}
-      </section>
+    <div className="relative min-h-screen bg-white sm:py-6">
+      <div className="fixed bottom-8 left-8 hidden lg:block">
+        <QrCode />
+      </div>
+
+      <div className="mx-auto max-w-xl shadow-all-sides">
+        <HeaderInfosPage title="Horários" />
+        <BusinessHoursSection businessHours={schedules} />
+      </div>
+
+      <div className="fixed bottom-8 right-8 hidden lg:block">
+        <QrCode />
+      </div>
     </div>
   );
 }
