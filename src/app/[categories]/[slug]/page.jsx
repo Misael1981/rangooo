@@ -49,5 +49,3 @@ export default async function EstabelecimentoPage({ params }) {
     </div>
   );
 }
-
-// <AppUI category={categories} establishment={establishment} />

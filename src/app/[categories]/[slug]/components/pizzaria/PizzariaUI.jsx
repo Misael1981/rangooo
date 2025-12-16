@@ -27,7 +27,7 @@ const PizzariaUI = ({ establishment }) => {
   const segment = enumCategoryToRoute(establishment.category);
 
   return (
-    <div className="mx-auto flex min-h-[90vh] max-w-xl flex-col items-center justify-center gap-4 rounded-lg bg-yellow-50 shadow-all-sides">
+    <div className="mx-auto flex min-h-svh max-w-xl flex-col items-center justify-center gap-4 rounded-lg bg-yellow-50 shadow-all-sides sm:min-h-[90vh]">
       <div className="flex flex-col items-center justify-center space-y-2 pt-10">
         <LogoImage establishment={establishment} />
         <h1 className="text-3xl font-bold text-[--brand-primary]">
