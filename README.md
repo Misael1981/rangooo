@@ -30,3 +30,9 @@ https://rangooo.vercel.app/onboarding?token=dcc3f4bf-93b9-49c1-a64b-56dfea2a0313
 categoria do produto nome do produto Quantidade de produto (total)
 
 Total de pedidos valor
+
+sueliaparecidagoncalvesdossant@gmail.com
+
+e49b9f80-2dcb-4d7d-b8c0-4fe076cbef8a
+
+sueli aparecida gonçalves dos santos

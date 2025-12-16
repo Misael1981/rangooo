@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 const roleEstablishment = [
@@ -30,6 +31,7 @@ const roleTranslations = {
 };
 
 const establishmentOwnerSchema = z.object({
+  id: z.string().uuid("ID de usuário inválido."),
   name: z.string().min(2, "Nome obrigatório."),
   email: z.string().email("Email inválido."),
   phone: z.string().min(10, "Número de telefone inválido."),
@@ -41,22 +43,45 @@ const EstablishmentOwnerData = ({ data }) => {
     resolver: zodResolver(establishmentOwnerSchema),
     mode: "onChange",
     defaultValues: {
+      id: data?.id || "",
       name: data?.name || "",
       email: data?.email || "",
       phone: data?.phone || "",
+      role: data?.role || "RESTAURANT_OWNER",
     },
   });
 
   useEffect(() => {
     form.reset({
+      id: data?.id || "",
       name: data?.name || "",
       email: data?.email || "",
       phone: data?.phone || "",
+      role: data?.role || "RESTAURANT_OWNER",
     });
   }, [data, form]);
 
-  const onSubmit = (values) => {
-    console.log(values);
+  const onSubmit = async (values) => {
+    try {
+      const response = await fetch("/api/admin/users", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error("Falha ao atualizar o usuário.");
+      }
+
+      const updatedUser = await response.json();
+      console.log("Usuário atualizado com sucesso:", updatedUser);
+      toast.success("Alterações salvas com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar alterações:", error);
+      toast.error(`Erro: ${error.message}`);
+    }
   };
 
   return (

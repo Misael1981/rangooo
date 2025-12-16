@@ -1,6 +1,7 @@
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getIO } from "@/lib/socket";
 
 const ALLOWED = [
   "PENDING",
@@ -44,8 +45,37 @@ export async function PATCH(request) {
     const updated = await db.order.update({
       where: { id },
       data: { status },
-      select: { id: true, status: true, updatedAt: true },
+      select: {
+        id: true,
+        status: true,
+        totalAmount: true,
+        createdAt: true,
+        restaurantId: true,
+        items: {
+          select: {
+            quantity: true,
+            priceAtOrder: true,
+            product: { select: { name: true } },
+          },
+        },
+      },
     });
+
+    if (status === "CONFIRMED") {
+      const io = getIO();
+
+      io.to(updated.restaurantId).emit("new_order", {
+        id: updated.id,
+        total: updated.totalAmount,
+        itens: updated.items.map((item) => ({
+          qtd: item.quantity,
+          nome: item.product.name,
+          preco: item.priceAtOrder,
+        })),
+      });
+
+      console.log("🖨️ Pedido enviado para impressão:", updated.id);
+    }
 
     return Response.json({ success: true, order: updated });
   } catch (err) {

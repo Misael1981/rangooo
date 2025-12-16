@@ -49,11 +49,11 @@ const PrintButton = ({ restaurantId }) => {
       socket.join(restaurantId);
 
       // LOG DE TESTE AQUI
-      socket.on("print_test", (data) => {
-        console.log("📩 RECEBI 'print_test' DO BROWSER!"); // <--- Se esse log NÃO aparecer no terminal do VS Code (Next.js), o erro é no BOTÃO.
-        console.log("📤 REPASSANDO PARA A SALA:", restaurantId);
-
-        io.to(restaurantId).emit("print_test", data);
+      socket.on("connection", (socket) => {
+        const { restaurantId } = socket.handshake.query;
+        if (restaurantId) {
+          socket.join(restaurantId);
+        }
       });
     });
 
