@@ -22,3 +22,11 @@ Mano IA, essas duas, eu vou pedir pra vc fazer pra mim, eu não sei msm!!! Eu go
 
 Boas novas!!!! Seu pedido de cadastro na plataforma Rangooo foi realizado com sucesso! Esse é o link para você criar sua página e ter uma nova experiência em gestão de vendas! Vamos lá?!
 https://rangooo.vercel.app/onboarding?token=dcc3f4bf-93b9-49c1-a64b-56dfea2a0313
+
+(método de consumo 1) quantidade de pedidos total
+(método de consumo 2) quantidade de pedidos total
+(método de consumo 3) quantidade de pedidos total
+
+categoria do produto nome do produto Quantidade de produto (total)
+
+Total de pedidos valor

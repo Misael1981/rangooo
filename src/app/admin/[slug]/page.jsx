@@ -7,6 +7,8 @@ import StatsCards from "./components/StatsCards";
 import { notFound, redirect } from "next/navigation";
 import PrintButton from "./components/PrintButton";
 import ConsumptionAndPaymentMethodsForm from "@/components/ConsumptionAndPaymentMethodsForm";
+import DailySalesSummary from "./components/DailySalesSummary";
+import { startOfDay, endOfDay } from "date-fns";
 
 export default async function AdminPage({ params }) {
   const p = await params;
@@ -23,6 +25,10 @@ export default async function AdminPage({ params }) {
   const restaurantSlug = p.slug;
 
   const isAdmin = userRole === "ADMIN";
+
+  // CORREÇÃO AQUI: Chame as funções!
+  const startOfToday = startOfDay(new Date());
+  const endOfToday = endOfDay(new Date());
 
   const restaurant = await db.restaurant.findUnique({
     where: {
@@ -44,9 +50,40 @@ export default async function AdminPage({ params }) {
       name: true,
       avatarImageUrl: true,
       isOpen: true,
-      orders: true,
       paymentMethods: true,
       consumptionMethods: true,
+      orders: {
+        where: {
+          createdAt: {
+            gte: startOfToday,
+            lte: endOfToday,
+          },
+        },
+        select: {
+          id: true,
+          status: true,
+          totalAmount: true,
+          deliveryFee: true,
+          consumptionMethod: true,
+          createdAt: true,
+          items: {
+            select: {
+              quantity: true,
+              priceAtOrder: true,
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  price: true,
+                  menuCategory: {
+                    select: { name: true },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -54,12 +91,40 @@ export default async function AdminPage({ params }) {
   const paymentMethods = restaurant.paymentMethods;
   const consumptionMethods = restaurant.consumptionMethods;
 
+  console.log("orders:", orders);
+
   if (!restaurant) {
     console.log(
       `[AUTH FAIL] Usuário ${userId} (${userRole}) tentou acessar slug ${restaurantSlug}.`,
     );
     notFound();
   }
+
+  const serializedOrders =
+    restaurant?.orders?.map((order) => ({
+      ...order,
+      totalAmount: order.totalAmount?.toNumber() || 0,
+      deliveryFee: order.deliveryFee?.toNumber() || 0,
+      items:
+        order.items?.map((item) => ({
+          ...item,
+          priceAtOrder: item.priceAtOrder?.toNumber() || 0,
+          product: {
+            ...item.product,
+            price: item.product?.price?.toNumber() || 0,
+          },
+        })) || [],
+    })) || [];
+
+  const serializedRestaurant = {
+    ...restaurant,
+    orders: serializedOrders,
+    paymentMethods:
+      restaurant?.paymentMethods?.map((pm) => ({
+        ...pm,
+        // converter se tiver campos Decimal
+      })) || [],
+  };
 
   return (
     <div className="container mx-auto min-h-screen px-6 pb-8">
@@ -77,21 +142,25 @@ export default async function AdminPage({ params }) {
         />
       </header>
 
-      {/* Stats Cards */}
-      <StatsCards statsOrders={orders} />
-
-      {/* Métodos de Consumo e Pagamento */}
-      <ConsumptionAndPaymentMethodsForm
-        paymentMethods={paymentMethods}
-        consumptionMethods={consumptionMethods}
-        restaurantId={restaurant.id}
-      />
-
-      {/* Print Button */}
-      {/* <PrintButton restaurantId={restaurant.id} /> */}
-
-      {/* Daily Orders Chart */}
-      {/* <DailyOrdersChart /> */}
+      <div className="space-y-8">
+        {/* Stats Cards */}
+        <StatsCards statsOrders={orders} />
+        {/* Métodos de Consumo e Pagamento */}
+        <ConsumptionAndPaymentMethodsForm
+          paymentMethods={paymentMethods}
+          consumptionMethods={consumptionMethods}
+          restaurantId={restaurant.id}
+        />
+        {/* Daily Sales Summary */}
+        <DailySalesSummary
+          orders={serializedOrders}
+          restaurant={serializedRestaurant}
+        />
+        {/* Print Button */}
+        {/* <PrintButton restaurantId={restaurant.id} /> */}
+        {/* Daily Orders Chart */}
+        {/* <DailyOrdersChart /> */}
+      </div>
     </div>
   );
 }
