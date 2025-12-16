@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 import StatusOpenSwitch from "./components/StatusOpenSwitch";
 import StatsCards from "./components/StatsCards";
 import { notFound, redirect } from "next/navigation";
+import PrintButton from "./components/PrintButton";
+import ConsumptionAndPaymentMethodsForm from "@/components/ConsumptionAndPaymentMethodsForm";
 
 export default async function AdminPage({ params }) {
   const p = await params;
@@ -13,6 +15,8 @@ export default async function AdminPage({ params }) {
   if (!session?.user) {
     redirect("/api/auth/signin");
   }
+
+  // restante do código...
 
   const userId = session.user.id;
   const userRole = session.user.role;
@@ -40,8 +44,15 @@ export default async function AdminPage({ params }) {
       name: true,
       avatarImageUrl: true,
       isOpen: true,
+      orders: true,
+      paymentMethods: true,
+      consumptionMethods: true,
     },
   });
+
+  const orders = restaurant.orders;
+  const paymentMethods = restaurant.paymentMethods;
+  const consumptionMethods = restaurant.consumptionMethods;
 
   if (!restaurant) {
     console.log(
@@ -50,53 +61,8 @@ export default async function AdminPage({ params }) {
     notFound();
   }
 
-  // Dados mockados - depois substitui pela API real
-  const dashboardData = {
-    stats: {
-      totalRestaurants: 1247,
-      pendingApprovals: 23,
-      totalUsers: 8564,
-      activeToday: 342,
-    },
-    recentApplications: [
-      {
-        id: "1",
-        restaurantName: "Pizzaria do Zé",
-        ownerName: "José Silva",
-        email: "ze@pizzaria.com",
-        phone: "(11) 99999-9999",
-        city: "São Paulo",
-        state: "SP",
-        status: "PENDING",
-        createdAt: new Date(),
-      },
-      {
-        id: "2",
-        restaurantName: "Pizza Nostra",
-        ownerName: "Maria Santos",
-        email: "maria@pizzanostra.com",
-        phone: "(11) 98888-8888",
-        city: "Rio de Janeiro",
-        state: "RJ",
-        status: "PENDING",
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      },
-      {
-        id: "3",
-        restaurantName: "Forno da Pizza",
-        ownerName: "Carlos Oliveira",
-        email: "carlos@forno.com",
-        phone: "(11) 97777-7777",
-        city: "Belo Horizonte",
-        state: "MG",
-        status: "APPROVED",
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-      },
-    ],
-  };
-
   return (
-    <div className="container mx-auto min-h-screen px-6">
+    <div className="container mx-auto min-h-screen px-6 pb-8">
       <header className="mb-8 flex flex-wrap items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -112,7 +78,17 @@ export default async function AdminPage({ params }) {
       </header>
 
       {/* Stats Cards */}
-      <StatsCards statsOrders={dashboardData} />
+      <StatsCards statsOrders={orders} />
+
+      {/* Métodos de Consumo e Pagamento */}
+      <ConsumptionAndPaymentMethodsForm
+        paymentMethods={paymentMethods}
+        consumptionMethods={consumptionMethods}
+        restaurantId={restaurant.id}
+      />
+
+      {/* Print Button */}
+      {/* <PrintButton restaurantId={restaurant.id} /> */}
 
       {/* Daily Orders Chart */}
       {/* <DailyOrdersChart /> */}

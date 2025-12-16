@@ -307,12 +307,6 @@ const AboutEstablishment = () => {
           </FormItem>
         )}
       />
-
-      <div className="flex justify-end">
-        <Button className="bg-green-600 text-white hover:bg-green-700">
-          Salvar
-        </Button>
-      </div>
     </section>
   );
 };

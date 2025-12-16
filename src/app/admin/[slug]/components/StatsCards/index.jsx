@@ -2,6 +2,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Building, CircleFadingPlus, Clock } from "lucide-react";
 
 const StatsCards = ({ statsOrders }) => {
+  const totalOrders = statsOrders.length;
+  const pendingOrders = statsOrders.filter(
+    (order) => order.status === "PENDING",
+  ).length;
+  const deliveredOrders = statsOrders.filter(
+    (order) => order.status === "DELIVERED",
+  ).length;
+
   return (
     <section className="mb-8">
       <div className="flex flex-wrap items-center justify-around gap-6">
@@ -14,7 +22,7 @@ const StatsCards = ({ statsOrders }) => {
                   Total de Pedidos
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {statsOrders.stats.totalRestaurants}
+                  {totalOrders}
                 </p>
                 <p className="flex items-center gap-1 text-xs text-green-600">
                   Pedidos do Dia
@@ -36,7 +44,7 @@ const StatsCards = ({ statsOrders }) => {
                   Pedidos Pendentes
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {statsOrders.stats.pendingApprovals}
+                  {pendingOrders}
                 </p>
                 <p className="text-xs text-amber-600">Requer atenção</p>
               </div>
@@ -56,7 +64,7 @@ const StatsCards = ({ statsOrders }) => {
                   Pedidos Entregues
                 </p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {statsOrders.stats.totalUsers}
+                  {deliveredOrders}
                 </p>
                 <p className="flex items-center gap-1 text-xs text-green-600">
                   Pedidos já entregues
