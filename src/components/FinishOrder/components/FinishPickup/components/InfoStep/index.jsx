@@ -45,7 +45,7 @@ const InfoStep = ({ customerName, estimatedTime, onUpdate }) => {
       </div>
 
       {/* Tempo Estimado (Opcional) */}
-      {/* <div className="space-y-3">
+      <div className="space-y-3">
         <Label htmlFor="estimatedTime" className="flex items-center gap-2">
           <Clock className="h-4 w-4" />
           Tempo estimado para retirada
@@ -69,7 +69,7 @@ const InfoStep = ({ customerName, estimatedTime, onUpdate }) => {
         <p className="text-center text-xs text-muted-foreground">
           Tempo aproximado para preparo do pedido
         </p>
-      </div> */}
+      </div>
 
       {/* Informações importantes */}
       <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
