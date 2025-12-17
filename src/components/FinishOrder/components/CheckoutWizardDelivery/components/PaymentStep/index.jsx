@@ -19,7 +19,6 @@ const PaymentStep = ({
       <RadioGroup
         value={paymentMethod}
         onValueChange={(value) => onUpdate("paymentMethod", value)}
-        className=""
       >
         <div className="flex cursor-pointer items-center space-x-3 rounded-lg border p-2 hover:bg-accent/50">
           <RadioGroupItem value="pix" id="pix" />
