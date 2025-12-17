@@ -302,6 +302,7 @@ model RestaurantPaymentMethod {
 model MenuCategory {
   id                     String                  @id @default(uuid())
   name                   String
+  displayOrder           Int                     @default(0)
   restaurant             Restaurant              @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   restaurantId           String
   products               Product[]

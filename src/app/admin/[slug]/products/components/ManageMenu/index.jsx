@@ -13,6 +13,7 @@ import MenuTables from "../MenuTables";
 import SelectedCategoryHeader from "./components/SelectedCategoryHeader";
 import AddProductCard from "./components/AddProductCard";
 import ProductListCard from "./components/ProductListCard";
+import AdditionalIngredientsCard from "./components/AdditionalIngredientsCard";
 
 const ManageMenu = ({ products = [] }) => {
   // Categorias com contagem de produtos
@@ -138,6 +139,9 @@ const ManageMenu = ({ products = [] }) => {
                 handleViewModeChange={handleViewModeChange}
               />
             )}
+
+            {/* Card de Gerenciamento de Ingredientes Adicionais */}
+            <AdditionalIngredientsCard />
 
             {/* Adicionar Produto */}
             <AddProductCard
