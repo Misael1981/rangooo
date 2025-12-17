@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import {
   Card,
   CardContent,
@@ -14,44 +14,24 @@ import SelectedCategoryHeader from "./components/SelectedCategoryHeader";
 import AddProductCard from "./components/AddProductCard";
 import ProductListCard from "./components/ProductListCard";
 import AdditionalIngredientsCard from "./components/AdditionalIngredientsCard";
+import { createCategory, deleteCategory } from "@/app/actions/admin/categories";
+import { toast } from "sonner";
 
-const ManageMenu = ({ products = [] }) => {
-  // Categorias com contagem de produtos
-  const categories = useMemo(() => {
-    const categoryMap = new Map();
-    const productCountMap = new Map();
-
-    // Contar produtos por categoria
-    products?.forEach((p) => {
-      const categoryId = p?.menuCategory?.id;
-      if (categoryId) {
-        productCountMap.set(
-          categoryId,
-          (productCountMap.get(categoryId) || 0) + 1,
-        );
-      }
-    });
-
-    // Criar array de categorias
-    products?.forEach((p) => {
-      const category = p?.menuCategory;
-      if (category?.id && !categoryMap.has(category.id)) {
-        categoryMap.set(category.id, {
-          id: category.id,
-          name: category.name,
-          productCount: productCountMap.get(category.id) || 0,
-        });
-      }
-    });
-
-    return Array.from(categoryMap.values());
-  }, [products]);
-
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+const ManageMenu = ({ initialCategories = [], restaurantId }) => {
+  const [categories, setCategories] = useState(initialCategories);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    initialCategories[0]?.id,
+  );
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newProductName, setNewProductName] = useState("");
   const [newProductPrice, setNewProductPrice] = useState("");
   const [viewMode, setViewMode] = useState("list");
+  const [isPending, startTransition] = useTransition();
+  // Se você ainda precisar da lista plana de produtos filtrados:
+  const filteredProducts = useMemo(() => {
+    const selected = categories.find((c) => c.id === selectedCategoryId);
+    return selected?.products || [];
+  }, [categories, selectedCategoryId]);
 
   // Seleciona primeira categoria por padrão
   useEffect(() => {
@@ -60,21 +40,51 @@ const ManageMenu = ({ products = [] }) => {
     }
   }, [categories, selectedCategoryId]);
 
-  // Produtos filtrados pela categoria selecionada
-  const filteredProducts = useMemo(() => {
-    if (!selectedCategoryId) return [];
-    return (products || []).filter(
-      (p) => p?.menuCategory?.id === selectedCategoryId,
-    );
-  }, [products, selectedCategoryId]);
-
   // Handlers
+
+  // Adiciona nova categoria
   const handleAddCategory = () => {
-    if (newCategoryName.trim()) {
-      // Aqui você integraria com a API
-      console.log("Adicionar categoria:", newCategoryName);
-      setNewCategoryName("");
+    if (!newCategoryName.trim()) return;
+
+    // startTransition avisa ao React que isso é uma mudança de dados
+    startTransition(async () => {
+      const result = await createCategory({
+        name: newCategoryName,
+        restaurantId,
+      });
+
+      if (result.success) {
+        setNewCategoryName("");
+        toast.success("Categoria adicionada com sucesso!");
+      } else {
+        console.error(result.error);
+        toast.error("Erro ao adicionar categoria!");
+      }
+    });
+  };
+
+  const handleDeleteCategory = (categoryId) => {
+    if (
+      !confirm(
+        "Tem certeza? Todos os produtos desta categoria serão excluídos!",
+      )
+    ) {
+      return;
     }
+
+    startTransition(async () => {
+      const result = await deleteCategory(categoryId);
+
+      if (result.success) {
+        toast.success("Categoria excluída com sucesso!");
+        setCategories(categories.filter((c) => c.id !== categoryId));
+        if (selectedCategoryId === categoryId) {
+          setSelectedCategoryId(null);
+        }
+      } else {
+        toast.error(result.error);
+      }
+    });
   };
 
   const handleAddProduct = () => {
@@ -84,11 +94,6 @@ const ManageMenu = ({ products = [] }) => {
       setNewProductName("");
       setNewProductPrice("");
     }
-  };
-
-  const handleDeleteCategory = (categoryId) => {
-    // Aqui você integraria com a API
-    console.log("Deletar categoria:", categoryId);
   };
 
   const handleDeleteProduct = (productId) => {

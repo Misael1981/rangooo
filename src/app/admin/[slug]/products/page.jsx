@@ -5,29 +5,40 @@ export default async function ProductsPage({ params }) {
   const p = await params;
   const slug = p.slug;
 
-  const products = await db.product.findMany({
-    where: { restaurant: { slug } },
-    select: {
-      id: true,
-      name: true,
-      price: true,
-      menuCategory: {
-        select: { id: true, name: true, additionalIngredients: true },
-      },
-    },
-    orderBy: { name: "asc" },
-    take: 50,
-    skip: 0,
+  const restaurant = await db.restaurant.findUnique({
+    where: { slug },
+    select: { id: true },
   });
 
-  console.log(
-    "Produtos Adicionais:",
-    products[0].menuCategory.additionalIngredients,
-  );
-  // Transformar os Decimal em string/number antes de enviar
-  const serializedProducts = products.map((product) => ({
-    ...product,
-    price: product.price.toString(),
+  if (!restaurant) return <div>Restaurante não encontrado</div>;
+
+  const categories = await db.menuCategory.findMany({
+    where: { restaurant: { slug } },
+    include: {
+      _count: {
+        select: { products: true },
+      },
+      products: {
+        select: {
+          id: true,
+          name: true,
+          price: true,
+        },
+        orderBy: { name: "asc" },
+      },
+      additionalIngredients: true,
+    },
+    orderBy: { displayOrder: "asc" },
+  });
+
+  // Serializa os preços (Decimal para Number/String)
+  const serializedData = categories.map((category) => ({
+    ...category,
+    productCount: category._count.products,
+    products: category.products.map((p) => ({
+      ...p,
+      price: p.price.toString(),
+    })),
   }));
 
   return (
@@ -38,7 +49,10 @@ export default async function ProductsPage({ params }) {
           Crie e exclua produtos e tabelas para exibir no seu cardápio.
         </p>
       </header>
-      <ManageMenu products={serializedProducts} />
+      <ManageMenu
+        initialCategories={serializedData}
+        restaurantId={restaurant.id}
+      />
     </div>
   );
 }
