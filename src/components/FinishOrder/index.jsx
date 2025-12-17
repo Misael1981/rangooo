@@ -103,7 +103,7 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
     <>
       <Drawer open={isOpen} onOpenChange={onOpenChange}>
         <AnimationFadeIn>
-          <DrawerContent className="h-fit">
+          <DrawerContent className="flex max-h-[96vh] flex-col">
             <DrawerHeader className="p-2">
               <DrawerTitle className="text-2xl font-bold text-red-500">
                 Quase lá!
@@ -112,30 +112,31 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
                 Método de consumo: {consumptionMethod}
               </DrawerDescription>
             </DrawerHeader>
-
-            <section>
-              {consumptionMethod === "DELIVERY" && (
-                <FinishDelivery
-                  isLogged={isLogged}
-                  userData={user} // ✅ Passa os dados do usuário
-                  onStepChange={setIsFinalStep}
-                  externalSubmitTrigger={submitTrigger}
-                  onSubmit={handleSubmit}
-                />
-              )}
-              {consumptionMethod === "PICKUP" && (
-                <FinishPickup
-                  onSubmit={handleSubmit}
-                  onCancel={() => setIsFinalStep(false)}
-                />
-              )}
-              {consumptionMethod === "DINE_IN" && (
-                <FinishDineIn onSubmit={handleSubmit} />
-              )}
-            </section>
+            <div className="flex-1 overflow-y-auto px-1">
+              <section>
+                {consumptionMethod === "DELIVERY" && (
+                  <FinishDelivery
+                    isLogged={isLogged}
+                    userData={user} // ✅ Passa os dados do usuário
+                    onStepChange={setIsFinalStep}
+                    externalSubmitTrigger={submitTrigger}
+                    onSubmit={handleSubmit}
+                  />
+                )}
+                {consumptionMethod === "PICKUP" && (
+                  <FinishPickup
+                    onSubmit={handleSubmit}
+                    onCancel={() => setIsFinalStep(false)}
+                  />
+                )}
+                {consumptionMethod === "DINE_IN" && (
+                  <FinishDineIn onSubmit={handleSubmit} />
+                )}
+              </section>
+            </div>
 
             <AnimationFadeIn>
-              <DrawerFooter>
+              <DrawerFooter className="flex-none">
                 {isFinalStep && (
                   <div className="flex w-full flex-col gap-2">
                     <Button
