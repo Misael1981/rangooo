@@ -6,12 +6,12 @@ const { Store, User, Clock } = require("lucide-react");
 
 const InfoStep = ({ customerName, estimatedTime, onUpdate }) => {
   const timeOptions = [
-    { value: "10", label: "10 min" },
-    { value: "15", label: "15 min" },
     { value: "20", label: "20 min" },
     { value: "30", label: "30 min" },
     { value: "45", label: "45 min" },
     { value: "60", label: "1 hora" },
+    { value: "90", label: "90 min" },
+    { value: "120", label: "2 horas" },
   ];
 
   return (
@@ -67,7 +67,7 @@ const InfoStep = ({ customerName, estimatedTime, onUpdate }) => {
         </div>
 
         <p className="text-center text-xs text-muted-foreground">
-          Tempo aproximado para preparo do pedido
+          Tempo aproximado para você vim retirar o pedido
         </p>
       </div>
 

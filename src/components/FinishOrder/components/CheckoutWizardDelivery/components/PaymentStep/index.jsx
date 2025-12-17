@@ -12,7 +12,7 @@ const PaymentStep = ({
   onUpdate,
 }) => {
   return (
-    <div className="h-[300px] space-y-4 overflow-y-scroll">
+    <div className="space-y-4 overflow-y-scroll">
       <h3 className="text-lg font-semibold">Forma de pagamento</h3>
 
       <RadioGroup

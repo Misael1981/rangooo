@@ -5,16 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import CheckoutWizardDelivery from "../CheckoutWizardDelivery";
 
-const userAddress = {
-  street: "Rua das Flores",
-  number: "123",
-  complement: "Apto 101",
-  neighborhood: "Centro",
-  city: "São Paulo",
-  state: "SP",
-  zipCode: "01234-567",
-};
-
 const FinishDelivery = ({
   isLogged,
   onStepChange,
@@ -29,8 +19,7 @@ const FinishDelivery = ({
   };
 
   const handleCancel = () => {
-    // Voltar para a página anterior
-    console.log("Cancelar pedido");
+    setDialogOpen(false);
   };
 
   return (

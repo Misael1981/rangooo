@@ -149,7 +149,9 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
                     </Button>
 
                     <DrawerClose asChild>
-                      <Button variant="destructive">Cancelar</Button>
+                      <Button variant="destructive" onClick={handleCancel}>
+                        Cancelar
+                      </Button>
                     </DrawerClose>
                   </div>
                 )}
