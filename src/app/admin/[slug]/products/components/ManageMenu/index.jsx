@@ -146,7 +146,7 @@ const ManageMenu = ({ initialCategories = [], restaurantId }) => {
             )}
 
             {/* Card de Gerenciamento de Ingredientes Adicionais */}
-            <AdditionalIngredientsCard />
+            <AdditionalIngredientsCard selectedCategory={selectedCategory} />
 
             {/* Adicionar Produto */}
             <AddProductCard

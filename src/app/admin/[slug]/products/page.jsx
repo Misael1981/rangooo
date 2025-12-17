@@ -31,13 +31,17 @@ export default async function ProductsPage({ params }) {
     orderBy: { displayOrder: "asc" },
   });
 
-  // Serializa os preços (Decimal para Number/String)
-  const serializedData = categories.map((category) => ({
+  const serializedCategories = categories.map((category) => ({
     ...category,
-    productCount: category._count.products,
+    // Limpa os decimais dos produtos
     products: category.products.map((p) => ({
       ...p,
-      price: p.price.toString(),
+      price: Number(p.price), // Converte Decimal para Number
+    })),
+    // Limpa os decimais dos ingredientes adicionais
+    additionalIngredients: category.additionalIngredients.map((ing) => ({
+      ...ing,
+      price: Number(ing.price),
     })),
   }));
 
@@ -50,7 +54,7 @@ export default async function ProductsPage({ params }) {
         </p>
       </header>
       <ManageMenu
-        initialCategories={serializedData}
+        initialCategories={serializedCategories}
         restaurantId={restaurant.id}
       />
     </div>
