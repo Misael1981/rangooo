@@ -11,13 +11,19 @@ export default async function ProductsPage({ params }) {
       id: true,
       name: true,
       price: true,
-      menuCategory: { select: { id: true, name: true } },
+      menuCategory: {
+        select: { id: true, name: true, additionalIngredients: true },
+      },
     },
     orderBy: { name: "asc" },
     take: 50,
     skip: 0,
   });
 
+  console.log(
+    "Produtos Adicionais:",
+    products[0].menuCategory.additionalIngredients,
+  );
   // Transformar os Decimal em string/number antes de enviar
   const serializedProducts = products.map((product) => ({
     ...product,
