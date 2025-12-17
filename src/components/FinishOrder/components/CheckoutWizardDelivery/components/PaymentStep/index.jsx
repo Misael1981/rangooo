@@ -13,7 +13,7 @@ const PaymentStep = ({
 }) => {
   // overflow-y-scroll min-h-[300px]
   return (
-    <div className="space-y-4">
+    <div className="pb-10">
       <h3 className="text-lg font-semibold">Forma de pagamento</h3>
 
       <RadioGroup
@@ -84,6 +84,7 @@ const PaymentStep = ({
                 id="changeAmount"
                 type="number"
                 placeholder="Ex: 50.00"
+                className="scroll-m-20"
                 value={changeAmount}
                 onChange={(e) => onUpdate("changeAmount", e.target.value)}
               />
