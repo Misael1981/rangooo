@@ -11,8 +11,9 @@ const PaymentStep = ({
   changeAmount,
   onUpdate,
 }) => {
+  // overflow-y-scroll min-h-[300px]
   return (
-    <div className="space-y-4 overflow-y-scroll">
+    <div className="space-y-4">
       <h3 className="text-lg font-semibold">Forma de pagamento</h3>
 
       <RadioGroup
