@@ -43,7 +43,7 @@ export const createOrder = async (input) => {
   });
 
   // 3. Cria o pedido no banco
-  return await db.order.create({
+  const order = await db.order.create({
     data: {
       userId: user.id,
       restaurantId: restaurant.id,
@@ -55,4 +55,10 @@ export const createOrder = async (input) => {
       items: { create: itemsData },
     },
   });
+
+  return {
+    ...order,
+    totalAmount: Number(order.totalAmount),
+    deliveryFee: Number(order.deliveryFee),
+  };
 };
