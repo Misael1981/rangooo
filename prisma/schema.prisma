@@ -367,7 +367,8 @@ model Order {
   deliveryFee       Decimal           @db.Decimal(6, 2) // Valor do frete
   status            OrderStatus       @default(PENDING) // Status do pedido
   consumptionMethod ConsumptionMethod @default(DELIVERY) // Método de consumo (delivery ou pickup)
-
+  customName   String?
+  extras       String?
   // Local de Entrega (pode ser diferente do endereço do User)
   deliveryAddress Json? // Endereço de entrega atual do pedido
 
@@ -389,7 +390,8 @@ model OrderItem {
   orderId   String
   productId String
   quantity  Int
-
+  customName   String?
+  extras       String?
   // Preço do item no momento da compra (para histórico)
   priceAtOrder Decimal @db.Decimal(6, 2)
   

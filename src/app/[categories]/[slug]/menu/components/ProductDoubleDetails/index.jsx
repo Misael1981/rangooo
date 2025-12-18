@@ -40,7 +40,8 @@ const ProductDoubleDetails = ({
     : product;
 
   const handleAddToCart = () => {
-    addToCart(displayProduct, quantity);
+    addToCart(displayProduct, quantity, extras);
+    openCart();
   };
 
   return (

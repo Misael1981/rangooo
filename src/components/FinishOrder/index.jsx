@@ -72,7 +72,9 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
         products: products.map((product) => ({
           productId: product.productId ?? product.id,
           quantity: product.quantity,
-          extras: product.extras,
+          extras: product.extras, // O JSON de extras
+          name: product.name, // 👈 ADICIONE ISSO (O nome composto)
+          price: product.price, // 👈 ADICIONE ISSO (O preço unitário/meio a meio)
         })),
         paymentMethod: formData.paymentMethod,
       });
@@ -117,7 +119,7 @@ const FinishOrder = ({ isOpen, onOpenChange, onOrderSuccess }) => {
                 {consumptionMethod === "DELIVERY" && (
                   <FinishDelivery
                     isLogged={isLogged}
-                    userData={user} // ✅ Passa os dados do usuário
+                    userData={user}
                     onStepChange={setIsFinalStep}
                     externalSubmitTrigger={submitTrigger}
                     onSubmit={handleSubmit}

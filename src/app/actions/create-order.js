@@ -3,70 +3,56 @@
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
 
 export const createOrder = async (input) => {
-  if (!input?.slug) throw new Error("Missing restaurant slug");
   const session = await getServerSession(authOptions);
   if (!session?.user) throw new Error("Not authenticated");
-  let user = null;
-  if (session.user.id) {
-    user = await db.user.findUnique({
-      where: { id: session.user.id },
-      select: { id: true, name: true, phone: true, address: true },
-    });
-  }
-  if (!user && session.user.email) {
-    user = await db.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, name: true, phone: true, address: true },
-    });
-  }
 
-  const restaurant = await db.restaurant.findUnique({
-    where: { slug: input.slug },
-    select: { id: true },
+  // 1. Busca Usuário e Restaurante em paralelo (ganho de performance)
+  const [user, restaurant] = await Promise.all([
+    db.user.findFirst({
+      where: { OR: [{ id: session.user.id }, { email: session.user.email }] },
+    }),
+    db.restaurant.findUnique({
+      where: { slug: input.slug },
+      select: { id: true },
+    }),
+  ]);
+
+  if (!user || !restaurant) throw new Error("User or restaurant not found");
+
+  let totalAmount = 0;
+
+  // 2. Processa itens e calcula o total em um único loop
+  const itemsData = input.products.map((p) => {
+    const qty = Math.max(1, Number(p.quantity || 1));
+    const basePrice = Number(p.price || 0);
+    const extrasPrice =
+      p.extras?.reduce((acc, e) => acc + Number(e.price || 0), 0) || 0;
+
+    // Soma ao total acumulado da ordem
+    totalAmount += (basePrice + extrasPrice) * qty;
+
+    return {
+      productId: p.productId ?? p.id,
+      quantity: qty,
+      priceAtOrder: basePrice,
+      customName: p.name,
+      extras: p.extras ? JSON.stringify(p.extras) : null,
+    };
   });
-  if (!user || !restaurant) {
-    throw new Error("User or restaurant not found");
-  }
-  const productIds = Array.isArray(input.products)
-    ? input.products.map((p) => p.productId ?? p.id).filter(Boolean)
-    : [];
-  if (productIds.length === 0) {
-    throw new Error("No valid products to create order");
-  }
-  const productsRows = await db.product.findMany({
-    where: { id: { in: productIds } },
-    select: { id: true, price: true },
-  });
-  const priceMap = Object.fromEntries(
-    productsRows.map((r) => [r.id, Number(r.price)]),
-  );
-  const itemsData = input.products
-    .map((p) => {
-      const pid = p.productId ?? p.id;
-      const price = priceMap[pid];
-      const qty = Math.max(1, Number(p.quantity ?? 1));
-      if (!pid || price === undefined) return null;
-      return { productId: pid, quantity: qty, priceAtOrder: price };
-    })
-    .filter(Boolean);
-  const total = itemsData.reduce(
-    (acc, it) => acc + Number(it.priceAtOrder) * it.quantity,
-    0,
-  );
-  await db.order.create({
+
+  // 3. Cria o pedido no banco
+  return await db.order.create({
     data: {
       userId: user.id,
+      restaurantId: restaurant.id,
       status: "PENDING",
       consumptionMethod: input.consumptionMethod,
       deliveryAddress: input.deliveryAddress ?? null,
-      restaurantId: restaurant.id,
-      items: { create: itemsData },
-      totalAmount: total,
       deliveryFee: input.deliveryFee ?? 0,
+      totalAmount,
+      items: { create: itemsData },
     },
   });
-  //redirect("/orders");
 };

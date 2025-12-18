@@ -3,8 +3,24 @@ import IngredientManager from "@/components/IngredientManager";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PiChefHatLight } from "react-icons/pi";
 
-const AboutProducts = ({ product, secondProduct, additionalIngredients, onExtrasChange }) => {
+const AboutProducts = ({
+  product,
+  secondProduct,
+  additionalIngredients,
+  onExtrasChange,
+}) => {
   const [extrasSelected, setExtrasSelected] = useState([]);
+  const [extras1, setExtras1] = useState([]);
+  const [extras2, setExtras2] = useState([]);
+
+  const updateAllExtras = (newExtras1, newExtras2) => {
+    const combined = [
+      ...newExtras1.map((item) => ({ ...item, half: "1ª Metade" })),
+      ...newExtras2.map((item) => ({ ...item, half: "2ª Metade" })),
+    ];
+    if (typeof onExtrasChange === "function") onExtrasChange(combined);
+  };
+
   return (
     <ScrollArea className="flex h-[350px] flex-col gap-4 bg-white pb-8">
       <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
@@ -26,10 +42,10 @@ const AboutProducts = ({ product, secondProduct, additionalIngredients, onExtras
             <IngredientManager
               ingredients={additionalIngredients}
               title="Adicionar Ingrediente"
-              selected={extrasSelected}
+              selected={extras1}
               onChange={(items) => {
-                setExtrasSelected(items);
-                if (typeof onExtrasChange === "function") onExtrasChange(items);
+                setExtras1(items);
+                updateAllExtras(items, extras2);
               }}
             />
             <IngredientManager
@@ -54,6 +70,11 @@ const AboutProducts = ({ product, secondProduct, additionalIngredients, onExtras
             <IngredientManager
               ingredients={additionalIngredients}
               title="Adicionar Ingrediente"
+              selected={extras2}
+              onChange={(items) => {
+                setExtras2(items);
+                updateAllExtras(extras1, items);
+              }}
             />
             <IngredientManager
               ingredients={

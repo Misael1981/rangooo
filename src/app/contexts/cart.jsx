@@ -21,13 +21,23 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product, quantity = 1, extras = []) => {
     setProducts((prevProducts) => {
+      const compositeKey = product.composite
+        ? product.composite
+            .map((p) => p.id)
+            .sort()
+            .join("-")
+        : product.id;
+
       const extrasKey = JSON.stringify(
         (Array.isArray(extras) ? extras : [])
           .map((e) => e?.id ?? e?.name ?? String(e))
           .sort(),
       );
-      const lineId = `${product.id}:${extrasKey}`;
+
+      const lineId = `${compositeKey}:${extrasKey}`;
+
       const exists = prevProducts.some((item) => item.lineId === lineId);
+
       if (exists) {
         return prevProducts.map((item) =>
           item.lineId === lineId
@@ -35,6 +45,7 @@ export const CartProvider = ({ children }) => {
             : item,
         );
       }
+
       return [...prevProducts, { ...product, quantity, extras, lineId }];
     });
   };
