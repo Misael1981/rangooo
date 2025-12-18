@@ -124,6 +124,7 @@ const AdditionalIngredientsCard = ({ selectedCategory }) => {
             </div>
           </div>
         </div>
+
         <div className="flex justify-center">
           <Button
             variant="outline"

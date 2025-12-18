@@ -11,7 +11,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import MenuTables from "../MenuTables";
 import SelectedCategoryHeader from "./components/SelectedCategoryHeader";
-import AddProductCard from "./components/AddProductCard";
 import ProductListCard from "./components/ProductListCard";
 import AdditionalIngredientsCard from "./components/AdditionalIngredientsCard";
 import { createCategory, deleteCategory } from "@/app/actions/admin/categories";
@@ -23,11 +22,9 @@ const ManageMenu = ({ initialCategories = [], restaurantId }) => {
     initialCategories[0]?.id,
   );
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [newProductName, setNewProductName] = useState("");
-  const [newProductPrice, setNewProductPrice] = useState("");
   const [viewMode, setViewMode] = useState("list");
   const [isPending, startTransition] = useTransition();
-  // Se você ainda precisar da lista plana de produtos filtrados:
+
   const filteredProducts = useMemo(() => {
     const selected = categories.find((c) => c.id === selectedCategoryId);
     return selected?.products || [];
@@ -87,19 +84,17 @@ const ManageMenu = ({ initialCategories = [], restaurantId }) => {
     });
   };
 
-  const handleAddProduct = () => {
-    if (newProductName.trim() && newProductPrice) {
-      // Aqui você integraria com a API
-      console.log("Adicionar produto:", newProductName, newProductPrice);
-      setNewProductName("");
-      setNewProductPrice("");
-    }
-  };
+  // const handleAddProduct = () => {
+  //   if (newProductName.trim() && newProductPrice) {
+  //     console.log("Adicionar produto:", newProductName, newProductPrice);
+  //     setNewProductName("");
+  //     setNewProductPrice("");
+  //   }
+  // };
 
-  const handleDeleteProduct = (productId) => {
-    // Aqui você integraria com a API
-    console.log("Deletar produto:", productId);
-  };
+  // const handleDeleteProduct = (productId) => {
+  //   console.log("Deletar produto:", productId);
+  // };
 
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
 
@@ -148,21 +143,14 @@ const ManageMenu = ({ initialCategories = [], restaurantId }) => {
             {/* Card de Gerenciamento de Ingredientes Adicionais */}
             <AdditionalIngredientsCard selectedCategory={selectedCategory} />
 
-            {/* Adicionar Produto */}
-            <AddProductCard
-              newProductName={newProductName}
-              setNewProductName={setNewProductName}
-              newProductPrice={newProductPrice}
-              setNewProductPrice={setNewProductPrice}
-              handleAddProduct={handleAddProduct}
-            />
-
             {/* Lista de Produtos */}
-            <ProductListCard
-              viewMode={viewMode}
-              filteredProducts={filteredProducts}
-              handleDeleteProduct={handleDeleteProduct}
-            />
+            {selectedCategory && (
+              <ProductListCard
+                selectedCategory={selectedCategory}
+                viewMode={viewMode}
+                filteredProducts={filteredProducts}
+              />
+            )}
           </div>
         </div>
       </div>
