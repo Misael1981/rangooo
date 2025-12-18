@@ -34,30 +34,17 @@ const PrintButton = ({ restaurantId }) => {
     }
 
     const pedidoFake = {
-      id: Math.floor(Math.random() * 1000),
+      id: "TESTE-" + Math.floor(Math.random() * 1000),
       cliente_nome: "Mano IA Simulator",
-      total: "99,90",
+      total: "99.90",
+      restaurantId: restaurantId, // Fundamental passar o ID aqui
       itens: [
-        { qtd: 2, nome: "Pizza de Código", preco: "50,00" },
-        { qtd: 1, nome: "Suco de Debug", preco: "10,00" },
+        { qtd: 2, nome: "Pizza de Código", preco: "50.00" },
+        { qtd: 1, nome: "Suco de Debug", preco: "10.00" },
       ],
     };
 
-    io.on("connection", (socket) => {
-      const { restaurantId } = socket.handshake.query;
-      console.log(`📡 Agente conectado na sala: ${restaurantId}`);
-      socket.join(restaurantId);
-
-      // LOG DE TESTE AQUI
-      socket.on("connection", (socket) => {
-        const { restaurantId } = socket.handshake.query;
-        if (restaurantId) {
-          socket.join(restaurantId);
-        }
-      });
-    });
-
-    // Agora o socketRef.current está acessível aqui!
+    // O CLIENTE APENAS EMITE
     socketRef.current.emit("print_test", pedidoFake);
     alert("Sinal enviado! Olha o terminal do seu Agente Node!");
   };

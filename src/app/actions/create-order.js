@@ -56,6 +56,20 @@ export const createOrder = async (input) => {
     },
   });
 
+  if (global.io) {
+    global.io.to(restaurant.id).emit("new_order", {
+      id: orderCreated.id.substring(0, 8),
+      cliente_nome: user.name,
+      total: totalAmount.toFixed(2),
+      restaurantId: restaurant.id,
+      itens: itemsData.map((it) => ({
+        qtd: it.quantity,
+        nome: it.customName,
+        preco: it.priceAtOrder,
+      })),
+    });
+  }
+
   return {
     ...order,
     totalAmount: Number(order.totalAmount),

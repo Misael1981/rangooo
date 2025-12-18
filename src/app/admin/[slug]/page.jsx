@@ -90,8 +90,6 @@ export default async function AdminPage({ params }) {
   const paymentMethods = restaurant.paymentMethods;
   const consumptionMethods = restaurant.consumptionMethods;
 
-  console.log("orders:", orders);
-
   if (!restaurant) {
     console.log(
       `[AUTH FAIL] Usuário ${userId} (${userRole}) tentou acessar slug ${restaurantSlug}.`,
@@ -145,17 +143,19 @@ export default async function AdminPage({ params }) {
 
       <div className="space-y-8">
         {/* Stats Cards */}
-        <StatsCards statsOrders={orders} />
+        {/* <StatsCards statsOrders={orders} /> */}
+
+        {/* Daily Sales Summary */}
+        <DailySalesSummary
+          orders={serializedOrders}
+          restaurant={serializedRestaurant}
+        />
+
         {/* Métodos de Consumo e Pagamento */}
         <ConsumptionAndPaymentMethodsForm
           paymentMethods={paymentMethods}
           consumptionMethods={consumptionMethods}
           restaurantId={restaurant.id}
-        />
-        {/* Daily Sales Summary */}
-        <DailySalesSummary
-          orders={serializedOrders}
-          restaurant={serializedRestaurant}
         />
         {/* Print Button */}
         <PrintButton restaurantId={restaurant.id} />
