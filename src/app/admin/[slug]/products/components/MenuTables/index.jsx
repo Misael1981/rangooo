@@ -52,7 +52,7 @@ const MenuTables = ({
               <div>
                 <p className="font-medium">{category.name}</p>
                 <p className="text-xs text-gray-500">
-                  {category.productCount} produto(s)
+                  {category.products?.length || 0} produto(s)
                 </p>
               </div>
             </div>

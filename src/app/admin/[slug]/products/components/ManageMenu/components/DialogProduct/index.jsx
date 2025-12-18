@@ -33,7 +33,13 @@ const productSchema = z.object({
   name: z.string().trim().min(2, "Nome é obrigatório"),
   price: z.coerce.number().min(0.01, "Preço inválido"),
   imageUrl: z.string().url().optional().or(z.literal("")),
-  description: z.string().trim().min(1, "A descrição ajuda a vender!"), // Obrigatória
+  description: z
+    .string()
+    .optional()
+    .transform((val) => val ?? "")
+    .refine((val) => val.length > 0, {
+      message: "A descrição ajuda a vender!",
+    }),
   ingredients: z.string().trim().optional().or(z.literal("")), // Opcional
   menuCategoryId: z.string().min(1, "Categoria não selecionada"),
 });
@@ -58,15 +64,19 @@ const DialogProduct = ({
       imageUrl: "",
       description: "",
       ingredients: "",
-      menuCategoryId: selectedCategoryId, // Já nasce vinculado!
+      menuCategoryId: "",
     },
   });
 
   useEffect(() => {
     if (product) {
       form.reset({
-        ...product,
-        price: Number(product.price).toString(),
+        name: product.name ?? "",
+        price: product.price ? Number(product.price).toString() : "",
+        imageUrl: product.imageUrl ?? "",
+        description: product.description ?? "",
+        ingredients: product.ingredients ?? "",
+        menuCategoryId: product.menuCategoryId ?? selectedCategoryId ?? "",
       });
     } else {
       form.reset({
@@ -75,9 +85,10 @@ const DialogProduct = ({
         imageUrl: "",
         description: "",
         ingredients: "",
+        menuCategoryId: selectedCategoryId ?? "",
       });
     }
-  }, [product, form, isOpen]);
+  }, [product, selectedCategoryId, isOpen]);
 
   useEffect(() => {
     if (selectedCategoryId) {
@@ -86,12 +97,17 @@ const DialogProduct = ({
   }, [selectedCategoryId, form]);
 
   const onSubmit = async (data) => {
+    if (!selectedCategory?.restaurantId) {
+      toast.error("Categoria inválida");
+      return;
+    }
+
     startTransition(async () => {
       const result = product
         ? await updateProduct(product.id, data)
         : await createProduct({
             ...data,
-            restaurantId: selectedCategory.restaurantId, // Verifique se esse campo existe aqui
+            restaurantId: selectedCategory.restaurantId,
           });
 
       if (result.success) {
@@ -144,6 +160,12 @@ const DialogProduct = ({
                       <FormMessage />
                     </FormItem>
                   )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="menuCategoryId"
+                  render={({ field }) => <input type="hidden" {...field} />}
                 />
 
                 <div className="grid grid-cols-2 gap-4">

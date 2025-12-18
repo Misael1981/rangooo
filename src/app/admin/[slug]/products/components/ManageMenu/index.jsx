@@ -84,18 +84,6 @@ const ManageMenu = ({ initialCategories = [], restaurantId }) => {
     });
   };
 
-  // const handleAddProduct = () => {
-  //   if (newProductName.trim() && newProductPrice) {
-  //     console.log("Adicionar produto:", newProductName, newProductPrice);
-  //     setNewProductName("");
-  //     setNewProductPrice("");
-  //   }
-  // };
-
-  // const handleDeleteProduct = (productId) => {
-  //   console.log("Deletar produto:", productId);
-  // };
-
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
 
   const handleViewModeChange = (mode) => {
@@ -118,13 +106,13 @@ const ManageMenu = ({ initialCategories = [], restaurantId }) => {
 
             <CardContent className="space-y-4">
               <MenuTables
-                categories={categories}
                 selectedCategoryId={selectedCategoryId}
                 setSelectedCategoryId={setSelectedCategoryId}
                 newCategoryName={newCategoryName}
                 setNewCategoryName={setNewCategoryName}
                 handleAddCategory={handleAddCategory}
                 handleDeleteCategory={handleDeleteCategory}
+                categories={categories}
               />
             </CardContent>
           </Card>

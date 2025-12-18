@@ -8,35 +8,43 @@ export async function createProduct(data) {
   const {
     name,
     price,
-    menuCategoryId,
-    restaurantId,
     description,
     ingredients,
     imageUrl,
+    menuCategoryId,
+    restaurantId,
   } = data;
+
+  const parsedIngredients = ingredients
+    ? ingredients
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : [];
 
   try {
     const product = await db.product.create({
       data: {
         name,
-        price, // Já vem como número do Zod
+        price,
         description,
-        ingredients,
+        ingredients: parsedIngredients,
         imageUrl,
         menuCategoryId,
         restaurantId,
       },
     });
 
-    revalidatePath("/admin/menu");
+    const safeProduct = {
+      ...product,
+      price: Number(product.price), // 👈 AQUI
+    };
 
-    return { success: true, data: product };
+    revalidatePath("/admin/menu");
+    return { success: true, data: safeProduct };
   } catch (error) {
     console.error("Erro ao criar produto:", error);
-    return {
-      success: false,
-      error: "Não foi possível cadastrar o produto. Verifique os dados.",
-    };
+    return { success: false, error: "Erro interno no banco de dados" };
   }
 }
 
@@ -57,9 +65,14 @@ export async function updateProduct(productId, data) {
       },
     });
 
+    const safeProduct = {
+      ...product,
+      price: Number(product.price), // 👈 AQUI
+    };
+
     revalidatePath("/admin/menu");
 
-    return { success: true, data: product };
+    return { success: true, data: safeProduct };
   } catch (error) {
     console.error("Erro ao atualizar produto:", error);
     return {
