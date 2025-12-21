@@ -34,40 +34,41 @@ wss.on("connection", async (ws, req) => {
     const existingConn = activeConnections.get(restaurant.id);
 
     if (isSaaS) {
-      console.log(`🚀 [${restaurant.name}] SaaS conectou apenas para envio`);
+      console.log(`🚀 [${restaurant.name}] SaaS conectou para envio.`);
 
       ws.on("message", async (data) => {
-        console.log("📥 Mensagem recebida do SaaS:", data.toString());
+        try {
+          console.log("📥 Mensagem recebida do SaaS:", data.toString());
+          const message = JSON.parse(data.toString());
 
-        const message = JSON.parse(data.toString());
+          if (message.type === "print_order") {
+            // Repassa usando a função que já temos lá embaixo
+            const enviado = sendToAgent(restaurant.id, message.order);
 
-        if (message.type === "print_order") {
-          // 1️⃣ ACK IMEDIATO PARA O SAAS
-          ws.send(
-            JSON.stringify({
-              type: "ack",
-              success: true,
-              printId: msg.order.printId,
-            }),
-          );
-
-          // 2️⃣ Repassa para o agente (se conectado)
-          const agentSocket = agents.get(restaurant.id);
-
-          if (agentSocket) {
-            agentSocket.send(
-              JSON.stringify({
-                type: "print_order",
-                order: msg.order,
-              }),
-            );
-          } else {
-            console.warn("⚠️ Nenhum agente conectado");
+            if (enviado) {
+              console.log(`🚀 Repassado com sucesso para o Agente.`);
+              // ENVIAR O ACK PARA A LIB NÃO DAR TIMEOUT
+              ws.send(
+                JSON.stringify({
+                  type: "print_ack",
+                  success: true,
+                  printId: message.order.printId || `print_${Date.now()}`,
+                }),
+              );
+            } else {
+              console.log(`⚠️ Falha ao repassar: Agente offline.`);
+              ws.send(
+                JSON.stringify({
+                  type: "print_error",
+                  reason: "Agente offline",
+                }),
+              );
+            }
           }
+        } catch (e) {
+          console.error("Erro no processamento SaaS:", e);
         }
       });
-
-      return;
     } else {
       console.log(`🎉 [${restaurant.name}] AGENTE LOCAL CONECTADO.`);
 
