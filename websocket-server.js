@@ -1,4 +1,4 @@
-// websocket-server.js - APENAS SERVIDOR
+// websocket-server.js
 require("dotenv").config();
 const WebSocket = require("ws");
 const { PrismaClient } = require("@prisma/client");
@@ -16,6 +16,10 @@ wss.on("connection", async (ws, req) => {
     const token = url.searchParams.get("token");
     const isSaaS = url.searchParams.get("saas") === "true";
 
+    console.log(
+      `🔗 Nova conexão: token=${token} saas=${isSaaS} from=${req.socket.remoteAddress}`,
+    );
+
     if (!token) {
       ws.close(1008, "Token não fornecido");
       return;
@@ -31,115 +35,94 @@ wss.on("connection", async (ws, req) => {
       return;
     }
 
-    const existingConn = activeConnections.get(restaurant.id);
-
     if (isSaaS) {
       console.log(`🚀 [${restaurant.name}] SaaS conectou para envio.`);
-
-      ws.on("message", async (data) => {
-        try {
-          console.log("📥 Mensagem recebida do SaaS:", data.toString());
-          const message = JSON.parse(data.toString());
-
-          if (message.type === "print_order") {
-            // Repassa usando a função que já temos lá embaixo
-            const enviado = sendToAgent(restaurant.id, message.order);
-
-            if (enviado) {
-              console.log(`🚀 Repassado com sucesso para o Agente.`);
-              // ENVIAR O ACK PARA A LIB NÃO DAR TIMEOUT
-              ws.send(
-                JSON.stringify({
-                  type: "print_ack",
-                  success: true,
-                  printId: message.order.printId || `print_${Date.now()}`,
-                }),
-              );
-            } else {
-              console.log(`⚠️ Falha ao repassar: Agente offline.`);
-              ws.send(
-                JSON.stringify({
-                  type: "print_error",
-                  reason: "Agente offline",
-                }),
-              );
-            }
-          }
-        } catch (e) {
-          console.error("Erro no processamento SaaS:", e);
-        }
-      });
+      // Aviso de handshake para facilitar debug
+      try {
+        ws.send(JSON.stringify({ type: "welcome", server: "rangooo-ws" }));
+      } catch (e) {
+        console.warn("⚠️ Falha ao enviar welcome:", e.message);
+      }
     } else {
       console.log(`🎉 [${restaurant.name}] AGENTE LOCAL CONECTADO.`);
-
       activeConnections.set(restaurant.id, {
         ws,
         restaurant,
         connectedAt: new Date(),
       });
 
-      if (!existingConn) {
-        await db.restaurant.update({
-          where: { id: restaurant.id },
-          data: { printerStatus: "connected", lastPrintedAt: null },
-        });
-        console.log(
-          `✅ Status do ${restaurant.name} atualizado para CONNECTED no DB.`,
-        );
-      }
+      await db.restaurant.update({
+        where: { id: restaurant.id },
+        data: { printerStatus: "connected", lastPrintedAt: null },
+      });
     }
 
-    // Envia boas-vindas
-    ws.send(
-      JSON.stringify({
-        type: "welcome",
-        restaurantId: restaurant.id,
-        restaurantName: restaurant.name,
-      }),
-    );
-
-    // Heartbeat
-    const heartbeat = setInterval(() => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: "ping", timestamp: Date.now() }));
-      }
-    }, 30000);
-
-    // OUVIR MENSAGENS QUE CHEGAM NO SERVIDOR
+    // ÚNICO OUVINTE DE MENSAGENS DO SERVIDOR
     ws.on("message", async (data) => {
-      console.log("🔥 CONTEÚDO BRUTO RECEBIDO NO SERVIDOR: ", data.toString());
+      const rawData = data.toString();
+      console.log(`🔥 [${restaurant.name}] RECEBIDO:`, rawData);
 
       try {
-        const message = JSON.parse(data.toString());
+        const message = JSON.parse(rawData);
 
-        // SE A MENSAGEM FOR PRINT_ORDER (Vinda do SaaS)
+        // SE FOR PEDIDO VINDO DO SAAS
         if (message.type === "print_order") {
-          console.log(
-            `🎯 SaaS solicitou repasse para o restaurante: ${restaurant.name}`,
-          );
+          console.log(`🎯 Repassando pedido para Agente Local...`);
 
-          const enviado = sendToAgent(restaurant.id, message.order);
+          try {
+            // aguardamos o resultado do envio ao agente (true = enviado com callback OK)
+            const enviado = await sendToAgent(restaurant.id, message.order);
+            console.log(`🔁 sendToAgent retornou: ${enviado}`);
 
-          if (enviado) {
-            console.log(`🚀 Repassado com sucesso para o Agente.`);
-          } else {
-            console.log(`⚠️ Falha ao repassar: Agente offline.`);
+            if (enviado) {
+              console.log(`🚀 Sucesso no repasse.`);
+              // RESPONDE AO SAAS PARA EVITAR TIMEOUT (enviamos ack apenas após callback de envio ao agente)
+              ws.send(
+                JSON.stringify({
+                  type: "print_ack",
+                  success: true,
+                  printId: message.order.printId,
+                }),
+              );
+            } else {
+              console.log(`⚠️ Falha: Agente offline ou erro no envio.`);
+              ws.send(
+                JSON.stringify({
+                  type: "print_error",
+                  reason: "Agente offline ou erro no envio",
+                }),
+              );
+            }
+          } catch (err) {
+            console.error("💥 Erro ao repassar para agente (promise):", err);
+            try {
+              ws.send(
+                JSON.stringify({ type: "print_error", reason: "server_error" }),
+              );
+            } catch (e) {
+              console.error("💥 Falha ao enviar print_error ao SaaS:", e);
+            }
           }
         }
 
         if (message.type === "pong") {
-          /* Heartbeat ok */
+          /* Heartbeat */
         }
       } catch (error) {
-        console.error(`💥 Erro ao processar mensagem:`, error);
+        console.error("💥 Erro ao processar JSON:", error);
       }
     });
+
+    // Heartbeat e Close
+    const heartbeat = setInterval(() => {
+      if (ws.readyState === WebSocket.OPEN)
+        ws.send(JSON.stringify({ type: "ping", timestamp: Date.now() }));
+    }, 30000);
 
     ws.on("close", async () => {
       console.log(`🔌 [${restaurant.name}] Desconectado`);
       clearInterval(heartbeat);
-      const current = activeConnections.get(restaurant.id);
-      if (current && current.ws === ws) {
+      if (!isSaaS) {
         activeConnections.delete(restaurant.id);
         await db.restaurant.update({
           where: { id: restaurant.id },
@@ -149,40 +132,62 @@ wss.on("connection", async (ws, req) => {
     });
   } catch (error) {
     console.error("💥 Erro conexão:", error);
-    ws.close(1011, "Erro interno");
   }
 });
 
-// FUNÇÃO DE REPASSE (Não mexer)
-function sendToAgent(restaurantId, orderData) {
-  const agentConnection = activeConnections.get(restaurantId);
-
-  if (!agentConnection || agentConnection.ws.readyState !== WebSocket.OPEN) {
+async function sendToAgent(restaurantId, orderData) {
+  const agentConn = activeConnections.get(restaurantId);
+  if (!agentConn) {
+    console.log(
+      `❌ sendToAgent: sem conexão ativa para restaurant ${restaurantId}. activeConnections.size=${activeConnections.size}`,
+    );
     return false;
   }
 
-  console.log(
-    "📡 Enviando para agente:",
-    restaurantId,
-    "Socket aberto:",
-    agentConnection?.ws.readyState,
-  );
-
-  const message = {
-    type: "print_order",
-    order: {
-      ...orderData,
-      printId: `print_${orderData.id}_${Date.now()}`,
-      requestedAt: new Date().toISOString(),
-    },
-  };
-
-  try {
-    agentConnection.ws.send(JSON.stringify(message));
-    return true;
-  } catch (error) {
+  if (agentConn.ws.readyState !== WebSocket.OPEN) {
+    console.log(`❌ sendToAgent: agente ws state=${agentConn.ws.readyState}`);
     return false;
   }
+
+  // Retornamos uma promise que resolve true somente se o envio ao agente for confirmado pela callback do ws.send
+  return new Promise((resolve) => {
+    let resolved = false;
+
+    // Timeout razoável para a callback do ws.send
+    const sendTimeout = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        console.error(
+          `⏱ sendToAgent: timeout ao enviar para agente ${restaurantId}`,
+        );
+        resolve(false);
+      }
+    }, 5000);
+
+    try {
+      agentConn.ws.send(
+        JSON.stringify({ type: "print_order", order: orderData }),
+        (err) => {
+          if (resolved) return;
+          resolved = true;
+          clearTimeout(sendTimeout);
+          if (err) {
+            console.error("❌ Erro ao enviar para agente:", err);
+            resolve(false);
+          } else {
+            console.log(
+              `📤 Pedido ${orderData.printId} encaminhado para agente ${restaurantId}`,
+            );
+            resolve(true);
+          }
+        },
+      );
+    } catch (e) {
+      if (resolved) return;
+      resolved = true;
+      clearTimeout(sendTimeout);
+      console.error("💥 Erro inesperado no sendToAgent:", e);
+      resolve(false);
+    }
+  });
 }
-
-module.exports = { sendToAgent };

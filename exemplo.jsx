@@ -43,11 +43,8 @@ export async function sendOrderToPrint(restaurantId, orderData) {
         reject(new Error("Timeout: servidor não respondeu"));
       }, 10000);
 
-      let sent = false;
-      // Função que efetivamente envia a mensagem, evita envios duplicados
-      function doSend() {
-        if (sent) return;
-        sent = true;
+      ws.on("open", () => {
+        console.log("🟢 Conectado ao servidor. Preparando envio...");
 
         const printMessage = JSON.stringify({
           type: "print_order",
@@ -57,10 +54,7 @@ export async function sendOrderToPrint(restaurantId, orderData) {
           },
         });
 
-        console.log("🟢 Conectado ao servidor. Preparando envio... (doSend)");
-        console.log("📤 Enviando payload:", printMessage);
-
-        // 1. Envia e loga se houve erro
+        // 1. Forçamos o envio
         ws.send(printMessage, (err) => {
           if (err) {
             console.error("❌ Erro fatal no envio do socket:", err);
@@ -69,35 +63,6 @@ export async function sendOrderToPrint(restaurantId, orderData) {
               "📤 Mensagem saiu da Lib. Aguardando confirmação do servidor...",
             );
           }
-        });
-      }
-
-      ws.on("open", () => {
-        // Caso o servidor demore para enviar 'welcome', enviamos após um curto fallback
-        const fallback = setTimeout(() => {
-          if (!sent) {
-            console.warn(
-              "⏳ fallback: servidor não enviou 'welcome' rapidamente, enviando de qualquer forma",
-            );
-            doSend();
-          }
-        }, 200);
-
-        // Se receber 'welcome', o handler de 'message' vai chamar doSend imediatamente
-        ws.once("message", (data) => {
-          try {
-            const msg = JSON.parse(data.toString());
-            if (msg.type === "welcome") {
-              console.log("📩 RESPOSTA DO SERVIDOR:", data.toString());
-              clearTimeout(fallback);
-              doSend();
-              return;
-            }
-          } catch (e) {
-            // ignora
-          }
-
-          // se for outra coisa, ainda chamamos doSend no fallback
         });
       });
 
