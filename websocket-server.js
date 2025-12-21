@@ -70,6 +70,29 @@ wss.on("connection", async (ws, req) => {
           console.log(`🎯 Repassando pedido para Agente Local...`);
 
           try {
+            // SNAPSHOT: log do estado atual de activeConnections antes de enviar
+            try {
+              const connKeys = Array.from(activeConnections.keys());
+              const snapshot = Array.from(activeConnections.entries()).map(
+                ([id, conn]) => ({
+                  id,
+                  name: conn.restaurant?.name,
+                  readyState:
+                    conn.ws && typeof conn.ws.readyState !== "undefined"
+                      ? conn.ws.readyState
+                      : null,
+                  connectedAt: conn.connectedAt,
+                }),
+              );
+              console.log("🔎 activeConnections snapshot:", {
+                size: activeConnections.size,
+                keys: connKeys,
+                snapshot,
+              });
+            } catch (snapErr) {
+              console.warn("⚠️ Falha ao gerar snapshot de conexões:", snapErr);
+            }
+
             // aguardamos o resultado do envio ao agente (true = enviado com callback OK)
             const enviado = await sendToAgent(restaurant.id, message.order);
             console.log(`🔁 sendToAgent retornou: ${enviado}`);
