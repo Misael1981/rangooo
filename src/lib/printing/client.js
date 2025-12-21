@@ -38,7 +38,12 @@ export async function sendOrderToPrint(
       `📤 Iniciando envio do pedido ${orderData.id} para ${restaurant.name}...`,
     );
 
-    const wsUrl = `ws://localhost:3001?token=${restaurant.printingToken}&saas=true`;
+    // O NEXT_PUBLIC_ garante que o navegador consiga ler a variável
+    const baseUrl =
+      process.env.NEXT_PUBLIC_SAAS_WS_URL || "ws://localhost:3001";
+
+    // Montando a URL com os parâmetros que você já tem
+    const wsUrl = `${baseUrl}?token=${restaurant.printingToken}&saas=true`;
 
     console.log(`🔁 sendOrderToPrint: tentativa ${attempt}`);
 
