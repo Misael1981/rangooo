@@ -1,7 +1,7 @@
 // PATCH /api/admin/methods
 
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 
@@ -64,7 +64,7 @@ export async function PATCH(request) {
     }
 
     // Iniciar transação para garantir consistência
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx) => {
       // 1. Remover métodos antigos
       await tx.consumptionMethod.deleteMany({
         where: { restaurantId },
@@ -149,11 +149,11 @@ export async function GET(request) {
     }
 
     const [consumptionMethods, paymentMethods] = await Promise.all([
-      prisma.consumptionMethod.findMany({
+      db.consumptionMethod.findMany({
         where: { restaurantId },
         select: { id: true, method: true, createdAt: true },
       }),
-      prisma.paymentMethod.findMany({
+      db.paymentMethod.findMany({
         where: { restaurantId },
         select: { id: true, method: true, createdAt: true },
       }),
