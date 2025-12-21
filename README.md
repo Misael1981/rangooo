@@ -36,3 +36,6 @@ sueliaparecidagoncalvesdossant@gmail.com
 e49b9f80-2dcb-4d7d-b8c0-4fe076cbef8a
 
 sueli aparecida gonçalves dos santos
+
+npx prisma generate
+npx prisma db push

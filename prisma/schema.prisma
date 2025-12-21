@@ -161,8 +161,15 @@ model Restaurant {
 
   // Paleta de cores da marca (array JSON de strings HEX/HSL)
   brandColors Json?
-
   isOpen Boolean @default(true) // Aberto ou Fechado
+
+  // Configuração de impressão
+  printingToken String?  @unique  // Token único para autenticação do agent
+  printerStatus String?  @default("disconnected")
+  lastPrintedAt DateTime?
+  agentVersion  String?
+  printerType   String?  // "xprinter", "bematech", etc
+  printerConfig Json?    // Configurações específicas {interface: "USB001", type: "EPSON"}
 
   // Relações
   owner                 User                   @relation(fields: [ownerId], references: [id], onDelete: Restrict)
@@ -361,16 +368,17 @@ model AdditionalIngredient {
 
 model Order {
   id                String            @id @default(uuid())
-  userId            String // Cliente que fez o pedido
-  restaurantId      String // Restaurante que recebeu o pedido
+  userId            String 
+  restaurantId      String
+  printId           String?           // Para o controle do WebSocket
+  orderNumber       Int?
   totalAmount       Decimal           @db.Decimal(10, 2) // Valor total do pedido (incluindo frete)
   deliveryFee       Decimal           @db.Decimal(6, 2) // Valor do frete
   status            OrderStatus       @default(PENDING) // Status do pedido
   consumptionMethod ConsumptionMethod @default(DELIVERY) // Método de consumo (delivery ou pickup)
-  customName   String?
-  extras       String?
-  // Local de Entrega (pode ser diferente do endereço do User)
-  deliveryAddress Json? // Endereço de entrega atual do pedido
+  customName        String?
+  extras            String?
+  deliveryAddress   Json? // Endereço de entrega atual do pedido
 
   // Relações
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)

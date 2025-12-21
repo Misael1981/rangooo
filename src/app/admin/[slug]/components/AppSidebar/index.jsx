@@ -11,7 +11,14 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import prisma from "@/lib/prisma";
-import { Home, Inbox, ShoppingBasket, Users, Warehouse } from "lucide-react";
+import {
+  Home,
+  Inbox,
+  Printer,
+  ShoppingBasket,
+  Users,
+  Warehouse,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -41,6 +48,11 @@ const AppSidebar = async ({ slug }) => {
       title: "Gerenciar Usuários",
       url: `/admin/${slug}/users`,
       icon: Users,
+    },
+    {
+      title: "Status de Impressão",
+      url: `/admin/${slug}/printing-status`,
+      icon: Printer,
     },
   ];
 

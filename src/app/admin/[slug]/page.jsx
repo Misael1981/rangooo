@@ -5,11 +5,9 @@ import { getServerSession } from "next-auth";
 import StatusOpenSwitch from "./components/StatusOpenSwitch";
 import StatsCards from "./components/StatsCards";
 import { notFound, redirect } from "next/navigation";
-import PrintButton from "./components/PrintButton";
 import ConsumptionAndPaymentMethodsForm from "@/components/ConsumptionAndPaymentMethodsForm";
 import DailySalesSummary from "./components/DailySalesSummary";
 import { startOfDay, endOfDay } from "date-fns";
-import SocketInitializer from "./components/SocketInitializer";
 
 export default async function AdminPage({ params }) {
   const p = await params;
@@ -125,8 +123,6 @@ export default async function AdminPage({ params }) {
 
   return (
     <div className="container mx-auto min-h-screen px-6 pb-8">
-      {/* SocketInitializer para garantir a conexão */}
-      <SocketInitializer />
       <header className="mb-8 flex flex-wrap items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -157,8 +153,7 @@ export default async function AdminPage({ params }) {
           consumptionMethods={consumptionMethods}
           restaurantId={restaurant.id}
         />
-        {/* Print Button */}
-        <PrintButton restaurantId={restaurant.id} />
+
         {/* Daily Orders Chart */}
         {/* <DailyOrdersChart /> */}
       </div>
