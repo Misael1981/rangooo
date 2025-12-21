@@ -158,59 +158,102 @@ wss.on("connection", async (ws, req) => {
   }
 });
 
-async function sendToAgent(restaurantId, orderData) {
-  const agentConn = activeConnections.get(restaurantId);
-  if (!agentConn) {
-    console.log(
-      `❌ sendToAgent: sem conexão ativa para restaurant ${restaurantId}. activeConnections.size=${activeConnections.size}`,
-    );
-    return false;
-  }
+async function sendToAgent(restaurantId, orderData, opts = {}) {
+  const attempts = opts.attempts ?? 3;
+  const delayMs = opts.delayMs ?? 200; // initial delay between retries
+  const backoff = opts.backoff ?? 2; // exponential multiplier
 
-  if (agentConn.ws.readyState !== WebSocket.OPEN) {
-    console.log(`❌ sendToAgent: agente ws state=${agentConn.ws.readyState}`);
-    return false;
-  }
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    const agentConn = activeConnections.get(restaurantId);
 
-  // Retornamos uma promise que resolve true somente se o envio ao agente for confirmado pela callback do ws.send
-  return new Promise((resolve) => {
-    let resolved = false;
+    if (!agentConn) {
+      console.log(
+        `❌ sendToAgent [attempt ${attempt}/${attempts}]: sem conexão ativa para restaurant ${restaurantId}. activeConnections.size=${activeConnections.size}`,
+      );
+      if (attempt < attempts) {
+        await new Promise((r) =>
+          setTimeout(r, delayMs * Math.pow(backoff, attempt - 1)),
+        );
+        continue;
+      }
+      return false;
+    }
 
-    // Timeout razoável para a callback do ws.send
-    const sendTimeout = setTimeout(() => {
-      if (!resolved) {
+    if (agentConn.ws.readyState !== WebSocket.OPEN) {
+      console.log(
+        `❌ sendToAgent [attempt ${attempt}/${attempts}]: agente ws state=${agentConn.ws.readyState}`,
+      );
+      if (attempt < attempts) {
+        await new Promise((r) =>
+          setTimeout(r, delayMs * Math.pow(backoff, attempt - 1)),
+        );
+        continue;
+      }
+      return false;
+    }
+
+    // Try to send and await the send callback (with a timeout)
+    const result = await new Promise((resolve) => {
+      let resolved = false;
+      const sendTimeout = setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          console.error(
+            `⏱ sendToAgent [attempt ${attempt}/${attempts}]: timeout ao enviar para agente ${restaurantId}`,
+          );
+          resolve(false);
+        }
+      }, 5000);
+
+      try {
+        agentConn.ws.send(
+          JSON.stringify({ type: "print_order", order: orderData }),
+          (err) => {
+            if (resolved) return;
+            resolved = true;
+            clearTimeout(sendTimeout);
+            if (err) {
+              console.error(
+                `❌ sendToAgent [attempt ${attempt}/${attempts}]: erro ao enviar para agente:`,
+                err,
+              );
+              resolve(false);
+            } else {
+              console.log(
+                `📤 Pedido ${orderData.printId} encaminhado para agente ${restaurantId} (attempt ${attempt}/${attempts})`,
+              );
+              resolve(true);
+            }
+          },
+        );
+      } catch (e) {
+        if (resolved) return;
         resolved = true;
+        clearTimeout(sendTimeout);
         console.error(
-          `⏱ sendToAgent: timeout ao enviar para agente ${restaurantId}`,
+          `💥 sendToAgent [attempt ${attempt}/${attempts}]: erro inesperado:`,
+          e,
         );
         resolve(false);
       }
-    }, 5000);
+    });
 
-    try {
-      agentConn.ws.send(
-        JSON.stringify({ type: "print_order", order: orderData }),
-        (err) => {
-          if (resolved) return;
-          resolved = true;
-          clearTimeout(sendTimeout);
-          if (err) {
-            console.error("❌ Erro ao enviar para agente:", err);
-            resolve(false);
-          } else {
-            console.log(
-              `📤 Pedido ${orderData.printId} encaminhado para agente ${restaurantId}`,
-            );
-            resolve(true);
-          }
-        },
+    if (result) return true;
+
+    // If not successful and we have more attempts, wait before retrying
+    if (attempt < attempts) {
+      console.log(
+        `🔁 Retentando envio ao agente (${attempt + 1}/${attempts}) depois de backoff`,
       );
-    } catch (e) {
-      if (resolved) return;
-      resolved = true;
-      clearTimeout(sendTimeout);
-      console.error("💥 Erro inesperado no sendToAgent:", e);
-      resolve(false);
+      await new Promise((r) =>
+        setTimeout(r, delayMs * Math.pow(backoff, attempt - 1)),
+      );
     }
-  });
+  }
+
+  // All attempts failed
+  console.error(
+    `❌ sendToAgent: todas as ${attempts} tentativas falharam para restaurant ${restaurantId}`,
+  );
+  return false;
 }

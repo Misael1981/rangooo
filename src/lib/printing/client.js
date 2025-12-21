@@ -7,7 +7,12 @@ if (typeof window === "undefined") {
   WebSocket = window.WebSocket;
 }
 
-export async function sendOrderToPrint(restaurantId, orderData) {
+export async function sendOrderToPrint(
+  restaurantId,
+  orderData,
+  attempt = 1,
+  printId = null,
+) {
   if (typeof window !== "undefined") {
     console.warn("⚠️ sendOrderToPrint chamado no cliente, ignorando");
     return null;
@@ -35,14 +40,31 @@ export async function sendOrderToPrint(restaurantId, orderData) {
 
     const wsUrl = `ws://localhost:3001?token=${restaurant.printingToken}&saas=true`;
 
+    console.log(`🔁 sendOrderToPrint: tentativa ${attempt}`);
+
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(wsUrl);
+      const maxAttempts = 3;
 
       const timeout = setTimeout(() => {
         ws.terminate();
+        if (attempt < maxAttempts) {
+          console.warn(
+            `🔁 Timeout na tentativa ${attempt}, tentando novamente...`,
+          );
+          return resolve(
+            sendOrderToPrint(
+              restaurantId,
+              orderData,
+              attempt + 1,
+              printId || `print_${orderData.id}_${Date.now()}`,
+            ),
+          );
+        }
         reject(new Error("Timeout: servidor não respondeu"));
       }, 10000);
 
+      if (!printId) printId = `print_${orderData.id}_${Date.now()}`;
       let sent = false;
       // Função que efetivamente envia a mensagem, evita envios duplicados
       function doSend() {
@@ -53,7 +75,7 @@ export async function sendOrderToPrint(restaurantId, orderData) {
           type: "print_order",
           order: {
             ...orderData,
-            printId: `print_${orderData.id}_${Date.now()}`,
+            printId,
           },
         });
 
@@ -64,6 +86,24 @@ export async function sendOrderToPrint(restaurantId, orderData) {
         ws.send(printMessage, (err) => {
           if (err) {
             console.error("❌ Erro fatal no envio do socket:", err);
+            if (!responded) {
+              responded = true;
+              clearTimeout(timeout);
+              if (attempt < maxAttempts) {
+                console.warn(
+                  `🔁 Erro no envio, tentando novamente... (tentativa ${attempt + 1}/${maxAttempts})`,
+                );
+                return resolve(
+                  sendOrderToPrint(
+                    restaurantId,
+                    orderData,
+                    attempt + 1,
+                    printId,
+                  ),
+                );
+              }
+              return reject(err);
+            }
           } else {
             console.log(
               "📤 Mensagem saiu da Lib. Aguardando confirmação do servidor...",
@@ -81,7 +121,7 @@ export async function sendOrderToPrint(restaurantId, orderData) {
             );
             doSend();
           }
-        }, 200);
+        }, 500);
 
         // Se receber 'welcome', o handler de 'message' vai chamar doSend imediatamente
         ws.once("message", (data) => {
@@ -136,6 +176,14 @@ export async function sendOrderToPrint(restaurantId, orderData) {
           responded = true;
           clearTimeout(timeout);
           console.error("❌ Erro WS:", err.message);
+          if (attempt < maxAttempts) {
+            console.warn(
+              `🔁 Erro na tentativa ${attempt}, tentando novamente...`,
+            );
+            return resolve(
+              sendOrderToPrint(restaurantId, orderData, attempt + 1, printId),
+            );
+          }
           reject(err);
         }
       });
@@ -145,6 +193,14 @@ export async function sendOrderToPrint(restaurantId, orderData) {
         if (!responded) {
           responded = true;
           clearTimeout(timeout);
+          if (attempt < maxAttempts) {
+            console.warn(
+              `🔁 Conexão fechada na tentativa ${attempt}, tentando novamente...`,
+            );
+            return resolve(
+              sendOrderToPrint(restaurantId, orderData, attempt + 1, printId),
+            );
+          }
           reject(
             new Error("Conexão encerrada antes de confirmação do servidor"),
           );
