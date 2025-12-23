@@ -49,6 +49,7 @@ export default async function AdminPage({ params }) {
       isOpen: true,
       paymentMethods: true,
       consumptionMethods: true,
+      printingToken: true,
       orders: {
         where: {
           createdAt: {
@@ -134,6 +135,7 @@ export default async function AdminPage({ params }) {
           initialIsOpen={restaurant.isOpen}
           restaurantId={restaurant.id}
           restaurantSlug={p.slug}
+          printingToken={printingToken}
         />
       </header>
 

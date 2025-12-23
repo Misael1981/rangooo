@@ -40,7 +40,8 @@ export async function sendOrderToPrint(
 
     // O NEXT_PUBLIC_ garante que o navegador consiga ler a variável
     const baseUrl =
-      process.env.NEXT_PUBLIC_SAAS_WS_URL || "ws://localhost:3001";
+      process.env.NEXT_PUBLIC_SAAS_WS_URL ||
+      "wss://rangooo-ws-server.onrender.com";
 
     // Montando a URL com os parâmetros que você já tem
     const wsUrl = `${baseUrl}?token=${restaurant.printingToken}&saas=true`;
