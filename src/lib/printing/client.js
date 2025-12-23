@@ -44,7 +44,7 @@ export async function sendOrderToPrint(
       "wss://rangooo-ws-server.onrender.com";
 
     // Montando a URL com os parâmetros que você já tem
-    const wsUrl = `${baseUrl}?token=${restaurant.printingToken}&saas=true`;
+    const wsUrl = `${baseUrl}?token=${restaurant.printingToken}&restaurantId=${restaurantId}&role=saas`;
 
     console.log(`🔁 sendOrderToPrint: tentativa ${attempt}`);
 
