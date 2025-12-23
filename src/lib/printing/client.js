@@ -82,11 +82,18 @@ export async function sendOrderToPrint(
           order: {
             ...orderData,
             printId,
+            restaurantId,
           },
         });
 
         console.log("🟢 Conectado ao servidor. Preparando envio... (doSend)");
         console.log("📤 Enviando payload:", printMessage);
+
+        console.log("📤 Enviando WS:", {
+          type: "print_order",
+          restaurantId,
+          printId,
+        });
 
         // 1. Envia e loga se houve erro
         ws.send(printMessage, (err) => {
