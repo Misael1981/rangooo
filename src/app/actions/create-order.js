@@ -81,45 +81,43 @@ export const createOrder = async (input) => {
   });
 
   // 2. Envio para impressão (fora da transação)
-  setTimeout(async () => {
-    try {
-      const printData = {
-        id: order.id,
-        number: `#${String(order.orderNumber).padStart(2, "0")}`,
-        customerName: order.user.name || "Cliente",
-        customerPhone: order.user.phone || "",
-        items: order.items.map((item) => ({
-          name: item.customName,
-          quantity: item.quantity,
-          price: Number(item.priceAtOrder),
-        })),
-        subtotal: Number(order.totalAmount) - Number(order.deliveryFee ?? 0),
-        deliveryFee: Number(order.deliveryFee ?? 0),
-        total: Number(order.totalAmount),
-        paymentMethod: input.paymentMethod || "Não informado",
-        deliveryAddress: input.deliveryAddress || "",
-        notes: input.notes || "",
-        createdAt: order.createdAt,
-      };
+  try {
+    const printData = {
+      id: order.id,
+      number: `#${String(order.orderNumber).padStart(2, "0")}`,
+      customerName: order.user.name || "Cliente",
+      customerPhone: order.user.phone || "",
+      items: order.items.map((item) => ({
+        name: item.customName,
+        quantity: item.quantity,
+        price: Number(item.priceAtOrder),
+      })),
+      subtotal: Number(order.totalAmount) - Number(order.deliveryFee ?? 0),
+      deliveryFee: Number(order.deliveryFee ?? 0),
+      total: Number(order.totalAmount),
+      paymentMethod: input.paymentMethod || "Não informado",
+      deliveryAddress: input.deliveryAddress || "",
+      notes: input.notes || "",
+      createdAt: order.createdAt,
+    };
 
-      const printId = await sendOrderToPrint(order.restaurantId, printData);
+    const printId = await sendOrderToPrint(order.restaurantId, printData);
 
-      // ✅ AQUI ESTÁ A CORREÇÃO PRINCIPAL
-      if (typeof printId === "string" && printId.length > 0) {
-        await db.order.update({
-          where: { id: order.id },
-          data: { printId }, // ← SEM boolean
-        });
+    // ✅ AQUI ESTÁ A CORREÇÃO PRINCIPAL
+    if (typeof printId === "string" && printId.length > 0) {
+      await db.order.update({
+        where: { id: order.id },
+        data: { printId }, // ← SEM boolean
+      });
 
-        console.log(`✅ Pedido #${order.orderNumber} enviado para impressão`);
-      }
-    } catch (err) {
-      console.warn(
-        `⚠️ Pedido #${order.orderNumber} criado, mas erro no printId:`,
-        err?.message ?? err,
-      );
+      console.log(`✅ Pedido #${order.orderNumber} enviado para impressão`);
     }
-  }, 100);
+  } catch (err) {
+    console.warn(
+      `⚠️ Pedido #${order.orderNumber} criado, mas erro no printId:`,
+      err?.message ?? err,
+    );
+  }
 
   // 3. Retorno seguro
   return {

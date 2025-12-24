@@ -4,10 +4,7 @@ import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Sun, Moon } from "lucide-react";
 import { toast } from "sonner"; // ou use seu toast favorito
-import {
-  connectPrintWS,
-  disconnectPrintWS,
-} from "@/lib/printing/print-ws-client";
+import { connectPrintWS, disconnectPrintWS } from "@/lib/printing/client";
 
 const StatusOpenSwitch = ({
   initialIsOpen, // ← Recebe do server
