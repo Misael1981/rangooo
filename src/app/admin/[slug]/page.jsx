@@ -3,9 +3,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import StatusOpenSwitch from "./components/StatusOpenSwitch";
-import StatsCards from "./components/StatsCards";
 import { notFound, redirect } from "next/navigation";
-import ConsumptionAndPaymentMethodsForm from "@/components/ConsumptionAndPaymentMethodsForm";
 import DailySalesSummary from "./components/DailySalesSummary";
 import { startOfDay, endOfDay } from "date-fns";
 
@@ -145,13 +143,6 @@ export default async function AdminPage({ params }) {
         <DailySalesSummary
           orders={serializedOrders}
           restaurant={serializedRestaurant}
-        />
-
-        {/* Métodos de Consumo e Pagamento */}
-        <ConsumptionAndPaymentMethodsForm
-          paymentMethods={paymentMethods}
-          consumptionMethods={consumptionMethods}
-          restaurantId={restaurant.id}
         />
 
         {/* Daily Orders Chart */}
