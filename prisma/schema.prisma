@@ -152,6 +152,7 @@ model Restaurant {
   city           String?
   state          String?            @db.VarChar(2)
   zipCode        String?
+  deliveryFee    Decimal? @db.Decimal(6, 2)
 
   // Contatos
   contacts    ContactNumber[]

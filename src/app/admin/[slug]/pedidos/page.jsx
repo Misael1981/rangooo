@@ -4,6 +4,8 @@ import FilterConsumptionMethods from "./components/FilterConsumptionMethods";
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import HeaderOrders from "./components/HeaderOrders";
+import ConsumptionAndPaymentMethodsForm from "@/components/ConsumptionAndPaymentMethodsForm";
+import DeliverySettingsForm from "@/components/DeliverySettingsForm";
 
 export default async function RestaurantOrdersPage({ params, searchParams }) {
   const p = await params;
@@ -29,12 +31,20 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
     : null;
   const restaurant = await prisma.restaurant.findUnique({
     where: { slug: p.slug },
-    select: { id: true, name: true, consumptionMethods: true },
+    select: {
+      id: true,
+      name: true,
+      consumptionMethods: true,
+      paymentMethods: true,
+      deliveryFee: true,
+    },
   });
+
+  const deliveryFee = Number(restaurant.deliveryFee ?? 0);
 
   if (!restaurant) notFound();
 
-  // --- NOVA LÓGICA DE DATA (O Pulo do Gato) ---
+  // --- LÓGICA DE DATA ---
 
   const now = new Date();
   const currentHour = now.getHours();
@@ -67,7 +77,7 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
       restaurantId: restaurant.id,
       createdAt: {
         gte: startOfShift,
-        lt: endOfShift, // Pega tudo até o corte da manhã seguinte
+        lt: endOfShift,
       },
       ...whereStatus,
       ...whereMethod,
@@ -99,12 +109,25 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
       [],
   }));
 
+  console.log(restaurant.id);
+
   return (
     <div className="min-h-screen p-6">
       <HeaderOrders totalOrders={viewOrders.length} />
 
+      <ConsumptionAndPaymentMethodsForm
+        paymentMethods={restaurant.paymentMethods}
+        consumptionMethods={restaurant.consumptionMethods}
+      />
+
+      <DeliverySettingsForm
+        deliveryFee={deliveryFee}
+        restaurantId={restaurant.id}
+      />
+
       <FilterConsumptionMethods
         consumptionMethods={restaurant.consumptionMethods}
+        restaurantId={restaurant.id}
       />
 
       <FiltersOrders />
