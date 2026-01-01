@@ -229,6 +229,16 @@ export async function sendOrderToPrint(
 let socket = null;
 
 export function connectPrintWS({ serverUrl, token }) {
+  if (!token) {
+    console.warn("⚠️ WS não conectado: token ausente");
+    return null;
+  }
+
+  if (!serverUrl) {
+    console.error("❌ WS não conectado: serverUrl ausente");
+    return null;
+  }
+
   if (socket && socket.readyState === WebSocket.OPEN) {
     return socket;
   }
@@ -242,16 +252,7 @@ export function connectPrintWS({ serverUrl, token }) {
 
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
-
     console.log("📥 WS mensagem:", message);
-
-    if (message.type === "print_ack") {
-      console.log("✅ Pedido confirmado pelo servidor", message.printId);
-    }
-
-    if (message.type === "print_error") {
-      console.error("❌ Erro no print:", message.reason);
-    }
   };
 
   socket.onerror = (err) => {
@@ -259,7 +260,7 @@ export function connectPrintWS({ serverUrl, token }) {
   };
 
   socket.onclose = () => {
-    console.warn("🔌 WS fechado, tentando reconectar...");
+    console.warn("🔌 WS fechado");
     socket = null;
   };
 

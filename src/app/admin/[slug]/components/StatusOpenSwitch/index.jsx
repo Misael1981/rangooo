@@ -3,14 +3,12 @@
 import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Sun, Moon } from "lucide-react";
-import { toast } from "sonner"; // ou use seu toast favorito
-import { connectPrintWS, disconnectPrintWS } from "@/lib/printing/client";
+import { toast } from "sonner";
 
 const StatusOpenSwitch = ({
   initialIsOpen, // ← Recebe do server
   restaurantId,
   restaurantSlug,
-  printingToken,
 }) => {
   // Estado local que começa com o valor do server
   const [isOpen, setIsOpen] = useState(initialIsOpen);
@@ -41,17 +39,6 @@ const StatusOpenSwitch = ({
       if (response.ok) {
         setIsOpen(newStatus);
 
-        if (newStatus) {
-          //  ABRIU → conecta WS
-          connectPrintWS({
-            serverUrl: process.env.NEXT_PUBLIC_PRINT_WS,
-            token: printingToken,
-          });
-        } else {
-          //  FECHOU → desconecta WS
-          disconnectPrintWS();
-        }
-
         toast.success(
           newStatus
             ? "Estabelecimento aberto com sucesso!"
@@ -76,19 +63,6 @@ const StatusOpenSwitch = ({
       setIsUpdating(false);
     }
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      connectPrintWS({
-        serverUrl: process.env.NEXT_PUBLIC_PRINT_WS,
-        token: printingToken,
-      });
-    }
-
-    return () => {
-      disconnectPrintWS();
-    };
-  }, []);
 
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-gray-200 bg-gradient-to-r from-gray-50 to-white p-4 shadow-sm">
