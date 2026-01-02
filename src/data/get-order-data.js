@@ -31,6 +31,14 @@ export async function getOrdersData(slug, sp) {
     },
   });
 
+  const safeRestaurant = {
+    id: String(restaurant.id),
+    name: String(restaurant.name),
+    consumptionMethods: restaurant.consumptionMethods,
+    paymentMethods: restaurant.paymentMethods,
+    deliveryFee: restaurant.deliveryFee ? Number(restaurant.deliveryFee) : 0,
+  };
+
   // --- LÓGICA DE DATA ---
 
   const now = new Date();
@@ -91,5 +99,5 @@ export async function getOrdersData(slug, sp) {
       [],
   }));
 
-  return { restaurant, orders: viewOrders };
+  return { restaurant: safeRestaurant, orders: viewOrders };
 }
