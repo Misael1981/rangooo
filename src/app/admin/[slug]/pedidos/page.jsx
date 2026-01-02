@@ -7,32 +7,10 @@ import FilterConsumptionMethods from "./components/FilterConsumptionMethods";
 import FiltersOrders from "./components/FiltersOrders";
 import CardOrder from "./components/CardOrder";
 
-// Definimos o fuso horário de Brasília para evitar discrepâncias entre Server e Client
-const TIMEZONE_OFFSET = -3;
-
 export default async function RestaurantOrdersPage({ params, searchParams }) {
+  // 1. Garante o recebimento dos params (Padrão Next 15)
   const p = await params;
   const sp = await searchParams;
-
-  const statusParam = String(sp?.status || "");
-  const methodParam = String(sp?.consumptionMethod || "");
-
-  const allowedStatuses = [
-    "PENDING",
-    "CONFIRMED",
-    "PREPARING",
-    "READY_FOR_PICKUP",
-    "OUT_FOR_DELIVERY",
-    "DELIVERED",
-  ];
-  const allowedMethods = ["DELIVERY", "PICKUP", "DINE_IN"];
-
-  const statusFilter = allowedStatuses.includes(statusParam.toUpperCase())
-    ? statusParam.toUpperCase()
-    : null;
-  const methodFilter = allowedMethods.includes(methodParam.toUpperCase())
-    ? methodParam.toUpperCase()
-    : null;
 
   const restaurant = await db.restaurant.findUnique({
     where: { slug: p.slug },
@@ -47,29 +25,27 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
 
   if (!restaurant) return notFound();
 
-  // --- LÓGICA DE DATA CORRIGIDA (Determinística) ---
-  // Criamos a data baseada em UTC para que o cálculo seja idêntico no Server e no Client
+  // 2. Lógica de Data simplificada e Robusta
   const now = new Date();
-  const utcHour = now.getUTCHours();
-
-  // Ajuste manual simples para hora de Brasília (ou use date-fns-tz se preferir)
-  const brHour = (utcHour + TIMEZONE_OFFSET + 24) % 24;
-  const cutoffHour = 6;
+  // Ajuste para fuso de Brasília (GMT-3) de forma manual para garantir consistência
+  const brDate = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+  const brHour = brDate.getUTCHours();
 
   const startOfShift = new Date(now);
   const endOfShift = new Date(now);
 
-  if (brHour < cutoffHour) {
-    startOfShift.setUTCDate(startOfShift.getUTCDate() - 1);
+  if (brHour < 6) {
+    startOfShift.setDate(startOfShift.getDate() - 1);
+  }
+  startOfShift.setHours(6, 0, 0, 0);
+  endOfShift.setHours(6, 0, 0, 0);
+  if (brHour >= 6) {
+    endOfShift.setDate(endOfShift.getDate() + 1);
   }
 
-  // Forçamos horários fixos em UTC para evitar que a hidratação mude os segundos/milissegundos
-  startOfShift.setUTCHours(cutoffHour - TIMEZONE_OFFSET, 0, 0, 0);
-  endOfShift.setUTCHours(cutoffHour - TIMEZONE_OFFSET + 24, 0, 0, 0);
-
-  // --- BUSCA NO BANCO ---
-  const whereStatus = statusFilter ? { status: statusFilter } : {};
-  const whereMethod = methodFilter ? { consumptionMethod: methodFilter } : {};
+  // 3. Filtros
+  const statusFilter = sp.status?.toUpperCase();
+  const methodFilter = sp.consumptionMethod?.toUpperCase();
 
   const orders = await db.order.findMany({
     where: {
@@ -78,8 +54,8 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
         gte: startOfShift,
         lt: endOfShift,
       },
-      ...whereStatus,
-      ...whereMethod,
+      ...(statusFilter && { status: statusFilter }),
+      ...(methodFilter && { consumptionMethod: methodFilter }),
     },
     include: {
       user: { select: { name: true, phone: true } },
@@ -88,41 +64,35 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
     orderBy: { createdAt: "desc" },
   });
 
-  // --- SERIALIZAÇÃO LIMPA ---
-  const viewOrders = orders.map((o) => ({
-    id: o.id,
-    totalAmount: Number(o.totalAmount ?? 0),
-    deliveryFee: Number(o.deliveryFee ?? 0),
-    status: o.status,
-    consumptionMethod: o.consumptionMethod,
-    deliveryAddress: o.deliveryAddress,
-    createdAt: o.createdAt.toISOString(), // Essencial: passar como string
-    user: o.user,
-    items: o.items.map((i) => ({
-      name: i.product?.name,
-      quantity: i.quantity,
-    })),
+  // 4. SERIALIZAÇÃO EXTREMA (Transforma tudo em tipos primitivos)
+  // Isso evita o erro de "Server Components render" em produção
+  const serializedOrders = JSON.parse(JSON.stringify(orders)).map((o) => ({
+    ...o,
+    totalAmount: Number(o.totalAmount),
+    deliveryFee: Number(o.deliveryFee),
+    // Garantimos que os itens sejam um array limpo
+    items:
+      o.items?.map((i) => ({
+        name: i.product?.name,
+        quantity: i.quantity,
+      })) || [],
   }));
-
-  // const deliveryFeeValue = Number(restaurant.deliveryFee ?? 0);
 
   return (
     <div className="min-h-screen p-6">
-      <HeaderOrders totalOrders={viewOrders.length} />
+      <HeaderOrders totalOrders={serializedOrders.length} />
 
-      <div className="mb-10 space-y-8">
+      <div className="mb-10 flex flex-col gap-8">
         <ConsumptionAndPaymentMethodsForm
           paymentMethods={restaurant.paymentMethods}
           consumptionMethods={restaurant.consumptionMethods}
         />
 
-        {/* <DeliverySettingsForm
-          deliveryFee={deliveryFeeValue}
+        <DeliverySettingsForm
+          deliveryFee={Number(restaurant.deliveryFee)}
           restaurantId={restaurant.id}
-        /> */}
+        />
       </div>
-
-      <hr className="my-8" />
 
       <FilterConsumptionMethods
         consumptionMethods={restaurant.consumptionMethods}
@@ -132,14 +102,12 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
       <FiltersOrders />
 
       <section className="mt-8 flex flex-col items-center justify-center gap-4">
-        {viewOrders.length > 0 ? (
-          viewOrders.map((order) => <CardOrder key={order.id} order={order} />)
+        {serializedOrders.length > 0 ? (
+          serializedOrders.map((order) => (
+            <CardOrder key={order.id} order={order} />
+          ))
         ) : (
-          <div className="w-full rounded-lg bg-gray-50 p-10 text-center">
-            <p className="text-gray-500">
-              Nenhum pedido nesta jornada (das 06h às 06h).
-            </p>
-          </div>
+          <p className="mt-10 text-gray-500">Nenhum pedido nesta jornada.</p>
         )}
       </section>
     </div>
