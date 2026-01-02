@@ -42,8 +42,6 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
 
   const deliveryFee = Number(restaurant.deliveryFee ?? 0);
 
-  if (!restaurant) notFound();
-
   // --- LÓGICA DE DATA ---
 
   const now = new Date();
@@ -109,19 +107,21 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
       [],
   }));
 
+  if (!restaurant) notFound();
+
   return (
     <div className="min-h-screen p-6">
       <HeaderOrders totalOrders={viewOrders.length} />
 
-      {/* <ConsumptionAndPaymentMethodsForm
+      <ConsumptionAndPaymentMethodsForm
         paymentMethods={restaurant.paymentMethods}
         consumptionMethods={restaurant.consumptionMethods}
-      /> */}
+      />
 
-      {/* <DeliverySettingsForm
+      <DeliverySettingsForm
         deliveryFee={deliveryFee}
         restaurantId={restaurant.id}
-      /> */}
+      />
 
       <FilterConsumptionMethods
         consumptionMethods={restaurant.consumptionMethods}
