@@ -44,9 +44,9 @@ const FilterConsumptionMethods = ({ consumptionMethods = [] }) => {
         >
           Todos
         </Button>
-        {available.map((method) => (
+        {available.map((method, index) => (
           <Button
-            key={method}
+            key={index}
             variant={active === method ? "default" : "outline"}
             size="sm"
             onClick={() => handleFilterChange(method)}
