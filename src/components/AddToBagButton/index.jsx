@@ -2,13 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { CartContext } from "@/app/contexts/cart";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import SheetCart from "../SheetCart";
+import DialogEstablishmentClosed from "../DialogEstablishmentClosed";
 
-const AddToBagButton = ({ product, quantity, extras = [] }) => {
-  const { isOpen, toggleCart, addToCart } = useContext(CartContext);
+const AddToBagButton = ({ product, quantity, extras = [], isOpen }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toggleCart, addToCart } = useContext(CartContext);
 
   const handleClick = () => {
+    if (!isOpen) {
+      setIsDialogOpen(true);
+      return;
+    }
     addToCart(product, quantity, extras);
     toggleCart();
   };
@@ -24,6 +30,10 @@ const AddToBagButton = ({ product, quantity, extras = [] }) => {
         Adicionar à sacola
       </Button>
       <SheetCart />
+      <DialogEstablishmentClosed
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+      />
     </section>
   );
 };

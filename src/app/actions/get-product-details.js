@@ -9,10 +9,11 @@ export async function getProductDetails(restaurantSlug, productId) {
       select: {
         id: true,
         name: true,
-        price: true, // Decimal
+        price: true,
         description: true,
         imageUrl: true,
         ingredients: true,
+        createdAt: true, // Adicionado para garantir a serialização
         restaurant: {
           select: {
             id: true,
@@ -21,7 +22,8 @@ export async function getProductDetails(restaurantSlug, productId) {
             brandColors: true,
             avatarImageUrl: true,
             name: true,
-
+            isOpen: true,
+            deliveryFee: true, // O "culpado"
             createdAt: true,
             updatedAt: true,
           },
@@ -33,38 +35,40 @@ export async function getProductDetails(restaurantSlug, productId) {
     if (!product || product.restaurant.slug !== restaurantSlug) {
       return null;
     }
-    if (!product.menuCategory) {
-      return {
-        product: product,
-        restaurant: product.restaurant,
-        additionalIngredients: [],
-      };
-    }
-    const additionalIngredients = await db.additionalIngredient.findMany({
-      where: { menuCategoryId: product.menuCategory.id },
-    });
 
-    // --- INÍCIO DA LÓGICA DE SERIALIZAÇÃO ---
+    const additionalIngredients = product.menuCategory
+      ? await db.additionalIngredient.findMany({
+          where: { menuCategoryId: product.menuCategory.id },
+        })
+      : [];
 
-    const { restaurant, menuCategory, ...restOfProduct } = product;
+    // --- LÓGICA DE SERIALIZAÇÃO BLINDADA ---
 
+    const { restaurant, ...restOfProduct } = product;
+
+    // 1. Limpando o Restaurante (incluindo a Taxa de Entrega)
     const serializedRestaurant = {
       ...restaurant,
+      // TRATAMENTO DO DELIVERY FEE AQUI:
+      deliveryFee: restaurant.deliveryFee ? Number(restaurant.deliveryFee) : 0,
       createdAt: restaurant.createdAt?.toISOString() ?? null,
       updatedAt: restaurant.updatedAt?.toISOString() ?? null,
     };
 
+    // 2. Limpando o Produto (Preço)
     const serializedProduct = {
       ...restOfProduct,
-      price: restOfProduct.price?.toNumber() ?? Number(restOfProduct.price),
+      price: Number(restOfProduct.price ?? 0),
       createdAt: restOfProduct.createdAt?.toISOString() ?? null,
-      updatedAt: restOfProduct.updatedOf?.toISOString() ?? null,
+      // Corrigi o nome da propriedade aqui (era updatedOf no seu, geralmente é updatedAt)
+      updatedAt: restOfProduct.updatedAt?.toISOString() ?? null,
     };
 
+    // 3. Limpando os Adicionais (Preços)
     const serializedAdditionalIngredients = additionalIngredients.map(
       (ing) => ({
         ...ing,
-        price: ing.price?.toNumber() ?? Number(ing.price),
+        price: Number(ing.price ?? 0),
         createdAt: ing.createdAt?.toISOString() ?? null,
         updatedAt: ing.updatedAt?.toISOString() ?? null,
       }),

@@ -26,6 +26,7 @@ export default async function ProductPage({ params }) {
           product={product}
           restaurant={restaurant}
           additionalIngredients={additionalIngredients}
+          isOpen={restaurant.isOpen}
         />
       </div>
       <div className="fixed bottom-8 right-8 hidden lg:block">

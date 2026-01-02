@@ -14,6 +14,7 @@ const ProductDetails = ({
   restaurant,
   secondProduct,
   additionalIngredients,
+  isOpen,
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [extras, setExtras] = useState([]);
@@ -91,6 +92,7 @@ const ProductDetails = ({
         product={displayProduct}
         quantity={quantity}
         extras={extras}
+        isOpen={isOpen}
       />
     </section>
   );

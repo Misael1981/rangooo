@@ -14,6 +14,7 @@ const ProductDoubleDetails = ({
   secondProduct,
   restaurant,
   additionalIngredients,
+  isOpen,
 }) => {
   const price = (product.price + secondProduct.price) / 2;
   const [quantity, setQuantity] = useState(1);
@@ -99,6 +100,7 @@ const ProductDoubleDetails = ({
         product={displayProduct}
         quantity={quantity}
         extras={extras}
+        isOpen={isOpen}
       />
     </section>
   );
