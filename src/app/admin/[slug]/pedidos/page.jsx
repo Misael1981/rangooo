@@ -111,7 +111,7 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
 
   return (
     <div className="min-h-screen p-6">
-      <HeaderOrders totalOrders={viewOrders.length} />
+      {/* <HeaderOrders totalOrders={viewOrders.length} />
 
       <ConsumptionAndPaymentMethodsForm
         paymentMethods={restaurant.paymentMethods}
@@ -136,7 +136,8 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
         ) : (
           <p className="mt-10 text-gray-500">Nenhum pedido nesta jornada.</p>
         )}
-      </section>
+      </section> */}
+      <h1>Teste</h1>
     </div>
   );
 }
