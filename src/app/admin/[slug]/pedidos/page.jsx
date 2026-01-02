@@ -109,8 +109,6 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
       [],
   }));
 
-  console.log(restaurant.id);
-
   return (
     <div className="min-h-screen p-6">
       <HeaderOrders totalOrders={viewOrders.length} />

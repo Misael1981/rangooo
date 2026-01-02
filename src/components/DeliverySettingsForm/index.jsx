@@ -9,8 +9,6 @@ import { toast } from "sonner";
 const DeliverySettingsForm = ({ deliveryFee, restaurantId }) => {
   const [value, setValue] = useState("");
 
-  console.log({ restaurantId, value });
-
   useEffect(() => {
     if (deliveryFee !== undefined && deliveryFee !== null) {
       setValue(String(deliveryFee));

@@ -229,42 +229,59 @@ export async function sendOrderToPrint(
 let socket = null;
 
 export function connectPrintWS({ serverUrl, token }) {
+  //  Garante que nunca roda no Server Component
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  //  Validações
   if (!token) {
     console.warn("⚠️ WS não conectado: token ausente");
     return null;
   }
 
   if (!serverUrl) {
-    console.error("❌ WS não conectado: serverUrl ausente");
+    console.warn("⚠️ WS não conectado: serverUrl ausente");
     return null;
   }
 
+  //  Reaproveita conexão aberta
   if (socket && socket.readyState === WebSocket.OPEN) {
     return socket;
   }
 
-  const url = `${serverUrl}?token=${token}&saas=true`;
-  socket = new WebSocket(url);
+  try {
+    const url = `${serverUrl}?token=${token}&saas=true`;
+    socket = new WebSocket(url);
 
-  socket.onopen = () => {
-    console.log("🟢 SaaS conectado ao Print WS");
-  };
+    socket.onopen = () => {
+      console.log("🟢 SaaS conectado ao Print WS");
+    };
 
-  socket.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    console.log("📥 WS mensagem:", message);
-  };
+    socket.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        console.log("📥 WS mensagem:", message);
+      } catch {
+        console.warn("⚠️ WS mensagem inválida:", event.data);
+      }
+    };
 
-  socket.onerror = (err) => {
-    console.error("💥 WS erro:", err);
-  };
+    socket.onerror = (err) => {
+      console.error("💥 WS erro:", err);
+    };
 
-  socket.onclose = () => {
-    console.warn("🔌 WS fechado");
+    socket.onclose = () => {
+      console.warn("🔌 WS fechado");
+      socket = null;
+    };
+
+    return socket;
+  } catch (error) {
+    console.error("💥 Falha ao criar WebSocket:", error);
     socket = null;
-  };
-
-  return socket;
+    return null;
+  }
 }
 
 export function sendPrintOrder(order) {
