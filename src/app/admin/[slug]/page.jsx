@@ -82,16 +82,16 @@ export default async function AdminPage({ params }) {
     },
   });
 
-  const orders = restaurant.orders;
-  const paymentMethods = restaurant.paymentMethods;
-  const consumptionMethods = restaurant.consumptionMethods;
-
   if (!restaurant) {
     console.log(
       `[AUTH FAIL] Usuário ${userId} (${userRole}) tentou acessar slug ${restaurantSlug}.`,
     );
-    notFound();
+    return notFound();
   }
+
+  const orders = restaurant.orders;
+  const paymentMethods = restaurant.paymentMethods;
+  const consumptionMethods = restaurant.consumptionMethods;
 
   const serializedOrders =
     restaurant?.orders?.map((order) => ({
