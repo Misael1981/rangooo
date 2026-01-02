@@ -29,5 +29,16 @@ export async function getOrdersData(slug) {
     },
   });
 
-  return { restaurant, orders };
+  const viewOrders = orders.map((o) => ({
+    ...o,
+    totalAmount: Number(o.totalAmount ?? 0),
+    deliveryFee: Number(o.deliveryFee ?? 0),
+    createdAt:
+      o.createdAt instanceof Date ? o.createdAt.toISOString() : o.createdAt,
+    items:
+      o.items?.map((i) => ({ name: i.product?.name, quantity: i.quantity })) ??
+      [],
+  }));
+
+  return { restaurant, orders: viewOrders };
 }
