@@ -40,10 +40,8 @@ const DeliverySettingsForm = ({ deliveryFee, restaurantId }) => {
   return (
     <section className="my-6 w-fit rounded-lg bg-white p-6 shadow-md">
       <Label className="mb-2 block font-medium">Valor da entrega</Label>
-
       <div className="flex items-center gap-3">
         <span className="text-sm text-muted-foreground">R$</span>
-
         <Input
           type="number"
           step="0.01"
@@ -52,7 +50,6 @@ const DeliverySettingsForm = ({ deliveryFee, restaurantId }) => {
           onChange={(e) => setValue(e.target.value)}
           className="max-w-[120px]"
         />
-
         <Button onClick={handleSave}>Salvar</Button>
       </div>
     </section>

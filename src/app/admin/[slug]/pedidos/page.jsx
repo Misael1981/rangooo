@@ -1,9 +1,19 @@
 import { db } from "@/lib/prisma";
+import { notFound } from "next/navigation";
 import HeaderOrders from "./components/HeaderOrders";
+import ConsumptionAndPaymentMethodsForm from "@/components/ConsumptionAndPaymentMethodsForm";
+import DeliverySettingsForm from "@/components/DeliverySettingsForm";
+import FilterConsumptionMethods from "./components/FilterConsumptionMethods";
+import FiltersOrders from "./components/FiltersOrders";
+import CardOrder from "./components/CardOrder";
+
+// Definimos o fuso horário de Brasília para evitar discrepâncias entre Server e Client
+const TIMEZONE_OFFSET = -3;
 
 export default async function RestaurantOrdersPage({ params, searchParams }) {
   const p = await params;
   const sp = await searchParams;
+
   const statusParam = String(sp?.status || "");
   const methodParam = String(sp?.consumptionMethod || "");
 
@@ -15,13 +25,12 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
     "OUT_FOR_DELIVERY",
     "DELIVERED",
   ];
+  const allowedMethods = ["DELIVERY", "PICKUP", "DINE_IN"];
 
   const statusFilter = allowedStatuses.includes(statusParam.toUpperCase())
     ? statusParam.toUpperCase()
     : null;
-  const methodFilter = ["DELIVERY", "PICKUP", "DINE_IN"].includes(
-    methodParam.toUpperCase(),
-  )
+  const methodFilter = allowedMethods.includes(methodParam.toUpperCase())
     ? methodParam.toUpperCase()
     : null;
 
@@ -38,29 +47,27 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
 
   if (!restaurant) return notFound();
 
-  // --- LÓGICA DE DATA ---
-
+  // --- LÓGICA DE DATA CORRIGIDA (Determinística) ---
+  // Criamos a data baseada em UTC para que o cálculo seja idêntico no Server e no Client
   const now = new Date();
-  const currentHour = now.getHours();
+  const utcHour = now.getUTCHours();
+
+  // Ajuste manual simples para hora de Brasília (ou use date-fns-tz se preferir)
+  const brHour = (utcHour + TIMEZONE_OFFSET + 24) % 24;
   const cutoffHour = 6;
 
   const startOfShift = new Date(now);
   const endOfShift = new Date(now);
 
-  if (currentHour < cutoffHour) {
-    startOfShift.setDate(startOfShift.getDate() - 1);
-    startOfShift.setHours(cutoffHour, 0, 0, 0);
-
-    endOfShift.setHours(cutoffHour, 0, 0, 0);
-  } else {
-    startOfShift.setHours(cutoffHour, 0, 0, 0);
-
-    endOfShift.setDate(endOfShift.getDate() + 1);
-    endOfShift.setHours(cutoffHour, 0, 0, 0);
+  if (brHour < cutoffHour) {
+    startOfShift.setUTCDate(startOfShift.getUTCDate() - 1);
   }
 
-  // --- FIM DA NOVA LÓGICA ---
+  // Forçamos horários fixos em UTC para evitar que a hidratação mude os segundos/milissegundos
+  startOfShift.setUTCHours(cutoffHour - TIMEZONE_OFFSET, 0, 0, 0);
+  endOfShift.setUTCHours(cutoffHour - TIMEZONE_OFFSET + 24, 0, 0, 0);
 
+  // --- BUSCA NO BANCO ---
   const whereStatus = statusFilter ? { status: statusFilter } : {};
   const whereMethod = methodFilter ? { consumptionMethod: methodFilter } : {};
 
@@ -74,36 +81,67 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
       ...whereStatus,
       ...whereMethod,
     },
-    select: {
-      id: true,
+    include: {
       user: { select: { name: true, phone: true } },
-      totalAmount: true,
-      deliveryFee: true,
-      status: true,
-      consumptionMethod: true,
-      createdAt: true,
-      deliveryAddress: true,
-      items: {
-        select: { quantity: true, product: { select: { name: true } } },
-      },
+      items: { include: { product: { select: { name: true } } } },
     },
     orderBy: { createdAt: "desc" },
   });
 
+  // --- SERIALIZAÇÃO LIMPA ---
   const viewOrders = orders.map((o) => ({
-    ...o,
+    id: o.id,
     totalAmount: Number(o.totalAmount ?? 0),
     deliveryFee: Number(o.deliveryFee ?? 0),
-    createdAt:
-      o.createdAt instanceof Date ? o.createdAt.toISOString() : o.createdAt,
-    items:
-      o.items?.map((i) => ({ name: i.product?.name, quantity: i.quantity })) ??
-      [],
+    status: o.status,
+    consumptionMethod: o.consumptionMethod,
+    deliveryAddress: o.deliveryAddress,
+    createdAt: o.createdAt.toISOString(), // Essencial: passar como string
+    user: o.user,
+    items: o.items.map((i) => ({
+      name: i.product?.name,
+      quantity: i.quantity,
+    })),
   }));
 
+  const deliveryFeeValue = Number(restaurant.deliveryFee ?? 0);
+
   return (
-    <div>
+    <div className="min-h-screen p-6">
       <HeaderOrders totalOrders={viewOrders.length} />
+
+      <div className="mb-10 space-y-8">
+        <ConsumptionAndPaymentMethodsForm
+          paymentMethods={restaurant.paymentMethods}
+          consumptionMethods={restaurant.consumptionMethods}
+        />
+
+        <DeliverySettingsForm
+          deliveryFee={deliveryFeeValue}
+          restaurantId={restaurant.id}
+        />
+      </div>
+
+      <hr className="my-8" />
+
+      <FilterConsumptionMethods
+        consumptionMethods={restaurant.consumptionMethods}
+        restaurantId={restaurant.id}
+      />
+
+      <FiltersOrders />
+
+      <section className="mt-8 flex flex-col items-center justify-center gap-4">
+        {viewOrders.length > 0 ? (
+          viewOrders.map((order) => <CardOrder key={order.id} order={order} />)
+        ) : (
+          <div className="w-full rounded-lg bg-gray-50 p-10 text-center">
+            <p className="text-gray-500">
+              Nenhum pedido nesta jornada (das 06h às 06h).
+            </p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
