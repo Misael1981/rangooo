@@ -118,10 +118,10 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
         consumptionMethods={restaurant.consumptionMethods}
       />
 
-      <DeliverySettingsForm
+      {/* <DeliverySettingsForm
         deliveryFee={deliveryFee}
         restaurantId={restaurant.id}
-      />
+      /> */}
 
       <FilterConsumptionMethods
         consumptionMethods={restaurant.consumptionMethods}
