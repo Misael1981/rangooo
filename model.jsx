@@ -29,6 +29,7 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
   )
     ? methodParam.toUpperCase()
     : null;
+
   const restaurant = await prisma.restaurant.findUnique({
     where: { slug: p.slug },
     select: {
