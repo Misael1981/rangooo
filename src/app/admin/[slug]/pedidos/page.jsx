@@ -40,6 +40,8 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
     },
   });
 
+  if (!restaurant) return notFound();
+
   const deliveryFee = Number(restaurant.deliveryFee ?? 0);
 
   // --- LÓGICA DE DATA ---
@@ -106,8 +108,6 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
       o.items?.map((i) => ({ name: i.product?.name, quantity: i.quantity })) ??
       [],
   }));
-
-  if (!restaurant) notFound();
 
   return (
     <div className="min-h-screen p-6">
