@@ -18,10 +18,10 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
 
       {/* Nível 2: Componente que você mexeu ontem */}
       {/* Comente esta linha se o erro persistir */}
-      <DeliverySettingsForm
+      {/* <DeliverySettingsForm
         deliveryFee={data.restaurant.deliveryFee}
         restaurantId={data.restaurant.id}
-      />
+      /> */}
 
       {/* Nível 3: Listagem de Pedidos (Onde o 418 costuma morar) */}
       <section className="mt-8 flex flex-col gap-4">
