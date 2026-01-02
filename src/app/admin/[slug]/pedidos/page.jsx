@@ -104,7 +104,7 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
     })),
   }));
 
-  const deliveryFeeValue = Number(restaurant.deliveryFee ?? 0);
+  // const deliveryFeeValue = Number(restaurant.deliveryFee ?? 0);
 
   return (
     <div className="min-h-screen p-6">
@@ -116,10 +116,10 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
           consumptionMethods={restaurant.consumptionMethods}
         />
 
-        <DeliverySettingsForm
+        {/* <DeliverySettingsForm
           deliveryFee={deliveryFeeValue}
           restaurantId={restaurant.id}
-        />
+        /> */}
       </div>
 
       <hr className="my-8" />
