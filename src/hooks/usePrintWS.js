@@ -11,7 +11,7 @@ export function usePrintWS({ printingToken }) {
     }
 
     connectPrintWS({
-      serverUrl: process.env.NEXT_PUBLIC_PRINT_WS,
+      serverUrl: process.env.NEXT_PUBLIC_SAAS_WS_URL,
       token: printingToken,
     });
 
