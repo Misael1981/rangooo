@@ -4,6 +4,7 @@ import HeaderOrders from "./components/HeaderOrders";
 import FilterConsumptionMethods from "./components/FilterConsumptionMethods";
 import FiltersOrders from "./components/FiltersOrders";
 import CardOrder from "./components/CardOrder";
+import ConsumptionAndPaymentMethodsForm from "@/components/ConsumptionAndPaymentMethodsForm";
 
 export default async function RestaurantOrdersPage({ params, searchParams }) {
   const p = await params;
@@ -19,6 +20,11 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
   return (
     <div className="min-h-screen p-6">
       <HeaderOrders totalOrders={orders.length} />
+
+      <ConsumptionAndPaymentMethodsForm
+        paymentMethods={restaurant.paymentMethods}
+        consumptionMethods={restaurant.consumptionMethods}
+      />
 
       <FilterConsumptionMethods
         consumptionMethods={restaurant.consumptionMethods}
