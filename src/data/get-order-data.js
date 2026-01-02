@@ -8,7 +8,6 @@ export async function getOrdersData(slug) {
       name: true,
       consumptionMethods: true,
       paymentMethods: true,
-      deliveryFee: true,
     },
   });
 
@@ -18,7 +17,6 @@ export async function getOrdersData(slug) {
       id: true,
       user: { select: { name: true, phone: true } },
       totalAmount: true,
-      deliveryFee: true,
       status: true,
       consumptionMethod: true,
       createdAt: true,
@@ -32,7 +30,6 @@ export async function getOrdersData(slug) {
   const viewOrders = orders.map((o) => ({
     ...o,
     totalAmount: Number(o.totalAmount ?? 0),
-    deliveryFee: Number(o.deliveryFee ?? 0),
     createdAt:
       o.createdAt instanceof Date ? o.createdAt.toISOString() : o.createdAt,
     items:
