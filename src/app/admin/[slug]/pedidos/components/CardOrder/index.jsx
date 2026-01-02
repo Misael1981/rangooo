@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 const getMethodConfig = (method) => {
   const configs = {
@@ -125,6 +126,12 @@ const formatDateTime = (date) =>
 
 const CardOrder = ({ order }) => {
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const methodConfig = getMethodConfig(order?.consumptionMethod);
   const MethodIcon = methodConfig.icon;
   const statusConfig = getStatusConfig(order?.status);
@@ -213,7 +220,11 @@ const CardOrder = ({ order }) => {
               )}
           </div>
           <div className="text-right text-xs text-muted-foreground">
-            {order?.createdAt ? formatDateTime(order.createdAt) : ""}
+            <span suppressHydrationWarning>
+              {isMounted && order?.createdAt
+                ? formatDateTime(order.createdAt)
+                : ""}
+            </span>
           </div>
         </div>
       </CardContent>
