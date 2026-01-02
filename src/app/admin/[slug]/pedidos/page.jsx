@@ -113,10 +113,10 @@ export default async function RestaurantOrdersPage({ params, searchParams }) {
     <div className="min-h-screen p-6">
       <HeaderOrders totalOrders={viewOrders.length} />
 
-      <ConsumptionAndPaymentMethodsForm
+      {/* <ConsumptionAndPaymentMethodsForm
         paymentMethods={restaurant.paymentMethods}
         consumptionMethods={restaurant.consumptionMethods}
-      />
+      /> */}
 
       {/* <DeliverySettingsForm
         deliveryFee={deliveryFee}
