@@ -23,7 +23,7 @@ export async function getProductDetails(restaurantSlug, productId) {
             avatarImageUrl: true,
             name: true,
             isOpen: true,
-            // deliveryFee: true,
+            deliveryFee: true,
             consumptionMethods: true,
             createdAt: true,
             updatedAt: true,
@@ -51,7 +51,10 @@ export async function getProductDetails(restaurantSlug, productId) {
     const serializedRestaurant = {
       ...restaurant,
       // TRATAMENTO DO DELIVERY FEE AQUI:
-      deliveryFee: restaurant.deliveryFee ? Number(restaurant.deliveryFee) : 0,
+      deliveryFee:
+        typeof restaurant.deliveryFee === "number"
+          ? restaurant.deliveryFee
+          : Number(restaurant.deliveryFee ?? 0),
       createdAt: restaurant.createdAt?.toISOString() ?? null,
       updatedAt: restaurant.updatedAt?.toISOString() ?? null,
     };
