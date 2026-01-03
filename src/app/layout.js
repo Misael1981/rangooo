@@ -3,6 +3,7 @@ import "./globals.css";
 import { CartProvider } from "./contexts/cart";
 import AuthProvider from "./providers/auth";
 import { Toaster } from "@/components/ui/sonner";
+import { Suspense } from "react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,7 +39,9 @@ export default function RootLayout({ children }) {
     <html lang="pt-BR">
       <body className={`${inter.className} antialiased`}>
         <AuthProvider>
-          <CartProvider>{children}</CartProvider>
+          <Suspense fallback={null}>
+            <CartProvider>{children}</CartProvider>
+          </Suspense>
           <Toaster />
         </AuthProvider>
       </body>
