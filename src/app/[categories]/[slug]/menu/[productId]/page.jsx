@@ -9,11 +9,13 @@ export default async function ProductPage({ params }) {
 
   const data = await getProductDetails(slug, productId);
 
-  // if (!data) {
-  //   return notFound();
-  // }
+  if (!data) {
+    return notFound();
+  }
 
   const { restaurant, additionalIngredients, product } = data;
+
+  console.log("O que vem no Restaurant: ", restaurant);
 
   return (
     <div className="relative min-h-screen bg-yellow-50 sm:py-6">
