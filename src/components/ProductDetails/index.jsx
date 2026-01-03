@@ -43,7 +43,10 @@ const ProductDetails = ({
     addToCart(displayProduct, quantity);
   };
 
-  const deliveryFee = 4;
+  const deliveryFee =
+    restaurant.deliveryFee !== null && restaurant.deliveryFee !== undefined
+      ? Number(restaurant.deliveryFee)
+      : 0;
 
   return (
     <section className="relative">
