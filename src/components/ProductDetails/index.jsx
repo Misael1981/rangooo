@@ -46,8 +46,6 @@ const ProductDetails = ({
 
   const deliveryFee = 4;
 
-  console.log("deliveryFee", deliveryFee);
-
   return (
     <section className="relative">
       <div className="relative -top-5 z-50 rounded-t-3xl bg-white px-4">

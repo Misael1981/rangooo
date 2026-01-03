@@ -28,7 +28,7 @@ export async function getProductDetails(restaurantSlug, productId) {
             avatarImageUrl: true,
             name: true,
             isOpen: true,
-            deliveryFee: true,
+            // deliveryFee: true,
             consumptionMethods: true,
             createdAt: true,
             updatedAt: true,
