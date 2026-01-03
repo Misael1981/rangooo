@@ -9,9 +9,9 @@ export default async function ProductPage({ params }) {
 
   const data = await getProductDetails(slug, productId);
 
-  if (!data) {
-    return notFound();
-  }
+  // if (!data) {
+  //   return notFound();
+  // }
 
   const { restaurant, additionalIngredients, product } = data;
 
