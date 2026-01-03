@@ -44,7 +44,7 @@ const ProductDetails = ({
     addToCart(displayProduct, quantity);
   };
 
-  const deliveryFee = serializeDecimal(restaurant.deliveryFee);
+  const deliveryFee = 4;
 
   console.log("deliveryFee", deliveryFee);
 
