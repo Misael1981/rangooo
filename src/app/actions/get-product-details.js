@@ -4,8 +4,13 @@ import { db } from "@/lib/prisma";
 
 export async function getProductDetails(restaurantSlug, productId) {
   try {
-    const product = await db.product.findUnique({
-      where: { id: productId },
+    const product = await db.product.findFirst({
+      where: {
+        id: productId,
+        restaurant: {
+          slug: restaurantSlug,
+        },
+      },
       select: {
         id: true,
         name: true,
@@ -33,7 +38,7 @@ export async function getProductDetails(restaurantSlug, productId) {
       },
     });
 
-    if (!product || product.restaurant.slug !== restaurantSlug) {
+    if (!product) {
       return null;
     }
 
@@ -43,32 +48,22 @@ export async function getProductDetails(restaurantSlug, productId) {
         })
       : [];
 
-    // --- LÓGICA DE SERIALIZAÇÃO BLINDADA ---
-
     const { restaurant, ...restOfProduct } = product;
 
-    // 1. Limpando o Restaurante (incluindo a Taxa de Entrega)
     const serializedRestaurant = {
       ...restaurant,
-      // TRATAMENTO DO DELIVERY FEE AQUI:
-      deliveryFee:
-        typeof restaurant.deliveryFee === "number"
-          ? restaurant.deliveryFee
-          : Number(restaurant.deliveryFee ?? 0),
+      deliveryFee: Number(restaurant.deliveryFee ?? 0),
       createdAt: restaurant.createdAt?.toISOString() ?? null,
       updatedAt: restaurant.updatedAt?.toISOString() ?? null,
     };
 
-    // 2. Limpando o Produto (Preço)
     const serializedProduct = {
       ...restOfProduct,
       price: Number(restOfProduct.price ?? 0),
       createdAt: restOfProduct.createdAt?.toISOString() ?? null,
-      // Corrigi o nome da propriedade aqui (era updatedOf no seu, geralmente é updatedAt)
       updatedAt: restOfProduct.updatedAt?.toISOString() ?? null,
     };
 
-    // 3. Limpando os Adicionais (Preços)
     const serializedAdditionalIngredients = additionalIngredients.map(
       (ing) => ({
         ...ing,

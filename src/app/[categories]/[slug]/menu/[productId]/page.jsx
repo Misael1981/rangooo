@@ -15,7 +15,7 @@ export default async function ProductPage({ params }) {
 
   const { restaurant, additionalIngredients, product } = data;
 
-  console.log("O que vem no Restaurant: ", restaurant);
+  console.log("productId", productId);
 
   return (
     <div className="relative min-h-screen bg-yellow-50 sm:py-6">
