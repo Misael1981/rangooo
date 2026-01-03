@@ -8,6 +8,7 @@ import AddToBagButton from "../AddToBagButton";
 import { CartContext } from "@/app/contexts/cart";
 import ProductDescription from "../ProductDescription";
 import Image from "next/image";
+import { serializeDecimal } from "@/helpers/serialize-decimal";
 
 const ProductDetails = ({
   product,
@@ -43,10 +44,9 @@ const ProductDetails = ({
     addToCart(displayProduct, quantity);
   };
 
-  const deliveryFee =
-    restaurant.deliveryFee !== null && restaurant.deliveryFee !== undefined
-      ? Number(restaurant.deliveryFee)
-      : 0;
+  const deliveryFee = serializeDecimal(restaurant.deliveryFee);
+
+  console.log("deliveryFee", deliveryFee);
 
   return (
     <section className="relative">
