@@ -12,11 +12,13 @@ import CartItem from "../CartItem";
 import FinishOrder from "../FinishOrder";
 import { Button } from "../ui/button";
 import OrderSuccessfulDialog from "../FinishOrder/components/OrderSuccessfulDialog";
+import { useSearchParams } from "next/navigation";
 
 function SheetCart() {
+  const searchParams = useSearchParams();
   const [orderSuccessful, setOrderSuccessful] = useState(false);
   const [finishOrderOpen, setFinishOrderOpen] = useState(false);
-  const { isOpen, toggleCart, products, total, extrasPrice } =
+  const { isOpen, toggleCart, products, total, extrasPrice, deliveryFee } =
     useContext(CartContext);
 
   const extrasTotal = products.reduce(
@@ -30,6 +32,14 @@ function SheetCart() {
   const handleFinishOrderClick = () => {
     setFinishOrderOpen(true);
   };
+
+  const consumptionMethods = searchParams
+    .get("consumptionMethod")
+    ?.toUpperCase();
+
+  const isDelivery = consumptionMethods === "DELIVERY";
+
+  console.log("Métodos de consumo: ", consumptionMethods);
 
   return (
     <>
@@ -55,6 +65,16 @@ function SheetCart() {
                   R$ {extrasTotal.toFixed(2)}
                 </span>
               </div>
+              {isDelivery && (
+                <div className="mt-1 flex w-full items-center justify-between">
+                  <span className="text-sm text-black opacity-50">
+                    Taxa de Entrega
+                  </span>
+                  <span className="text-sm font-medium text-green-500">
+                    R$ {deliveryFee.toFixed(2)}
+                  </span>
+                </div>
+              )}
               <div className="mt-4 flex w-full items-center justify-between">
                 <span className="text-lg font-bold">Total</span>
                 <span className="text-lg font-bold text-green-500">

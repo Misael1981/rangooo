@@ -6,7 +6,14 @@ import { useContext, useState } from "react";
 import SheetCart from "../SheetCart";
 import DialogEstablishmentClosed from "../DialogEstablishmentClosed";
 
-const AddToBagButton = ({ product, quantity, extras = [], isOpen }) => {
+const AddToBagButton = ({
+  product,
+  quantity,
+  extras = [],
+  isOpen,
+  deliveryFee,
+  consumptionMethods,
+}) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toggleCart, addToCart } = useContext(CartContext);
 
@@ -15,7 +22,7 @@ const AddToBagButton = ({ product, quantity, extras = [], isOpen }) => {
       setIsDialogOpen(true);
       return;
     }
-    addToCart(product, quantity, extras);
+    addToCart(product, quantity, extras, deliveryFee);
     toggleCart();
   };
 
@@ -29,7 +36,7 @@ const AddToBagButton = ({ product, quantity, extras = [], isOpen }) => {
       >
         Adicionar à sacola
       </Button>
-      <SheetCart />
+      <SheetCart consumptionMethods={consumptionMethods} />
       <DialogEstablishmentClosed
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}

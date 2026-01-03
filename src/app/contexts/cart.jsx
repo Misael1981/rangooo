@@ -1,25 +1,45 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { createContext, useState } from "react";
 
 export const CartContext = createContext({
   isOpen: false,
   products: [],
+  deliveryFee: 0,
   toggleCart: () => {},
   openCart: () => {},
   closeCart: () => {},
   clearCart: () => {},
+  addToCart: () => {},
+  decreaseProductQuantity: () => {},
+  increaseProductQuantity: () => {},
+  removeProduct: () => {},
+  subtotal: 0,
+  total: 0,
 });
 
 export const CartProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [deliveryFee, setDeliveryFee] = useState(0);
+  const searchParams = useSearchParams();
+
+  const isDelivery =
+    searchParams.get("consumptionMethod")?.toUpperCase() === "DELIVERY";
+
   const toggleCart = () => setIsOpen((prev) => !prev);
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
-  const clearCart = () => setProducts([]);
 
-  const addToCart = (product, quantity = 1, extras = []) => {
+  const clearCart = () => {
+    setProducts([]);
+    setDeliveryFee(0);
+  };
+
+  const addToCart = (product, quantity = 1, extras = [], fee = 0) => {
+    if (fee > 0) setDeliveryFee(Number(fee));
+
     setProducts((prevProducts) => {
       const compositeKey = product.composite
         ? product.composite
@@ -35,7 +55,6 @@ export const CartProvider = ({ children }) => {
       );
 
       const lineId = `${compositeKey}:${extrasKey}`;
-
       const exists = prevProducts.some((item) => item.lineId === lineId);
 
       if (exists) {
@@ -45,7 +64,6 @@ export const CartProvider = ({ children }) => {
             : item,
         );
       }
-
       return [...prevProducts, { ...product, quantity, extras, lineId }];
     });
   };
@@ -82,16 +100,21 @@ export const CartProvider = ({ children }) => {
       : 0;
   };
 
-  const total = products.reduce((acc, item) => {
+  // Subtotal (Apenas produtos)
+  const subtotal = products.reduce((acc, item) => {
     const extrasSum = extrasPrice(item.extras);
     return acc + (Number(item.price ?? 0) + extrasSum) * item.quantity;
   }, 0);
+
+  const total = subtotal + (isDelivery ? deliveryFee : 0);
 
   return (
     <CartContext.Provider
       value={{
         isOpen,
         products,
+        deliveryFee,
+        setDeliveryFee,
         toggleCart,
         openCart,
         closeCart,
@@ -101,6 +124,7 @@ export const CartProvider = ({ children }) => {
         removeProduct,
         extrasPrice,
         clearCart,
+        subtotal,
         total,
       }}
     >

@@ -13,7 +13,7 @@ export async function getProductDetails(restaurantSlug, productId) {
         description: true,
         imageUrl: true,
         ingredients: true,
-        createdAt: true, // Adicionado para garantir a serialização
+        createdAt: true,
         restaurant: {
           select: {
             id: true,
@@ -23,7 +23,8 @@ export async function getProductDetails(restaurantSlug, productId) {
             avatarImageUrl: true,
             name: true,
             isOpen: true,
-            deliveryFee: true, // O "culpado"
+            deliveryFee: true,
+            consumptionMethods: true,
             createdAt: true,
             updatedAt: true,
           },

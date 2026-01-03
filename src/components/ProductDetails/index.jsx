@@ -42,6 +42,9 @@ const ProductDetails = ({
   const handleAddToCart = () => {
     addToCart(displayProduct, quantity);
   };
+
+  const deliveryFee = restaurant.deliveryFee || 0;
+
   return (
     <section className="relative">
       <div className="relative -top-5 z-50 rounded-t-3xl bg-white px-4">
@@ -93,6 +96,8 @@ const ProductDetails = ({
         quantity={quantity}
         extras={extras}
         isOpen={isOpen}
+        deliveryFee={deliveryFee}
+        consumptionMethods={restaurant.consumptionMethods}
       />
     </section>
   );
