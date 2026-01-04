@@ -23,6 +23,8 @@ export default async function ProductPage({ params }) {
       ? rawFee.toNumber()
       : Number(rawFee);
 
+  console.log("deliveryFee: ", typeof deliveryFee, deliveryFee);
+
   return (
     <div className="relative min-h-screen bg-yellow-50 sm:py-6">
       <div className="fixed bottom-8 left-8 hidden lg:block">

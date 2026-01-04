@@ -50,13 +50,12 @@ export async function getProductDetails(restaurantSlug, productId) {
 
     const { restaurant, ...restOfProduct } = product;
 
-    const rawFee = restaurant.deliveryFee ?? 0;
-    const deliveryFee =
-      typeof rawFee === "object" &&
-      rawFee !== null &&
-      typeof rawFee.toNumber === "function"
-        ? rawFee.toNumber()
-        : Number(rawFee);
+    // Helper simples para garantir que Decimal vire Number
+    const toNumber = (value) => {
+      if (value == null) return 0;
+      if (typeof value === "object" && value.toNumber) return value.toNumber();
+      return Number(value);
+    };
 
     const serializedRestaurant = {
       id: restaurant.id,
@@ -66,10 +65,11 @@ export async function getProductDetails(restaurantSlug, productId) {
       brandColors: restaurant.brandColors,
       isOpen: restaurant.isOpen,
       category: restaurant.category,
-      deliveryFee: deliveryFee,
       consumptionMethods: restaurant.consumptionMethods,
-      createdAt: restaurant.createdAt?.toISOString() ?? null,
-      updatedAt: restaurant.updatedAt?.toISOString() ?? null,
+
+      deliveryFee: toNumber(restaurant.deliveryFee),
+      createdAt: restaurant.createdAt?.toISOString() || null,
+      updatedAt: restaurant.updatedAt?.toISOString() || null,
     };
 
     const serializedProduct = {
