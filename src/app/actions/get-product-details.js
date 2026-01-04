@@ -28,7 +28,7 @@ export async function getProductDetails(restaurantSlug, productId) {
             avatarImageUrl: true,
             name: true,
             isOpen: true,
-            //deliveryFee: true,
+            deliveryFee: true,
             consumptionMethods: true,
             createdAt: true,
             updatedAt: true,
@@ -42,6 +42,8 @@ export async function getProductDetails(restaurantSlug, productId) {
       return null;
     }
 
+    const { deliveryFee, ...restaurantData } = product.restaurant;
+
     const additionalIngredients = product.menuCategory
       ? await db.additionalIngredient.findMany({
           where: { menuCategoryId: product.menuCategory.id },
@@ -50,26 +52,13 @@ export async function getProductDetails(restaurantSlug, productId) {
 
     const { restaurant, ...restOfProduct } = product;
 
-    // Helper simples para garantir que Decimal vire Number
-    const toNumber = (value) => {
-      if (value == null) return 0;
-      if (typeof value === "object" && value.toNumber) return value.toNumber();
-      return Number(value);
-    };
-
     const serializedRestaurant = {
-      id: restaurant.id,
-      slug: restaurant.slug,
-      name: restaurant.name,
-      avatarImageUrl: restaurant.avatarImageUrl,
-      brandColors: restaurant.brandColors,
-      isOpen: restaurant.isOpen,
-      category: restaurant.category,
-      consumptionMethods: restaurant.consumptionMethods,
-
-      deliveryFee: toNumber(restaurant.deliveryFee),
-      createdAt: restaurant.createdAt?.toISOString() || null,
-      updatedAt: restaurant.updatedAt?.toISOString() || null,
+      ...restaurantData,
+      // Aqui nós forçamos o valor a ser um número puro ou zero
+      // Se o erro persistia, é porque o Prisma estava mandando um "Object" que o Next não aceitava
+      deliveryFee: deliveryFee ? Number(deliveryFee) : 0,
+      createdAt: product.restaurant.createdAt?.toISOString() || null,
+      updatedAt: product.restaurant.updatedAt?.toISOString() || null,
     };
 
     const serializedProduct = {
