@@ -28,7 +28,6 @@ export async function getProductDetails(restaurantSlug, productId) {
             avatarImageUrl: true,
             name: true,
             isOpen: true,
-            deliveryFee: true,
             consumptionMethods: true,
             createdAt: true,
             updatedAt: true,
@@ -42,7 +41,7 @@ export async function getProductDetails(restaurantSlug, productId) {
       return null;
     }
 
-    const { deliveryFee, ...restaurantData } = product.restaurant;
+    const { ...restaurantData } = product.restaurant;
 
     const additionalIngredients = product.menuCategory
       ? await db.additionalIngredient.findMany({
@@ -54,9 +53,6 @@ export async function getProductDetails(restaurantSlug, productId) {
 
     const serializedRestaurant = {
       ...restaurantData,
-      // Aqui nós forçamos o valor a ser um número puro ou zero
-      // Se o erro persistia, é porque o Prisma estava mandando um "Object" que o Next não aceitava
-      deliveryFee: deliveryFee ? Number(deliveryFee) : 0,
       createdAt: product.restaurant.createdAt?.toISOString() || null,
       updatedAt: product.restaurant.updatedAt?.toISOString() || null,
     };
@@ -84,9 +80,6 @@ export async function getProductDetails(restaurantSlug, productId) {
     };
   } catch (err) {
     console.error("ERRO CRÍTICO NA ACTION:", err);
-
-    // Em vez de retornar null (que gera o 404), vamos jogar o erro para cima
-    // para ver se o Next.js mostra algo mais útil ou use um valor de fallback
     throw err;
   }
 }
