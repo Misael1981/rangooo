@@ -11,11 +11,13 @@ import Image from "next/image";
 
 const ProductDetails = ({
   product,
-  restaurant,
   secondProduct,
   additionalIngredients,
   isOpen,
   deliveryFee,
+  consumptionMethods,
+  avatarImageUrl,
+  restaurantName,
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [extras, setExtras] = useState([]);
@@ -50,13 +52,13 @@ const ProductDetails = ({
         <div className="pt-4">
           <div className="flex items-center gap-2">
             <Image
-              src={restaurant.avatarImageUrl}
-              alt={restaurant.name}
+              src={avatarImageUrl}
+              alt={restaurantName}
               width={24}
               height={24}
               className="rounded-lg"
             />
-            <p className="text-sm text-muted-foreground">{restaurant.name}</p>
+            <p className="text-sm text-muted-foreground">{restaurantName}</p>
           </div>
           <p className="text-lg font-semibold">{displayProduct.name}</p>
         </div>
@@ -96,7 +98,7 @@ const ProductDetails = ({
         extras={extras}
         isOpen={isOpen}
         deliveryFee={deliveryFee}
-        consumptionMethods={restaurant.consumptionMethods}
+        consumptionMethods={consumptionMethods}
       />
     </section>
   );

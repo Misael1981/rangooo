@@ -14,16 +14,8 @@ export default async function ProductPage({ params }) {
   }
 
   const { restaurant, additionalIngredients, product } = data;
-
-  const rawFee = restaurant.deliveryFee ?? 0;
-  const deliveryFee =
-    typeof rawFee === "object" &&
-    rawFee !== null &&
-    typeof rawFee.toNumber === "function"
-      ? rawFee.toNumber()
-      : Number(rawFee);
-
-  console.log("deliveryFee: ", typeof deliveryFee, deliveryFee);
+  const { avatarImageUrl, name, isOpen, deliveryFee, consumptionMethods } =
+    restaurant;
 
   return (
     <div className="relative min-h-screen bg-yellow-50 sm:py-6">
@@ -34,10 +26,12 @@ export default async function ProductPage({ params }) {
         <HeaderImage image={product.imageUrl} alt={product.name} />
         <ProductDetails
           product={product}
-          restaurant={restaurant}
           additionalIngredients={additionalIngredients}
-          isOpen={restaurant.isOpen}
+          isOpen={isOpen}
           deliveryFee={deliveryFee}
+          avatarImageUrl={avatarImageUrl}
+          restaurantName={name}
+          consumptionMethods={consumptionMethods}
         />
       </div>
       <div className="fixed bottom-8 right-8 hidden lg:block">
