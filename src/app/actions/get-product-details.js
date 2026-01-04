@@ -94,7 +94,10 @@ export async function getProductDetails(restaurantSlug, productId) {
       additionalIngredients: serializedAdditionalIngredients,
     };
   } catch (err) {
-    console.error("Erro ao buscar detalhes do produto:", err);
-    return null;
+    console.error("ERRO CRÍTICO NA ACTION:", err);
+
+    // Em vez de retornar null (que gera o 404), vamos jogar o erro para cima
+    // para ver se o Next.js mostra algo mais útil ou use um valor de fallback
+    throw err;
   }
 }
