@@ -11,7 +11,6 @@ import Image from "next/image";
 
 const ProductDetails = ({
   product,
-  secondProduct,
   additionalIngredients,
   isOpen,
   deliveryFee,
@@ -30,20 +29,10 @@ const ProductDetails = ({
     setQuantity((prevQuantity) => prevQuantity + 1);
   };
 
-  const displayProduct = secondProduct
-    ? {
-        ...product,
-        name: `${product.name} + ${secondProduct.name}`,
-        price: Math.max(
-          Number(product.price ?? 0),
-          Number(secondProduct.price ?? 0),
-        ),
-        composite: [product, secondProduct],
-      }
-    : product;
+  const { name, price } = product;
 
   const handleAddToCart = () => {
-    addToCart(displayProduct, quantity);
+    addToCart(product, quantity);
   };
 
   return (
@@ -60,11 +49,11 @@ const ProductDetails = ({
             />
             <p className="text-sm text-muted-foreground">{restaurantName}</p>
           </div>
-          <p className="text-lg font-semibold">{displayProduct.name}</p>
+          <p className="text-lg font-semibold">{name}</p>
         </div>
         <div className="flex items-center justify-between py-4">
           <h3 className="text-lg font-semibold text-green-500">
-            {formatCurrency(displayProduct.price)}
+            {formatCurrency(price)}
           </h3>
           <div className="flex items-center gap-3 text-center">
             <Button
@@ -87,13 +76,13 @@ const ProductDetails = ({
       </div>
       <div className="flex-auto">
         <ProductDescription
-          product={displayProduct}
+          product={product}
           additionalIngredients={additionalIngredients}
           onExtrasChange={setExtras}
         />
       </div>
       <AddToBagButton
-        product={displayProduct}
+        product={product}
         quantity={quantity}
         extras={extras}
         isOpen={isOpen}
