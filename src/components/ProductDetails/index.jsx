@@ -44,7 +44,9 @@ const ProductDetails = ({
     addToCart(displayProduct, quantity);
   };
 
-  const deliveryFee = 4;
+  const deliveryFee = restaurant.deliveryFee;
+
+  console.log("DEliveryFee: ", deliveryFee);
 
   return (
     <section className="relative">

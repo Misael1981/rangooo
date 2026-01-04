@@ -28,7 +28,7 @@ export async function getProductDetails(restaurantSlug, productId) {
             avatarImageUrl: true,
             name: true,
             isOpen: true,
-            // deliveryFee: true,
+            deliveryFee: true,
             consumptionMethods: true,
             createdAt: true,
             updatedAt: true,
@@ -51,8 +51,15 @@ export async function getProductDetails(restaurantSlug, productId) {
     const { restaurant, ...restOfProduct } = product;
 
     const serializedRestaurant = {
-      ...restaurant,
+      id: restaurant.id,
+      slug: restaurant.slug,
+      name: restaurant.name,
+      avatarImageUrl: restaurant.avatarImageUrl,
+      brandColors: restaurant.brandColors,
+      isOpen: restaurant.isOpen,
+      category: restaurant.category,
       deliveryFee: Number(restaurant.deliveryFee ?? 0),
+      consumptionMethods: restaurant.consumptionMethods,
       createdAt: restaurant.createdAt?.toISOString() ?? null,
       updatedAt: restaurant.updatedAt?.toISOString() ?? null,
     };
