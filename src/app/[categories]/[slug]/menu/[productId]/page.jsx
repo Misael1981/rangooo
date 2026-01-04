@@ -15,6 +15,14 @@ export default async function ProductPage({ params }) {
 
   const { restaurant, additionalIngredients, product } = data;
 
+  const rawFee = restaurant.deliveryFee ?? 0;
+  const deliveryFee =
+    typeof rawFee === "object" &&
+    rawFee !== null &&
+    typeof rawFee.toNumber === "function"
+      ? rawFee.toNumber()
+      : Number(rawFee);
+
   return (
     <div className="relative min-h-screen bg-yellow-50 sm:py-6">
       <div className="fixed bottom-8 left-8 hidden lg:block">
@@ -27,6 +35,7 @@ export default async function ProductPage({ params }) {
           restaurant={restaurant}
           additionalIngredients={additionalIngredients}
           isOpen={restaurant.isOpen}
+          deliveryFee={deliveryFee}
         />
       </div>
       <div className="fixed bottom-8 right-8 hidden lg:block">

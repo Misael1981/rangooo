@@ -50,6 +50,14 @@ export async function getProductDetails(restaurantSlug, productId) {
 
     const { restaurant, ...restOfProduct } = product;
 
+    const rawFee = restaurant.deliveryFee ?? 0;
+    const deliveryFee =
+      typeof rawFee === "object" &&
+      rawFee !== null &&
+      typeof rawFee.toNumber === "function"
+        ? rawFee.toNumber()
+        : Number(rawFee);
+
     const serializedRestaurant = {
       id: restaurant.id,
       slug: restaurant.slug,
@@ -58,7 +66,7 @@ export async function getProductDetails(restaurantSlug, productId) {
       brandColors: restaurant.brandColors,
       isOpen: restaurant.isOpen,
       category: restaurant.category,
-      deliveryFee: Number(restaurant.deliveryFee ?? 0),
+      deliveryFee: deliveryFee,
       consumptionMethods: restaurant.consumptionMethods,
       createdAt: restaurant.createdAt?.toISOString() ?? null,
       updatedAt: restaurant.updatedAt?.toISOString() ?? null,

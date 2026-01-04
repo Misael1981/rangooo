@@ -8,7 +8,6 @@ import AddToBagButton from "../AddToBagButton";
 import { CartContext } from "@/app/contexts/cart";
 import ProductDescription from "../ProductDescription";
 import Image from "next/image";
-import { serializeDecimal } from "@/helpers/serialize-decimal";
 
 const ProductDetails = ({
   product,
@@ -16,6 +15,7 @@ const ProductDetails = ({
   secondProduct,
   additionalIngredients,
   isOpen,
+  deliveryFee,
 }) => {
   const [quantity, setQuantity] = useState(1);
   const [extras, setExtras] = useState([]);
@@ -43,10 +43,6 @@ const ProductDetails = ({
   const handleAddToCart = () => {
     addToCart(displayProduct, quantity);
   };
-
-  const deliveryFee = restaurant.deliveryFee;
-
-  console.log("DEliveryFee: ", deliveryFee);
 
   return (
     <section className="relative">
