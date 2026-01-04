@@ -3,7 +3,6 @@ import HeaderImage from "@/components/HeaderImage";
 import ProductDetails from "@/components/ProductDetails";
 import QrCode from "@/components/QrCode";
 import { db } from "@/lib/prisma";
-import { se } from "date-fns/locale";
 import { notFound } from "next/navigation";
 
 export default async function ProductPage({ params }) {
@@ -11,18 +10,33 @@ export default async function ProductPage({ params }) {
 
   const data = await getProductDetails(slug, productId);
 
-  // const deliveryFeeBase = await db.restaurant.findUnique({
-  //   where: { slug },
-  //   select: { deliveryFee: true },
-  // });
+  const deliveryFeeBase = await db.restaurant.findUnique({
+    where: { slug },
+    select: { deliveryFee: true },
+  });
 
-  // const deliveryFee = Number(deliveryFeeBase?.deliveryFee);
+  // Defensive parse: Prisma `Decimal` or unexpected values can break serialization in production.
+  let deliveryFee = 0;
+  try {
+    const raw = deliveryFeeBase?.deliveryFee;
+    if (raw !== undefined && raw !== null) {
+      const parsed = Number(String(raw));
+      deliveryFee = Number.isFinite(parsed) ? parsed : 0;
+    }
+  } catch (err) {
+    // Log to server logs (Vercel) to help debug production-only errors without leaking details to users.
+    console.error(
+      "Failed to parse deliveryFee for restaurant",
+      slug,
+      deliveryFeeBase,
+      err,
+    );
+    deliveryFee = 0;
+  }
 
   if (!data) {
     return notFound();
   }
-
-  const teste = 3;
 
   const { restaurant, additionalIngredients, product } = data;
   const { avatarImageUrl, name, isOpen, consumptionMethods } = restaurant;
@@ -38,7 +52,7 @@ export default async function ProductPage({ params }) {
           product={product}
           additionalIngredients={additionalIngredients}
           isOpen={isOpen}
-          deliveryFee={teste}
+          deliveryFee={deliveryFee}
           avatarImageUrl={avatarImageUrl}
           restaurantName={name}
           consumptionMethods={consumptionMethods}
