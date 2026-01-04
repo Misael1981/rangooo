@@ -11,16 +11,18 @@ export default async function ProductPage({ params }) {
 
   const data = await getProductDetails(slug, productId);
 
-  const deliveryFeeBase = await db.restaurant.findUnique({
-    where: { slug },
-    select: { deliveryFee: true },
-  });
+  // const deliveryFeeBase = await db.restaurant.findUnique({
+  //   where: { slug },
+  //   select: { deliveryFee: true },
+  // });
 
-  const deliveryFee = Number(deliveryFeeBase?.deliveryFee);
+  // const deliveryFee = Number(deliveryFeeBase?.deliveryFee);
 
   if (!data) {
     return notFound();
   }
+
+  const teste = 3;
 
   const { restaurant, additionalIngredients, product } = data;
   const { avatarImageUrl, name, isOpen, consumptionMethods } = restaurant;
@@ -36,7 +38,7 @@ export default async function ProductPage({ params }) {
           product={product}
           additionalIngredients={additionalIngredients}
           isOpen={isOpen}
-          deliveryFee={deliveryFee}
+          deliveryFee={teste}
           avatarImageUrl={avatarImageUrl}
           restaurantName={name}
           consumptionMethods={consumptionMethods}
