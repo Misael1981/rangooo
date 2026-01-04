@@ -17,6 +17,8 @@ export default async function ProductPage({ params }) {
   const { avatarImageUrl, name, isOpen, deliveryFee, consumptionMethods } =
     restaurant;
 
+  const deliveryFeeTeste = 3;
+
   return (
     <div className="relative min-h-screen bg-yellow-50 sm:py-6">
       <div className="fixed bottom-8 left-8 hidden lg:block">
@@ -28,7 +30,7 @@ export default async function ProductPage({ params }) {
           product={product}
           additionalIngredients={additionalIngredients}
           isOpen={isOpen}
-          deliveryFee={deliveryFee}
+          deliveryFee={deliveryFeeTeste}
           avatarImageUrl={avatarImageUrl}
           restaurantName={name}
           consumptionMethods={consumptionMethods}
