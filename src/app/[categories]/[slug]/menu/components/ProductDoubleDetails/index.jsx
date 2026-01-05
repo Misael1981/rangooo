@@ -8,6 +8,7 @@ import { useContext, useState } from "react";
 import { CartContext } from "@/app/contexts/cart";
 import AboutProducts from "../AboutProducts";
 import AddToBagButton from "@/components/AddToBagButton";
+import Image from "next/image";
 
 const ProductDoubleDetails = ({
   product,
@@ -49,12 +50,14 @@ const ProductDoubleDetails = ({
     <section className="relative -top-5 z-50 rounded-t-3xl bg-white p-4">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <LogoImage
-            restaurant={restaurant}
-            width={32}
-            height={32}
-            className="rounded-full"
+          <Image
+            src={restaurant.avatarImageUrl}
+            alt={restaurant.name}
+            width={24}
+            height={24}
+            className="rounded-lg"
           />
+
           <p className="text-sm text-muted-foreground">{restaurant.name}</p>
         </div>
         <div className="flex items-center gap-2">

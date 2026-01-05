@@ -16,7 +16,6 @@ export default async function ProductPage({ params }) {
       select: { deliveryFee: true },
     });
 
-    // Defensive parse: Prisma `Decimal` or unexpected values can break serialization in production.
     let deliveryFee = 0;
     try {
       const raw = deliveryFeeBase?.deliveryFee;
@@ -25,7 +24,6 @@ export default async function ProductPage({ params }) {
         deliveryFee = Number.isFinite(parsed) ? parsed : 0;
       }
     } catch (err) {
-      // Log to server logs (Vercel) to help debug production-only errors without leaking details to users.
       console.error(
         "Failed to parse deliveryFee for restaurant",
         slug,

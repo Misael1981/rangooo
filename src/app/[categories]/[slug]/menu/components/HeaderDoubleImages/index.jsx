@@ -1,14 +1,21 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ChevronLeftIcon, ScrollTextIcon } from "lucide-react";
+import { ChevronLeftIcon, ScrollTextIcon, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { CartContext } from "@/app/contexts/cart";
+import { useContext } from "react";
 
 const HeaderDoubleImages = ({ imageUrl1, imageUrl2, alt1, alt2 }) => {
+  const { toggleCart } = useContext(CartContext);
   const router = useRouter();
   const handleBack = () => {
     router.back();
+  };
+
+  const handleCartClick = () => {
+    toggleCart();
   };
   return (
     <div className="relative h-[332px] w-full">
@@ -34,8 +41,9 @@ const HeaderDoubleImages = ({ imageUrl1, imageUrl2, alt1, alt2 }) => {
         variant="secondary"
         size="icon"
         className="absolute right-4 top-4 z-20 rounded-full"
+        onClick={handleCartClick}
       >
-        <ScrollTextIcon />
+        <ShoppingCart />
       </Button>
     </div>
   );
