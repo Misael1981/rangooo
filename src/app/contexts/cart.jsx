@@ -38,7 +38,17 @@ export const CartProvider = ({ children }) => {
   };
 
   const addToCart = (product, quantity = 1, extras = [], fee = 0) => {
-    if (fee > 0) setDeliveryFee(Number(fee));
+    // Safely parse fee to handle Prisma Decimal or unexpected types in production.
+    let parsedFee = 0;
+    try {
+      if (fee !== undefined && fee !== null) {
+        const p = Number(String(fee));
+        parsedFee = Number.isFinite(p) ? p : 0;
+      }
+    } catch (e) {
+      parsedFee = 0;
+    }
+    if (parsedFee > 0) setDeliveryFee(parsedFee);
 
     setProducts((prevProducts) => {
       const compositeKey = product.composite
