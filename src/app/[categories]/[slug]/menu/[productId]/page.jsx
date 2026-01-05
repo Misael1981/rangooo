@@ -2,6 +2,7 @@ import { getProductDetails } from "@/app/actions/get-product-details";
 import HeaderImage from "@/components/HeaderImage";
 import ProductDetails from "@/components/ProductDetails";
 import QrCode from "@/components/QrCode";
+import { formatCurrency } from "@/helpers/format-currency";
 import { db } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
@@ -33,6 +34,10 @@ export default async function ProductPage({ params }) {
     );
     deliveryFee = 0;
   }
+
+  const deliveryFeeCurrency = formatCurrency(deliveryFee);
+
+  console.log("Delivery Fee Currency: ", deliveryFeeCurrency);
 
   if (!data) {
     return notFound();

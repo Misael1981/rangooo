@@ -13,6 +13,7 @@ import FinishOrder from "../FinishOrder";
 import { Button } from "../ui/button";
 import OrderSuccessfulDialog from "../FinishOrder/components/OrderSuccessfulDialog";
 import { useSearchParams } from "next/navigation";
+import { formatCurrency } from "@/helpers/format-currency";
 
 function SheetCart() {
   const searchParams = useSearchParams();
@@ -62,7 +63,7 @@ function SheetCart() {
                   Ingredientes Adicionais
                 </span>
                 <span className="text-sm text-green-500">
-                  R$ {extrasTotal.toFixed(2)}
+                  {formatCurrency(extrasTotal)}
                 </span>
               </div>
               {isDelivery && (
@@ -71,14 +72,14 @@ function SheetCart() {
                     Taxa de Entrega
                   </span>
                   <span className="text-sm font-medium text-green-500">
-                    R$ {deliveryFee.toFixed(2)}
+                    {formatCurrency(deliveryFee)}
                   </span>
                 </div>
               )}
               <div className="mt-4 flex w-full items-center justify-between">
                 <span className="text-lg font-bold">Total</span>
                 <span className="text-lg font-bold text-green-500">
-                  R$ {total.toFixed(2)}
+                  {formatCurrency(total)}
                 </span>
               </div>
             </div>
