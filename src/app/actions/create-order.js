@@ -63,7 +63,6 @@ export const createOrder = async (input) => {
       data: {
         userId: user.id,
         restaurantId: restaurant.id,
-        restaurantName: restaurant.name,
         orderNumber: nextOrderNumber,
         status: "PENDING",
         consumptionMethod: input.consumptionMethod,
@@ -98,7 +97,6 @@ export const createOrder = async (input) => {
           parsedExtras = [];
         }
 
-        // Agora sim, retorna o objeto formatado
         return {
           name: item.customName,
           quantity: item.quantity,
@@ -120,13 +118,19 @@ export const createOrder = async (input) => {
       createdAt: order.createdAt,
     };
 
-    const printId = await sendOrderToPrint(order.restaurantId, printData);
+    const printPromise = sendOrderToPrint(order.restaurantId, printData);
+    printPromise.catch(() => {});
 
-    // ✅ AQUI ESTÁ A CORREÇÃO PRINCIPAL
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout de impressão (5s)")), 5000),
+    );
+
+    const printId = await Promise.race([printPromise, timeoutPromise]);
+
     if (typeof printId === "string" && printId.length > 0) {
       await db.order.update({
         where: { id: order.id },
-        data: { printId }, // ← SEM boolean
+        data: { printId },
       });
 
       console.log(`✅ Pedido #${order.orderNumber} enviado para impressão`);
