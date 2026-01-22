@@ -1,3 +1,4 @@
+```
 "use server";
 
 import { db } from "@/lib/prisma";
@@ -19,7 +20,7 @@ export const createOrder = async (input) => {
       }),
       tx.restaurant.findUnique({
         where: { slug: input.slug },
-        select: { id: true, name: true },
+        select: { id: true },
       }),
     ]);
 
@@ -63,7 +64,6 @@ export const createOrder = async (input) => {
       data: {
         userId: user.id,
         restaurantId: restaurant.id,
-        restaurantName: restaurant.name,
         orderNumber: nextOrderNumber,
         status: "PENDING",
         consumptionMethod: input.consumptionMethod,
@@ -77,7 +77,6 @@ export const createOrder = async (input) => {
       include: {
         items: true,
         user: true,
-        restaurant: true,
       },
     });
   });
@@ -86,31 +85,14 @@ export const createOrder = async (input) => {
   try {
     const printData = {
       id: order.id,
-      restaurantName: order.restaurant.name,
       number: `#${String(order.orderNumber).padStart(2, "0")}`,
       customerName: order.user.name || "Cliente",
       customerPhone: order.user.phone || "",
-      items: order.items.map((item) => {
-        let parsedExtras = [];
-        try {
-          parsedExtras = item.extras ? JSON.parse(item.extras) : [];
-        } catch (e) {
-          parsedExtras = [];
-        }
-
-        // Agora sim, retorna o objeto formatado
-        return {
-          name: item.customName,
-          quantity: item.quantity,
-          price: Number(item.priceAtOrder),
-          // Mapeia apenas os nomes para a impressora não receber lixo
-          extras: Array.isArray(parsedExtras)
-            ? parsedExtras.map((e) =>
-                typeof e === "string" ? e : e.name || e.title,
-              )
-            : [],
-        };
-      }),
+      items: order.items.map((item) => ({
+        name: item.customName,
+        quantity: item.quantity,
+        price: Number(item.priceAtOrder),
+      })),
       subtotal: Number(order.totalAmount) - Number(order.deliveryFee ?? 0),
       deliveryFee: Number(order.deliveryFee ?? 0),
       total: Number(order.totalAmount),
@@ -149,3 +131,4 @@ export const createOrder = async (input) => {
     })),
   };
 };
+```
