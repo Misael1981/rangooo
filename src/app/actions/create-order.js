@@ -27,7 +27,6 @@ export const createOrder = async (input) => {
       throw new Error("User or restaurant not found");
     }
 
-    // Número sequencial diário
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -39,7 +38,6 @@ export const createOrder = async (input) => {
     });
 
     const nextOrderNumber = ordersToday + 1;
-
     let totalAmount = 0;
 
     const itemsData = input.products.map((p) => {
@@ -74,9 +72,17 @@ export const createOrder = async (input) => {
         },
       },
       include: {
-        items: true,
         user: true,
         restaurant: true,
+        items: {
+          include: {
+            product: {
+              include: {
+                menuCategory: true, // 🔥 BUSCANDO A CATEGORIA NO BANCO
+              },
+            },
+          },
+        },
       },
     });
   });
@@ -99,9 +105,10 @@ export const createOrder = async (input) => {
 
         return {
           name: item.customName,
+          // 🔥 ENVIANDO A CATEGORIA PARA O AGENTE
+          category: item.product?.menuCategory?.name || "Geral",
           quantity: item.quantity,
           price: Number(item.priceAtOrder),
-          // Mapeia apenas os nomes para a impressora não receber lixo
           extras: Array.isArray(parsedExtras)
             ? parsedExtras.map((e) =>
                 typeof e === "string" ? e : e.name || e.title,
@@ -113,7 +120,7 @@ export const createOrder = async (input) => {
       deliveryFee: Number(order.deliveryFee ?? 0),
       total: Number(order.totalAmount),
       paymentMethod: input.paymentMethod || "Não informado",
-      deliveryAddress: input.deliveryAddress || "",
+      deliveryAddress: order.deliveryAddress || "", // Usando o do objeto salvo
       notes: input.notes || "",
       createdAt: order.createdAt,
     };
@@ -132,7 +139,6 @@ export const createOrder = async (input) => {
         where: { id: order.id },
         data: { printId },
       });
-
       console.log(`✅ Pedido #${order.orderNumber} enviado para impressão`);
     }
   } catch (err) {
@@ -142,7 +148,6 @@ export const createOrder = async (input) => {
     );
   }
 
-  // 3. Retorno seguro
   return {
     ...order,
     totalAmount: Number(order.totalAmount),
