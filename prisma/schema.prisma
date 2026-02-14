@@ -1,0 +1,405 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String    @id @default(uuid())
+  name               String
+  email              String    @unique
+  emailVerified      DateTime? @map("email_verified")
+  image              String?
+  phone              String?
+  addresses          Address[]
+  isProfileCompleted Boolean   @default(false)
+
+  role Role @default(CLIENT)
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  password        String?          @map("hashed_password")
+  orders          Order[]
+  restaurants     Restaurant[]
+  restaurantRoles RestaurantUser[]
+  accounts        Account[]
+  sessions        Session[]
+
+  @@map("users")
+}
+
+model Address {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name         String? // Ex: "Casa", "Trabalho"
+  cep          String?
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  reference    String?
+  areaType     AreaType @default(URBAN)
+  city         String
+  state        String   @db.Char(2)
+  isDefault    Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([city])
+  @@map("addresses")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model LeadApplication {
+  id             String             @id @default(cuid())
+  name           String
+  email          String
+  phone          String
+  restaurantName String
+  notes          String?
+  status         LeadStatus         @default(PENDING)
+  approvedAt     DateTime?
+  approvedBy     String?
+  createdAt      DateTime           @default(now())
+  city           String
+  state          String
+  invites        EnrollmentInvite[]
+
+  @@unique([email, status])
+  @@index([status, createdAt])
+}
+
+model EnrollmentInvite {
+  id        String          @id @default(cuid())
+  leadId    String
+  email     String
+  token     String          @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  status    InviteStatus    @default(PENDING)
+  createdAt DateTime        @default(now())
+  lead      LeadApplication @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([status, expiresAt])
+}
+
+model Restaurant {
+  id                 String                        @id @default(uuid())
+  ownerId            String
+  name               String
+  slug               String                        @unique
+  description        String?
+  avatarImageUrl     String?
+  coverImageUrl      String?
+  latitude           Decimal
+  longitude          Decimal
+  isOpen             Boolean                       @default(true)
+  createdAt          DateTime                      @default(now())
+  updatedAt          DateTime                      @updatedAt
+  brandColors        Json?
+  socialMedia        Json?
+  city               String?
+  complement         String?
+  neighborhood       String?
+  number             String?
+  state              String?                       @db.VarChar(2)
+  street             String?
+  zipCode            String?
+  email              String?
+  agentVersion       String?
+  lastPrintedAt      DateTime?
+  printerConfig      Json?
+  printerStatus      String?                       @default("disconnected")
+  printerType        String?
+  printingToken      String?                       @unique
+  deliveryFee        Decimal?                      @db.Decimal(6, 2)
+  category           RestaurantCategory            @default(RESTAURANT)
+  businessHours      BusinessHours[]
+  contacts           ContactNumber[]
+  menuCategories     MenuCategory[]
+  orders             Order[]
+  products           Product[]
+  owner              User                          @relation(fields: [ownerId], references: [id])
+  consumptionMethods RestaurantConsumptionMethod[]
+  paymentMethods     RestaurantPaymentMethod[]
+  users              RestaurantUser[]
+
+  @@index([ownerId])
+}
+
+model RestaurantUser {
+  id           String         @id @default(uuid())
+  userId       String
+  restaurantId String
+  role         RestaurantRole @default(MANAGER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  restaurant   Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, restaurantId])
+  @@index([restaurantId])
+}
+
+model RestaurantConsumptionMethod {
+  id           String            @id @default(cuid())
+  restaurantId String
+  method       ConsumptionMethod
+  isActive     Boolean           @default(true)
+  displayOrder Int               @default(0)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  restaurant   Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, method])
+  @@index([restaurantId, isActive])
+}
+
+model ContactNumber {
+  id           String      @id @default(cuid())
+  restaurantId String
+  type         ContactType
+  number       String
+  label        String?
+  isPrimary    Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([restaurantId, type])
+}
+
+model BusinessHours {
+  id           String     @id @default(cuid())
+  restaurantId String
+  dayOfWeek    Int
+  timeSlots    Json
+  isClosed     Boolean    @default(false)
+  displayOrder Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, dayOfWeek])
+  @@index([restaurantId, dayOfWeek])
+}
+
+model RestaurantPaymentMethod {
+  id           String        @id @default(cuid())
+  restaurantId String
+  method       PaymentMethod
+  cardBrands   CardBrand[]
+  isActive     Boolean       @default(true)
+  description  String?
+  displayOrder Int           @default(0)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  restaurant   Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, method])
+  @@index([restaurantId, isActive])
+}
+
+model MenuCategory {
+  id                    String                 @id @default(uuid())
+  name                  String
+  restaurantId          String
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  displayOrder          Int                    @default(0)
+  additionalIngredients AdditionalIngredient[]
+  restaurant            Restaurant             @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  products              Product[]
+}
+
+model Product {
+  id             String       @id @default(uuid())
+  restaurantId   String
+  name           String
+  description    String?
+  price          Decimal      @db.Decimal(6, 2)
+  imageUrl       String?
+  ingredients    String[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  menuCategoryId String
+  orderItems     OrderItem[]
+  menuCategory   MenuCategory @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
+  restaurant     Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model AdditionalIngredient {
+  id             String       @id @default(cuid())
+  name           String
+  price          Decimal      @db.Decimal(6, 2)
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  menuCategoryId String       @map("menu_category_id")
+  menuCategory   MenuCategory @relation(fields: [menuCategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([menuCategoryId, name])
+  @@index([menuCategoryId])
+}
+
+model Order {
+  id                String            @id @default(uuid())
+  userId            String
+  restaurantId      String
+  totalAmount       Decimal           @db.Decimal(10, 2)
+  deliveryFee       Decimal           @default(0) @db.Decimal(6, 2)
+  status            OrderStatus       @default(PENDING)
+  consumptionMethod ConsumptionMethod @default(DELIVERY)
+  deliveryAddress   Json?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  customName        String?
+  extras            String?
+  orderNumber       Int?
+  printId           String?
+  restaurant        Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items             OrderItem[]
+}
+
+model OrderItem {
+  id                    String   @id @default(uuid())
+  orderId               String
+  productId             String
+  quantity              Int
+  priceAtOrder          Decimal  @db.Decimal(6, 2)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  additionalIngredients Json?
+  customName            String?
+  extras                String?
+  order                 Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product               Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+enum InviteStatus {
+  PENDING
+  USED
+  EXPIRED
+}
+
+enum LeadStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum RestaurantCategory {
+  RESTAURANT
+  PIZZARIA
+  HAMBURGUERIA
+  SORVETERIA
+  ACAI
+  SAUDAVEL
+  DOCES
+}
+
+enum Role {
+  CLIENT
+  RESTAURANT_OWNER
+  DELIVERY_PERSON
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY_FOR_PICKUP
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELED
+}
+
+enum ConsumptionMethod {
+  DELIVERY
+  PICKUP
+  DINE_IN
+}
+
+enum ContactType {
+  PHONE
+  WHATSAPP
+}
+
+enum PaymentMethod {
+  CASH
+  PIX
+  CREDIT_CARD
+  DEBIT_CARD
+  MEAL_VOUCHER
+  FOOD_VOUCHER
+  ONLINE
+}
+
+enum CardBrand {
+  VISA
+  MASTERCARD
+  ELO
+  AMERICAN_EXPRESS
+  HIPERCARD
+  DINERS_CLUB
+  DISCOVER
+  AURA
+}
+
+enum RestaurantRole {
+  OWNER
+  MANAGER
+  EMPLOYEE
+  VIEWER
+}
+
+enum AreaType {
+  URBAN
+  RURAL
+  DISTRICT
+}
