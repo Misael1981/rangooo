@@ -37,4 +37,8 @@ export type CheckoutState = {
   };
 
   payment?: PaymentFormData;
+
+  pickupDetails?: {
+    estimatedTime: string;
+  };
 };

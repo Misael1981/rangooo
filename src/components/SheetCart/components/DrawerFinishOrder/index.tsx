@@ -106,7 +106,14 @@ const DrawerFinishOrder = ({ open, setOpen }: DrawerFinishOrderProps) => {
             />
           )}
 
-          {consumptionMethod === "PICKUP" && <FinishPickup />}
+          {consumptionMethod === "PICKUP" && (
+            <FinishPickup
+              checkoutState={checkoutState}
+              onUpdateState={updateCheckoutData}
+              onFinalButtonClick={handleFinalButtonClick}
+              onCancel={handleCancel}
+            />
+          )}
 
           {consumptionMethod === "DINE_IN" && <FinishDineIn />}
         </div>
