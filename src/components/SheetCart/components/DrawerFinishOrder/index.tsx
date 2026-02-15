@@ -115,7 +115,14 @@ const DrawerFinishOrder = ({ open, setOpen }: DrawerFinishOrderProps) => {
             />
           )}
 
-          {consumptionMethod === "DINE_IN" && <FinishDineIn />}
+          {consumptionMethod === "DINE_IN" && (
+            <FinishDineIn
+              onCancel={handleCancel}
+              checkoutState={checkoutState}
+              onUpdateState={updateCheckoutData}
+              onFinalButtonClick={handleFinalButtonClick}
+            />
+          )}
         </div>
         <DrawerFooter></DrawerFooter>
       </DrawerContent>

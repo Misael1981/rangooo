@@ -41,4 +41,8 @@ export type CheckoutState = {
   pickupDetails?: {
     estimatedTime: string;
   };
+
+  dineInDetails?: {
+    tableNumber: string;
+  };
 };
