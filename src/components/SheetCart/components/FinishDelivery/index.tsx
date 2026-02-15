@@ -33,6 +33,8 @@ const FinishDelivery = ({
   const [userClosedModal, setUserClosedModal] = useState(false);
   const [isFinalStep, setIsFinalStep] = useState(false);
 
+  console.log(session, isFinalStep);
+
   const isLogged = status === "authenticated";
 
   const handleLogin = (provider: "google" | "facebook") => {

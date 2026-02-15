@@ -1,9 +1,8 @@
 import { UserDTO } from "@/dtos/profile-status.dto";
 import { CheckCircle2, CreditCard, MapPin } from "lucide-react";
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useMemo, useState } from "react";
 import AddressStep from "./components/AddressStep";
 import PaymentStep, { PaymentFormData } from "./components/PaymentStep";
-import ConfirmStep from "./components/ConfirmStep";
 import {
   Card,
   CardContent,
@@ -13,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckoutState } from "@/dtos/finish-order.dto";
+import ConfirmStep from "./components/ConfirmStep";
 
 type CheckoutWizardDeliveryProps = {
   user: UserDTO | null;
@@ -65,25 +65,31 @@ const CheckoutWizardDelivery = ({
 
   const defaultAddress = user?.addresses?.find((addr) => addr.isDefault);
 
-  const userAddress = defaultAddress && {
-    street: defaultAddress.street,
-    number: defaultAddress.number,
-    complement: defaultAddress.complement,
-    neighborhood: defaultAddress.neighborhood,
-    city: defaultAddress.city,
-    reference: defaultAddress.reference,
-    areaType: defaultAddress.areaType,
-  };
+  const userAddress = useMemo(() => {
+    if (!defaultAddress) return undefined;
+
+    return {
+      street: defaultAddress.street,
+      number: defaultAddress.number,
+      complement: defaultAddress.complement,
+      neighborhood: defaultAddress.neighborhood,
+      city: defaultAddress.city,
+      reference: defaultAddress.reference,
+      areaType: defaultAddress.areaType,
+    };
+  }, [defaultAddress]);
+
+  const deliveryAddress = checkoutState.delivery?.address;
 
   useEffect(() => {
-    if (userAddress && !checkoutState.delivery?.address) {
+    if (userAddress && !deliveryAddress) {
       onUpdateState("delivery", { address: userAddress });
     }
 
     if (typeof onStepChange === "function") {
       onStepChange(isFinalStep);
     }
-  }, [isFinalStep, onStepChange, userAddress, checkoutState.delivery?.address]);
+  }, [isFinalStep, onStepChange, userAddress, deliveryAddress, onUpdateState]);
 
   const handlePaymentUpdate = <K extends keyof PaymentFormData>(
     field: K,
