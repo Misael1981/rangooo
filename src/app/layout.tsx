@@ -4,6 +4,7 @@ import AuthProvider from "@/providers/auth";
 import { Toaster } from "sonner";
 import { CartProvider } from "@/contexts/cart-context";
 import SheetCart from "@/components/SheetCart";
+import { Suspense } from "react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,11 +48,12 @@ export default function RootLayout({
         className={`${inter.variable} ${plusJakartaSans.variable} antialiased`}
       >
         <AuthProvider>
-          {/* Use o Provider, não o Context diretamente */}
           <CartProvider>
-            {children}
-            <Toaster />
-            <SheetCart />
+            <Suspense fallback={null}>
+              {children}
+              <Toaster />
+              <SheetCart />
+            </Suspense>
           </CartProvider>
         </AuthProvider>
       </body>

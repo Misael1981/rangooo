@@ -12,7 +12,7 @@ export interface CartItem {
   quantity: number;
   extras: ManageableIngredient[];
   consumptionMethod: ConsumptionMethod | string;
-  deliveryFee: number;
+  deliveryFee?: number;
   //removedIngredients: string[];
   isDouble?: boolean;
   flavor2?: {
