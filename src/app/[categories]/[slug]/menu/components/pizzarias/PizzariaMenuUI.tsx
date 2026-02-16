@@ -18,6 +18,7 @@ const PizzariaMenuUI = ({ establishment }: PizzariaMenuUIProps) => {
     neighborhood,
     city,
     state,
+    category,
   } = establishment;
 
   const establishmentData = {
@@ -29,6 +30,7 @@ const PizzariaMenuUI = ({ establishment }: PizzariaMenuUIProps) => {
     neighborhood,
     city,
     state,
+    category,
   };
 
   return (
@@ -41,7 +43,11 @@ const PizzariaMenuUI = ({ establishment }: PizzariaMenuUIProps) => {
         <EstablishmentDescriptionForMenu
           establishmentData={establishmentData}
         />
-        <BusinessInfo slug={establishment.slug} isOpen={establishment.isOpen} />
+        <BusinessInfo
+          slug={establishment.slug}
+          isOpen={establishment.isOpen}
+          categorie={establishment.category}
+        />
 
         <SelectionMenu
           menuCategories={establishment.menuCategories}

@@ -4,23 +4,26 @@ import { BsCreditCard, BsClock, BsInfoCircle } from "react-icons/bs";
 type BusinessInfoProps = {
   slug: string;
   isOpen: boolean;
+  categorie: string;
 };
 
-const BusinessInfo = ({ slug, isOpen }: BusinessInfoProps) => {
+const BusinessInfo = ({ slug, isOpen, categorie }: BusinessInfoProps) => {
+  const categories = categorie.toLowerCase();
+
   const linksInfos = [
     {
       label: "Pagamentos",
-      href: `/infos/modos-pagamento?slug=${slug}`,
+      href: `/${categories}s/${slug}/sobre/modos-pagamento`,
       icon: <BsCreditCard size={24} />,
     },
     {
       label: "Horários",
-      href: `/infos/horarios?slug=${slug}`,
+      href: `/${categories}s/${slug}/sobre/horarios`,
       icon: <BsClock size={24} />,
     },
     {
       label: "Informações",
-      href: `/infos/sobre-o-estabelecimento?slug=${slug}`,
+      href: `/${categories}s/${slug}/sobre/contato`,
       icon: <BsInfoCircle size={24} />,
     },
   ];
@@ -40,9 +43,9 @@ const BusinessInfo = ({ slug, isOpen }: BusinessInfoProps) => {
         ))}
       </ul>
       <div className="flex flex-col items-center justify-center">
-        <h4>Funcionamento</h4>
+        <h4 className="text-center">Funcionamento</h4>
         {isOpen ? (
-          <p className="text-lg text-green-500">Aberto</p>
+          <p className="text-lg text-green-500 text-center">Aberto</p>
         ) : (
           <p className="text-lg text-red-500">Fechado</p>
         )}
