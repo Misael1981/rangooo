@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { sendOrderToPrint } from "@/lib/send-order-to-print";
 import { CreateOrderInputDTO, OrderResponseDTO } from "@/dtos/create-order.dto";
 import { parseExtras } from "@/helpers/parse-extras";
+import { serializeOrder } from "@/helpers/serialize-order";
 export const createOrder = async (
   input: CreateOrderInputDTO,
 ): Promise<OrderResponseDTO> => {
@@ -150,5 +151,5 @@ export const createOrder = async (
     console.warn(`⚠️ Erro na impressão do pedido #${order.orderNumber}:`, err);
   }
 
-  return order;
+  return serializeOrder(order);
 };

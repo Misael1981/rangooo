@@ -1,4 +1,4 @@
-export function MyOrdersPage() {
+export default function MyOrdersPage() {
   return (
     <>
       <h1>Meus Pedidos</h1>
