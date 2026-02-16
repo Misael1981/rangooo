@@ -8,7 +8,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import FinishDelivery from "../FinishDelivery";
 import { useProfileStatus } from "@/hooks/use-profile-status";
 import FinishPickup from "../FinishPickup";
@@ -18,10 +18,11 @@ import { createOrder } from "@/app/action/create-order";
 import { useCart } from "@/contexts/cart-context";
 import { toast } from "sonner";
 import FinishDineIn from "../FinishDineIn";
+import OrderSuccessfulDialog from "@/components/OrderSuccessfulDialog";
 
 type DrawerFinishOrderProps = {
   open: boolean;
-  setOpen: (open: boolean) => void;
+  onOpenChange: (open: boolean) => void; // Nome padrão do Shadcn
 };
 
 const METHOD_MAP = [
@@ -32,10 +33,10 @@ const METHOD_MAP = [
 
 type ConsumptionMethod = (typeof METHOD_MAP)[number]["value"];
 
-const DrawerFinishOrder = ({ open, setOpen }: DrawerFinishOrderProps) => {
+const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
+  const [openOrderSuccess, setOpenOrderSuccess] = useState(false);
   const sp = useSearchParams();
   const methodParam = sp.get("consumptionMethod");
-  const router = useRouter();
   const { products, clearCart, toogleCart, deliveryFee } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const params = useParams();
@@ -108,12 +109,13 @@ const DrawerFinishOrder = ({ open, setOpen }: DrawerFinishOrderProps) => {
         toast.success("Pedido enviado com sucesso! 🚀");
 
         clearCart();
-        setOpen(false);
+        onOpenChange(false);
+        setOpenOrderSuccess(true);
         toogleCart();
-        router.back();
       }
     } catch (error) {
       console.error("Erro ao finalizar pedido:", error);
+      console.log(isSubmitting);
       toast.error("Vixi! Algo deu errado ao processar seu pedido.");
     } finally {
       setIsSubmitting(false);
@@ -121,49 +123,55 @@ const DrawerFinishOrder = ({ open, setOpen }: DrawerFinishOrderProps) => {
   };
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle className="text-2xl font-bold text-red-500">
-            Quase lá!
-          </DrawerTitle>
-          <DrawerDescription>
-            Método de consumo: {methodLabel}
-          </DrawerDescription>
-        </DrawerHeader>
-        <div className="flex-1 overflow-y-auto px-1">
-          {consumptionMethod === "DELIVERY" && (
-            <FinishDelivery
-              isProfileCompleted={isProfileCompleted}
-              userData={userData}
-              onCancel={handleCancel}
-              checkoutState={checkoutState}
-              onUpdateState={updateCheckoutData}
-              onSubmit={handleSubmit}
-            />
-          )}
+    <>
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle className="text-2xl font-bold text-red-500">
+              Quase lá!
+            </DrawerTitle>
+            <DrawerDescription>
+              Método de consumo: {methodLabel}
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="flex-1 overflow-y-auto px-1">
+            {consumptionMethod === "DELIVERY" && (
+              <FinishDelivery
+                isProfileCompleted={isProfileCompleted}
+                userData={userData}
+                onCancel={handleCancel}
+                checkoutState={checkoutState}
+                onUpdateState={updateCheckoutData}
+                onSubmit={handleSubmit}
+              />
+            )}
 
-          {consumptionMethod === "PICKUP" && (
-            <FinishPickup
-              checkoutState={checkoutState}
-              onUpdateState={updateCheckoutData}
-              onSubmit={handleSubmit}
-              onCancel={handleCancel}
-            />
-          )}
+            {consumptionMethod === "PICKUP" && (
+              <FinishPickup
+                checkoutState={checkoutState}
+                onUpdateState={updateCheckoutData}
+                onSubmit={handleSubmit}
+                onCancel={handleCancel}
+              />
+            )}
 
-          {consumptionMethod === "DINE_IN" && (
-            <FinishDineIn
-              onCancel={handleCancel}
-              checkoutState={checkoutState}
-              onUpdateState={updateCheckoutData}
-              onSubmit={handleSubmit}
-            />
-          )}
-        </div>
-        <DrawerFooter></DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+            {consumptionMethod === "DINE_IN" && (
+              <FinishDineIn
+                onCancel={handleCancel}
+                checkoutState={checkoutState}
+                onUpdateState={updateCheckoutData}
+                onSubmit={handleSubmit}
+              />
+            )}
+          </div>
+          <DrawerFooter></DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+      <OrderSuccessfulDialog
+        isOpen={openOrderSuccess}
+        onOpenChange={setOpenOrderSuccess}
+      />
+    </>
   );
 };
 

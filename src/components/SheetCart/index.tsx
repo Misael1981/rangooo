@@ -95,7 +95,7 @@ function SheetCart() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
-      <DrawerFinishOrder open={openDrawer} setOpen={setOpenDrawer} />
+      <DrawerFinishOrder open={openDrawer} onOpenChange={setOpenDrawer} />
     </>
   );
 }
