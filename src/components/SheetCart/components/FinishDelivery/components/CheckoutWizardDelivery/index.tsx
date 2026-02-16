@@ -23,7 +23,7 @@ type CheckoutWizardDeliveryProps = {
     key: keyof CheckoutState,
     value: CheckoutState[keyof CheckoutState],
   ) => void;
-  onFinalButtonClick: () => void;
+  onSubmit: (checkoutState: CheckoutState) => void;
 };
 
 const steps = [
@@ -38,7 +38,7 @@ const CheckoutWizardDelivery = ({
   onCancel,
   checkoutState,
   onUpdateState,
-  onFinalButtonClick,
+  onSubmit,
 }: CheckoutWizardDeliveryProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formPaymentData, setFormPaymentData] = useState<PaymentFormData>({
@@ -174,7 +174,7 @@ const CheckoutWizardDelivery = ({
             {isFinalStep ? (
               <Button
                 className="bg-green-600 hover:bg-green-700"
-                onClick={onFinalButtonClick}
+                onClick={() => onSubmit(checkoutState)}
               >
                 Finalizar Pedido
               </Button>

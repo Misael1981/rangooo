@@ -32,6 +32,7 @@ interface CartContextData {
   deliveryFee: number;
   totalFinal: number;
   consumptionMethod: "DELIVERY" | "PICKUP" | "DINE_IN" | null;
+  clearCart: () => void;
   setDeliveryFee: (fee: number) => void;
   addToCart: (item: CartItem) => void;
   toogleCart: () => void;
@@ -56,6 +57,7 @@ export const CartContext = createContext<CartContextData>({
   removeProduct: () => {},
   consumptionMethod: null,
   setConsumptionMethod: () => {},
+  clearCart: () => {},
 } as CartContextData);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
@@ -151,6 +153,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  const clearCart = () => {
+    setProducts([]);
+    setDeliveryFee(0);
+    setConsumptionMethod(null);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -161,6 +169,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         totalPrice,
         totalFinal,
         consumptionMethod,
+        clearCart,
         setConsumptionMethod: updateConsumptionMethod,
         addToCart,
         toogleCart,

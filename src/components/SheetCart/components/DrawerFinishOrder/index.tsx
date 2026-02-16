@@ -8,13 +8,16 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import FinishDelivery from "../FinishDelivery";
 import { useProfileStatus } from "@/hooks/use-profile-status";
 import FinishPickup from "../FinishPickup";
-import FinishDineIn from "../FinishDineIn";
 import { CheckoutState } from "@/dtos/finish-order.dto";
 import { useEffect, useState } from "react";
+import { createOrder } from "@/app/action/create-order";
+import { useCart } from "@/contexts/cart-context";
+import { toast } from "sonner";
+import FinishDineIn from "../FinishDineIn";
 
 type DrawerFinishOrderProps = {
   open: boolean;
@@ -32,6 +35,11 @@ type ConsumptionMethod = (typeof METHOD_MAP)[number]["value"];
 const DrawerFinishOrder = ({ open, setOpen }: DrawerFinishOrderProps) => {
   const sp = useSearchParams();
   const methodParam = sp.get("consumptionMethod");
+  const router = useRouter();
+  const { products, clearCart, toogleCart, deliveryFee } = useCart();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const params = useParams();
+  const slug = params.slug as string;
 
   const consumptionMethod: ConsumptionMethod = METHOD_MAP.some(
     (m) => m.value === methodParam,
@@ -75,12 +83,41 @@ const DrawerFinishOrder = ({ open, setOpen }: DrawerFinishOrderProps) => {
     }));
   };
 
-  const handleFinalButtonClick = () => {
-    console.log("Finalizar pedido");
-  };
-
   const handleCancel = () => {
     window.history.back();
+  };
+
+  const handleSubmit = async (checkoutState: CheckoutState) => {
+    if (products.length === 0) return toast.error("Seu carrinho está vazio!");
+
+    try {
+      setIsSubmitting(true);
+
+      const result = await createOrder({
+        ...checkoutState,
+        products: products,
+        slug: slug,
+        deliveryFee: deliveryFee,
+        customer: {
+          name: checkoutState.customer?.name ?? undefined,
+          phone: checkoutState.customer?.phone ?? undefined,
+        },
+      });
+
+      if (result) {
+        toast.success("Pedido enviado com sucesso! 🚀");
+
+        clearCart();
+        setOpen(false);
+        toogleCart();
+        router.back();
+      }
+    } catch (error) {
+      console.error("Erro ao finalizar pedido:", error);
+      toast.error("Vixi! Algo deu errado ao processar seu pedido.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -99,10 +136,10 @@ const DrawerFinishOrder = ({ open, setOpen }: DrawerFinishOrderProps) => {
             <FinishDelivery
               isProfileCompleted={isProfileCompleted}
               userData={userData}
-              onFinalButtonClick={handleFinalButtonClick}
               onCancel={handleCancel}
               checkoutState={checkoutState}
               onUpdateState={updateCheckoutData}
+              onSubmit={handleSubmit}
             />
           )}
 
@@ -110,7 +147,7 @@ const DrawerFinishOrder = ({ open, setOpen }: DrawerFinishOrderProps) => {
             <FinishPickup
               checkoutState={checkoutState}
               onUpdateState={updateCheckoutData}
-              onFinalButtonClick={handleFinalButtonClick}
+              onSubmit={handleSubmit}
               onCancel={handleCancel}
             />
           )}
@@ -120,7 +157,7 @@ const DrawerFinishOrder = ({ open, setOpen }: DrawerFinishOrderProps) => {
               onCancel={handleCancel}
               checkoutState={checkoutState}
               onUpdateState={updateCheckoutData}
-              onFinalButtonClick={handleFinalButtonClick}
+              onSubmit={handleSubmit}
             />
           )}
         </div>

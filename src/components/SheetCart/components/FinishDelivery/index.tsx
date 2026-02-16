@@ -15,17 +15,17 @@ type FinishDeliveryProps = {
     key: keyof CheckoutState,
     value: CheckoutState[keyof CheckoutState],
   ) => void;
-  onFinalButtonClick: () => void;
   onCancel: () => void;
+  onSubmit: (checkoutState: CheckoutState) => void;
 };
 
 const FinishDelivery = ({
   isProfileCompleted,
   userData,
-  onFinalButtonClick,
   onCancel,
   checkoutState,
   onUpdateState,
+  onSubmit,
 }: FinishDeliveryProps) => {
   const { data: session, status } = useSession();
 
@@ -72,7 +72,7 @@ const FinishDelivery = ({
               onUpdateState={onUpdateState}
               onStepChange={setIsFinalStep}
               onCancel={onCancel}
-              onFinalButtonClick={onFinalButtonClick}
+              onSubmit={onSubmit}
             />
           )}
         </div>

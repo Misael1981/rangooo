@@ -18,7 +18,7 @@ type FinishPickupProps = {
     key: keyof CheckoutState,
     value: CheckoutState[keyof CheckoutState],
   ) => void;
-  onFinalButtonClick: () => void;
+  onSubmit: (checkoutState: CheckoutState) => void;
   onCancel: () => void;
 };
 
@@ -28,12 +28,14 @@ const steps = [
 ];
 
 const FinishPickup = ({
-  onFinalButtonClick,
+  onSubmit,
   onCancel,
   checkoutState,
   onUpdateState,
 }: FinishPickupProps) => {
   const [currentStep, setCurrentStep] = useState(0);
+
+  const isFinalStep = currentStep === steps.length - 1;
 
   const stepComponents: Record<number, JSX.Element> = {
     0: <InfoStep checkoutState={checkoutState} onUpdateState={onUpdateState} />,
@@ -43,8 +45,6 @@ const FinishPickup = ({
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
-    } else {
-      onFinalButtonClick();
     }
   };
 
@@ -102,19 +102,25 @@ const FinishPickup = ({
         </AnimatePresence>
       </CardContent>
       {/* Navigation Buttons */}
-      <CardFooter className="border-t bg-background sticky bottom-0 py-0">
-        <div className=" flex justify-between w-full">
+      <CardFooter className="border-t bg-background sticky bottom-0">
+        <div className="w-full flex justify-between">
           <Button
             variant="outline"
             onClick={currentStep === 0 ? onCancel : prevStep}
           >
             {currentStep === 0 ? "Cancelar" : "Voltar"}
           </Button>
-          <Button onClick={nextStep}>
-            {currentStep === steps.length - 1
-              ? "Finalizar Pedido"
-              : "Continuar"}
-          </Button>
+
+          {isFinalStep ? (
+            <Button
+              className="bg-green-600 hover:bg-green-700"
+              onClick={() => onSubmit(checkoutState)}
+            >
+              Finalizar Pedido
+            </Button>
+          ) : (
+            <Button onClick={nextStep}>Continuar</Button>
+          )}
         </div>
       </CardFooter>
     </Card>

@@ -18,8 +18,8 @@ type FinishDineInProps = {
     key: keyof CheckoutState,
     value: CheckoutState[keyof CheckoutState],
   ) => void;
-  onFinalButtonClick: () => void;
   onCancel: () => void;
+  onSubmit: (checkoutState: CheckoutState) => void;
 };
 
 const steps = [
@@ -31,9 +31,11 @@ const FinishDineIn = ({
   onCancel,
   checkoutState,
   onUpdateState,
-  onFinalButtonClick,
+  onSubmit,
 }: FinishDineInProps) => {
   const [currentStep, setCurrentStep] = useState(0);
+
+  const isFinalStep = currentStep === steps.length - 1;
 
   const stepComponents: Record<number, JSX.Element> = {
     0: (
@@ -45,8 +47,6 @@ const FinishDineIn = ({
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
-    } else {
-      console.log("Finalizar pedido");
     }
   };
 
@@ -107,18 +107,24 @@ const FinishDineIn = ({
         </CardContent>
         {/* Navigation Buttons */}
         <CardFooter className="border-t bg-background sticky bottom-0">
-          <div className="mt-6 flex justify-between">
+          <div className="w-full flex justify-between">
             <Button
               variant="outline"
               onClick={currentStep === 0 ? onCancel : prevStep}
             >
               {currentStep === 0 ? "Cancelar" : "Voltar"}
             </Button>
-            <Button onClick={nextStep}>
-              {currentStep === steps.length - 1
-                ? "Finalizar Pedido"
-                : "Continuar"}
-            </Button>
+
+            {isFinalStep ? (
+              <Button
+                className="bg-green-600 hover:bg-green-700"
+                onClick={() => onSubmit(checkoutState)}
+              >
+                Finalizar Pedido
+              </Button>
+            ) : (
+              <Button onClick={nextStep}>Continuar</Button>
+            )}
           </div>
         </CardFooter>
       </Card>
