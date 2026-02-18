@@ -6,15 +6,20 @@ import OrderCard from "./components/OrderCard";
 import OrderFilter from "./components/OrderFilter";
 import SecondaryHeader from "@/components/SecondaryHeader";
 
-export default async function MyOrdersPage() {
+export default async function MyOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>; // Tipado como Promise
+}) {
   const session = await getServerSession(authOptions);
+  const { search } = await searchParams;
 
   if (!session?.user) {
     redirect("/login?callbackUrl=/meus-pedidos");
   }
 
   const userName = session.user.name;
-  const orders = await getUserOrders(session.user.id);
+  const orders = await getUserOrders(session.user.id, search);
 
   return (
     <>

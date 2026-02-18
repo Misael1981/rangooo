@@ -55,9 +55,6 @@ const OrderCard = ({ order }: OrderCardProps) => {
   const status = order.status;
   const config = ORDER_STATUS_CONFIG[status];
 
-  const categorie = order.restaurant.category.toLowerCase();
-  console.log(categorie);
-
   return (
     <Card className="overflow-hidden gap-2 transition-all hover:shadow-md  ">
       <CardHeader>

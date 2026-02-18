@@ -1,10 +1,19 @@
 import { UserOrder } from "@/dtos/order.dto";
 import { db } from "@/lib/prisma";
 
-export const getUserOrders = async (userId: string) => {
+export const getUserOrders = async (
+  userId: string,
+  searchTerm?: string,
+): Promise<UserOrder[]> => {
   const orders = await db.order.findMany({
     where: {
       userId: userId,
+      restaurant: {
+        name: {
+          contains: searchTerm,
+          mode: "insensitive",
+        },
+      },
     },
     take: 10,
     orderBy: {
@@ -25,9 +34,7 @@ export const getUserOrders = async (userId: string) => {
             select: {
               name: true,
               menuCategory: {
-                select: {
-                  name: true,
-                },
+                select: { name: true },
               },
             },
           },
