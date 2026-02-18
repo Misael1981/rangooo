@@ -38,7 +38,7 @@ const UserMenuLinks = ({ user }: UserMenuLinksProps) => {
         <Separator className="bg-gray-500" />
       </div>
       <div className="flex flex-col gap-2">
-        <Link href="/" className="w-full py-2">
+        <Link href="/termos-de-uso" className="w-full py-2">
           <span className="flex items-center gap-2">
             <ShieldAlert className="text-green-500" />
             Termos e Condições
