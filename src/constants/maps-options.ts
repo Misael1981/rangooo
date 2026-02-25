@@ -3,29 +3,32 @@ export const restaurantCategories = [
     value: "RESTAURANT",
     label: "Restaurantes",
     link: "/restaurantes?category=RESTAURANT",
+    background: "#334155",
   },
   {
     value: "PIZZARIA",
     label: "Pizzarias",
     link: "/restaurantes?category=PIZZARIA",
+    background: "#111827",
   },
   {
     value: "HAMBURGUERIA",
     label: "Hamburguerias",
     link: "/restaurantes?category=HAMBURGUERIA",
+    background: "#92400E",
   },
   {
     value: "SORVETERIA",
     label: "Sorveterias",
     link: "/restaurantes?category=SORVETERIA",
+    background: "#DB2777",
   },
-  { value: "ACAI", label: "Açaí", link: "/restaurantes?category=ACAI" },
   {
-    value: "SAUDAVEL",
-    label: "Saudável",
-    link: "/restaurantes?category=SAUDAVEL",
+    value: "ADEGA",
+    label: "Adegas",
+    link: "/restaurantes?category=ADEGA",
+    background: "#7F1D1D",
   },
-  { value: "DOCES", label: "Doces", link: "/restaurantes?category=DOCES" },
 ];
 
 export const categoriesWithAll = [

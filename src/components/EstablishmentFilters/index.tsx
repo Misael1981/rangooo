@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { categoriesWithAll } from "@/helpers/filter-restaurant-categories";
+import { categoriesWithAll } from "@/constants/maps-options";
 
 type EstablishmentFiltersProps = {
   onSelectCategory: (category: string) => void;

@@ -48,13 +48,13 @@ const UserSheet = ({ user }: UserSheetProps) => {
     <div className="fixed right-8 top-8">
       <Sheet>
         <SheetTrigger asChild>
-          <Button className="bg-red-500/80">
+          <Button className="bg-primary">
             <EllipsisVertical />
           </Button>
         </SheetTrigger>
         <SheetContent className="w-[90%] flex flex-col justify-between h-screen overflow-auto px-4">
           <SheetHeader>
-            <SheetTitle className=" text-left text-red-700">
+            <SheetTitle className=" text-left text-primary">
               Cantinho do usuário
             </SheetTitle>
           </SheetHeader>

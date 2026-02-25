@@ -32,4 +32,3 @@ const EstablishmentsBrowser = ({
 };
 
 export default EstablishmentsBrowser;
-// EstablishmentCards
