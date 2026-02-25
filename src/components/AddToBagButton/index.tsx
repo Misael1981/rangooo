@@ -1,14 +1,24 @@
 "use client";
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Button } from "../ui/button";
 import { CartContext } from "@/contexts/cart-context";
 import { AddToBagButtonProps } from "@/dtos/cart.dto";
+import DialogEstablishmentClosed from "../DialogEstablishmentClosed";
 
-const AddToBagButton = ({ product }: AddToBagButtonProps) => {
+const AddToBagButton = ({
+  product,
+  establishmentOpen,
+}: AddToBagButtonProps) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toogleCart, addToCart } = useContext(CartContext);
 
   const handleAddToBag = () => {
+    if (!establishmentOpen) {
+      setIsDialogOpen(true);
+      return;
+    }
+
     toogleCart();
     addToCart(product);
   };
@@ -18,6 +28,10 @@ const AddToBagButton = ({ product }: AddToBagButtonProps) => {
       <Button className="w-full " onClick={handleAddToBag}>
         Adicionar à sacola
       </Button>
+      <DialogEstablishmentClosed
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+      />
     </div>
   );
 };

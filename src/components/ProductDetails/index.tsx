@@ -24,6 +24,7 @@ type ProductDetailsProps = {
     ingredients: string[];
     additionalIngredients: AdditionalIngredientDTO[];
   };
+  establishmentOpen: boolean;
 };
 
 const ProductDetails = ({
@@ -31,6 +32,7 @@ const ProductDetails = ({
   establishmentImage,
   product,
   deliveryFee,
+  establishmentOpen,
 }: ProductDetailsProps) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedExtras, setSelectedExtras] = useState<ManageableIngredient[]>(
@@ -103,7 +105,10 @@ const ProductDetails = ({
           }
         />
       </ScrollArea>
-      <AddToBagButton product={productToCart} />
+      <AddToBagButton
+        product={productToCart}
+        establishmentOpen={establishmentOpen}
+      />
     </>
   );
 };

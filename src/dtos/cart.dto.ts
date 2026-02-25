@@ -15,4 +15,5 @@ export type AddToBagButtonProps = {
     quantity: number;
     consumptionMethod: string;
   };
+  establishmentOpen: boolean;
 };

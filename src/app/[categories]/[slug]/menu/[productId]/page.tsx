@@ -29,6 +29,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const deliveryFee = restaurant.deliveryFee;
 
+  const establishmentOpen = restaurant.isOpen;
+
   return (
     <div className=" lg:bg-[url('/fundo.png')] lg:bg-cover lg:bg-center lg:bg-no-repeat lg:fixed lg:inset-0 lg:-z-10">
       <div className="bg-black/40 min-h-screen">
@@ -42,6 +44,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 establishmentImage={establishmentData.avatarImageUrl}
                 product={product}
                 deliveryFee={deliveryFee}
+                establishmentOpen={establishmentOpen}
               />
             </main>
           </div>
