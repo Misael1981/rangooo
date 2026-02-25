@@ -62,7 +62,7 @@ export default async function MenuPage({
       <div className="bg-black/40 min-h-screen">
         <div className="relative min-h-screen sm:py-6">
           <QrCodeImage direction="left" />
-          <div className="mx-auto max-w-xl shadow-lg">
+          <div className="mx-auto max-w-xl lg:h-[95%] shadow-lg">
             <AppMenuUI category={categories} establishment={establishment} />
           </div>
           <QrCodeImage direction="right" />
