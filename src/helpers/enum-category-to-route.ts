@@ -5,9 +5,7 @@ const CATEGORY_MAP = {
   PIZZARIA: "pizzarias",
   HAMBURGUERIA: "hamburguerias",
   SORVETERIA: "sorveterias",
-  ACAI: "acai",
-  SAUDAVEL: "saudavel",
-  DOCES: "doces",
+  ADEGA: "adegas",
 };
 
 export function enumCategoryToRoute(categoryEnum: RestaurantCategory) {
