@@ -4,11 +4,11 @@ import DefaultMenuUI from "../default/DefaultMenuUI";
 import { EstablishmentMenuDataDTO } from "@/dtos/establishment-menu-data.dto";
 
 const MENU_MAP = {
-  hamburguerias: dynamic(() => import("../hamburguerias/HamburgueriaMenuUI"), {
-    loading: () => (
-      <Loader2 className="animate-spin mx-auto mt-20 text-orange-500" />
-    ),
-  }),
+  // hamburguerias: dynamic(() => import("../hamburguerias/HamburgueriaMenuUI"), {
+  //   loading: () => (
+  //     <Loader2 className="animate-spin mx-auto mt-20 text-orange-500" />
+  //   ),
+  // }),
   pizzarias: dynamic(() => import("../pizzarias/PizzariaMenuUI"), {
     loading: () => (
       <Loader2 className="animate-spin mx-auto mt-20 text-red-500" />

@@ -1,8 +1,61 @@
-const DefaultMenuUI = () => {
+import BusinessInfo from "@/components/BusinessInfo";
+import EstablishmentDescriptionForMenu from "@/components/EstablishmentDescriptionForMenu";
+import HeaderMenu from "@/components/HeaderMenu";
+import SelectionMenuDefault from "@/components/SelectionMenuDefault";
+import { EstablishmentMenuDataDTO } from "@/dtos/establishment-menu-data.dto";
+
+type PizzariaMenuUIProps = {
+  establishment: EstablishmentMenuDataDTO;
+};
+
+const DefaultMenuUI = ({ establishment }: PizzariaMenuUIProps) => {
+  const {
+    name,
+    avatarImageUrl,
+    description,
+    street,
+    number,
+    neighborhood,
+    city,
+    state,
+    category,
+  } = establishment;
+
+  const establishmentData = {
+    name,
+    avatarImageUrl,
+    description,
+    street,
+    number,
+    neighborhood,
+    city,
+    state,
+    category,
+  };
+
   return (
-    <>
-      <h1>Default</h1>
-    </>
+    <div className="bg-white overflow-y-auto h-screen scrollbar-hide">
+      <HeaderMenu
+        image={establishment.coverImageUrl}
+        alt={establishment.name}
+      />
+      <main className="bg-white min-h-50 -mt-6 z-50 relative rounded-t-3xl p-4 space-y-4">
+        <EstablishmentDescriptionForMenu
+          establishmentData={establishmentData}
+        />
+        <BusinessInfo
+          slug={establishment.slug}
+          isOpen={establishment.isOpen}
+          categorie={establishment.category}
+        />
+
+        <SelectionMenuDefault
+          menuCategories={establishment.menuCategories}
+          slug={establishment.slug}
+          categorie={establishment.category.toLowerCase()}
+        />
+      </main>
+    </div>
   );
 };
 

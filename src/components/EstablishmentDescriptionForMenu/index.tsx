@@ -30,7 +30,7 @@ const EstablishmentDescriptionForMenu = ({
           />
           <div className="max-w-[80%]">
             <h2 className="text-lg font-semibold">{establishmentData.name}</h2>
-            <p className="text-xs opacity-55">
+            <p className="text-xs opacity-55 line-clamp-2">
               {establishmentData.description || "Sem descrição disponível."}
             </p>
           </div>
