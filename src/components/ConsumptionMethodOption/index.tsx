@@ -27,7 +27,7 @@ const ConsumptionMethodOption = ({
         <div className="relative h-20 w-20">
           <Image src={imageUrl} alt={alt} fill className="object-contain" />
         </div>
-        <p className="rounded-full">{buttonText}</p>
+        <p className="text-sm">{buttonText}</p>
       </Link>
     </section>
   );

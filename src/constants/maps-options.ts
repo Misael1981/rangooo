@@ -35,3 +35,28 @@ export const categoriesWithAll = [
   { value: "ALL", label: "Todos", link: "/restaurantes" },
   ...restaurantCategories,
 ];
+
+export const CATEGORIES_URL = [
+  "pizzarias",
+  "restaurantes",
+  "hamburguerias",
+  "sorveterias",
+  "adegas",
+];
+
+export const METHOD_BASE = {
+  DELIVERY: {
+    alt: "Entregar",
+    buttonText: "Entregar",
+  },
+  PICKUP: {
+    alt: "Pegar no local",
+    buttonText: "Pegar no local",
+  },
+  DINE_IN: {
+    alt: "Comer no local",
+    buttonText: "Comer no local",
+  },
+} as const;
+
+export type MethodType = keyof typeof METHOD_BASE;
