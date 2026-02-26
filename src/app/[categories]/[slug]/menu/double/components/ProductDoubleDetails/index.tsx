@@ -17,6 +17,7 @@ interface ProductDoubleDetailsProps {
   flavor1: Partial<ProductDTO>;
   flavor2: Partial<ProductDTO>;
   deliveryFee: number;
+  establishmentOpen: boolean;
 }
 
 const ProductDoubleDetails = ({
@@ -25,6 +26,7 @@ const ProductDoubleDetails = ({
   flavor1,
   flavor2,
   deliveryFee,
+  establishmentOpen,
 }: ProductDoubleDetailsProps) => {
   const [quantity, setQuantity] = useState(1);
   const [extrasFlavor1, setExtrasFlavor1] = useState<ManageableIngredient[]>(
@@ -119,7 +121,10 @@ const ProductDoubleDetails = ({
           onRemovedIngredientsChange={(removed) => setRemovedFlavor2(removed)}
         />
       </ScrollArea>
-      <AddToBagButton product={productsToCart} />
+      <AddToBagButton
+        product={productsToCart}
+        establishmentOpen={establishmentOpen}
+      />
     </>
   );
 };

@@ -38,6 +38,7 @@ export default async function DoublePizzaPage({
   };
 
   const deliveryFee = restaurant.deliveryFee;
+  const establishmentOpen = restaurant.isOpen;
 
   return (
     <div className="lg:bg-[url('/fundo.png')] lg:bg-cover lg:bg-center lg:bg-no-repeat lg:fixed lg:inset-0 lg:-z-10">
@@ -59,6 +60,7 @@ export default async function DoublePizzaPage({
                 flavor1={flavor1WithExtras}
                 flavor2={flavor2WithExtras}
                 deliveryFee={deliveryFee}
+                establishmentOpen={establishmentOpen}
               />
             </main>
           </div>

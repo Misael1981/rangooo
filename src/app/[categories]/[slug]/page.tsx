@@ -39,9 +39,20 @@ export default async function EstabelecimentoPage({ params }: PageProps) {
   function getMethodOption(method: MethodType, category: string) {
     const base = METHOD_BASE[method];
 
+    const validCategories = [
+      "restaurantes",
+      "pizzarias",
+      "hamburguerias",
+      "sorveterias",
+      "adegas",
+    ];
+    const folder = validCategories.includes(category.toLowerCase())
+      ? category.toLowerCase()
+      : "default";
+
     return {
       ...base,
-      imageUrl: `/images/${category.toLowerCase()}/${method.toUpperCase()}.png`,
+      imageUrl: `/images/${folder}/${method.toUpperCase()}.png`,
     };
   }
 
@@ -90,18 +101,3 @@ export default async function EstabelecimentoPage({ params }: PageProps) {
     </div>
   );
 }
-
-// function getMethodOption(method: MethodType, category: string) {
-//   const base = METHOD_BASE[method];
-
-//   // Lista de categorias que você SABE que já tem imagens
-//   const validCategories = ["pizzaria", "hamburgueria", "japonesa"];
-//   const folder = validCategories.includes(category.toLowerCase())
-//     ? category.toLowerCase()
-//     : "default"; // Uma pasta com ícones genéricos
-
-//   return {
-//     ...base,
-//     imageUrl: `/images/${folder}/${method.toLowerCase()}.png`,
-//   };
-// }
