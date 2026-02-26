@@ -21,13 +21,11 @@ const CardLogin = ({
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-xl font-semibold">
-          Entre para finalizar seu pedido
-        </h3>
+        <h3 className="text-xl font-semibold">Faça seu login</h3>
 
         <p className="text-sm text-muted-foreground">
-          Para pedidos de entrega, precisamos que você esteja logado e tenha um
-          endereço cadastrado.
+          Para finalizar seu pedido, precisamos que você esteja logado e tenha
+          seus dados cadastrados.
         </p>
       </div>
 

@@ -88,6 +88,7 @@ const FinishPickup = ({
           ))}
         </div>
       </CardHeader>
+
       <CardContent className="p-4 gap-0">
         <AnimatePresence mode="wait">
           <motion.div
@@ -101,7 +102,7 @@ const FinishPickup = ({
           </motion.div>
         </AnimatePresence>
       </CardContent>
-      {/* Navigation Buttons */}
+
       <CardFooter className="border-t bg-background sticky bottom-0">
         <div className="w-full flex justify-between">
           <Button
