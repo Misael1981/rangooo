@@ -1,9 +1,9 @@
-import QrCodeImage from "@/components/QrCodeImage";
 import AppMenuUI from "./components/AppMenuUI";
 import { unstable_cache } from "next/cache";
 import { db } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import { getEstablishmentMenuData } from "@/data/get-menu-data-for-establishment";
+import { PageContainer } from "@/components/PageContainer";
 
 type MenuPageProps = {
   params: { [key: string]: string };
@@ -58,16 +58,8 @@ export default async function MenuPage({
   }
 
   return (
-    <div className=" lg:bg-[url('/fundo.png')] lg:bg-cover lg:bg-center lg:bg-no-repeat lg:fixed lg:inset-0 lg:-z-10">
-      <div className="bg-black/40 min-h-screen">
-        <div className="relative min-h-screen sm:py-6">
-          <QrCodeImage direction="left" />
-          <div className="mx-auto max-w-xl lg:h-[95%] shadow-lg">
-            <AppMenuUI category={categories} establishment={establishment} />
-          </div>
-          <QrCodeImage direction="right" />
-        </div>
-      </div>
-    </div>
+    <PageContainer>
+      <AppMenuUI category={categories} establishment={establishment} />
+    </PageContainer>
   );
 }

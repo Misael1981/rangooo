@@ -34,7 +34,7 @@ const DefaultMenuUI = ({ establishment }: PizzariaMenuUIProps) => {
   };
 
   return (
-    <div className="bg-white overflow-y-auto h-screen scrollbar-hide">
+    <div className="">
       <HeaderMenu
         image={establishment.coverImageUrl}
         alt={establishment.name}
