@@ -4,7 +4,6 @@ import {
   Drawer,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
@@ -143,7 +142,7 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
   return (
     <>
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent>
+        <DrawerContent className="max-h-[90vh]">
           <DrawerHeader>
             <DrawerTitle className="text-2xl font-bold text-red-500">
               Quase lá!
@@ -159,7 +158,7 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
               onLogin={handleLogin}
             />
           ) : (
-            <div>
+            <div className="flex flex-col flex-1 overflow-hidden">
               {!isProfileCompleted && (
                 <FirstRegistration
                   open={!userClosedModal}
@@ -199,7 +198,6 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
               </div>
             </div>
           )}
-          <DrawerFooter></DrawerFooter>
         </DrawerContent>
       </Drawer>
       <OrderSuccessfulDialog

@@ -55,8 +55,8 @@ const FinishPickup = ({
   };
 
   return (
-    <Card className="gap-0 pb-0">
-      <CardHeader>
+    <Card className="flex flex-col gap-0 pb-0 max-h-[90vh]">
+      <CardHeader className="flex-none">
         <div className=" flex justify-center">
           {steps.map((step, index) => (
             <div
@@ -89,7 +89,7 @@ const FinishPickup = ({
         </div>
       </CardHeader>
 
-      <CardContent className="p-4 gap-0">
+      <CardContent className="p-4 gap-0 flex flex-col h-full">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
@@ -97,13 +97,14 @@ const FinishPickup = ({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
+            className="w-full"
           >
             {stepComponents[currentStep]}
           </motion.div>
         </AnimatePresence>
       </CardContent>
 
-      <CardFooter className="border-t bg-background sticky bottom-0">
+      <CardFooter className="border-t bg-background flex-none sticky bottom-0 pb-4">
         <div className="w-full flex justify-between">
           <Button
             variant="outline"
