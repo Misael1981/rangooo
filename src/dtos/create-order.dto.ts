@@ -46,7 +46,15 @@ export type CreateOrderInputDTO = {
   products: CreateOrderProductDTO[];
   deliveryFee?: number;
 
-  deliveryAddress?: DeliveryAddressDTO;
+  delivery?: {
+    address: {
+      street: string;
+      number: string;
+      complement?: string | null;
+      neighborhood: string;
+      city: string;
+    };
+  };
   dineInDetails?: DineInDetailsDTO;
   pickupDetails?: PickupDetailsDTO;
 

@@ -12,6 +12,7 @@ export const createOrder = async (
   input: CreateOrderInputDTO,
 ): Promise<OrderResponseDTO> => {
   const session = await getServerSession(authOptions);
+  console.log("DEBUG INPUT DA ACTION:", JSON.stringify(input, null, 2));
 
   if (!session?.user) throw new Error("Não autenticado");
 
@@ -37,6 +38,9 @@ export const createOrder = async (
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
+    // Função Nº do pedido
+    const currentDay = new Date().getDate();
+
     const ordersToday = await tx.order.count({
       where: {
         restaurantId: restaurant.id,
@@ -44,7 +48,7 @@ export const createOrder = async (
       },
     });
 
-    const nextOrderNumber = ordersToday + 1;
+    const nextOrderNumber = currentDay * 100 + (ordersToday + 1);
 
     let totalAmount = 0;
 
@@ -81,7 +85,7 @@ export const createOrder = async (
 
         deliveryAddress:
           input.consumptionMethod === "DELIVERY"
-            ? input.deliveryAddress
+            ? input.delivery?.address
             : input.consumptionMethod === "DINE_IN"
               ? input.dineInDetails
               : input.pickupDetails,
