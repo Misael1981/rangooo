@@ -21,6 +21,7 @@ import OrderSuccessfulDialog from "@/components/OrderSuccessfulDialog";
 import { signIn, useSession } from "next-auth/react";
 import CardLogin from "../FinishDelivery/components/CardLogin";
 import FirstRegistration from "@/components/FirstRegistration";
+import { CreateOrderInputDTO } from "@/dtos/create-order.dto";
 
 type DrawerFinishOrderProps = {
   open: boolean;
@@ -47,6 +48,8 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
   const params = useParams();
   const slug = params.slug as string;
   const { data: session, status } = useSession();
+
+  console.log(session);
 
   const isLogged = status === "authenticated";
 
@@ -111,16 +114,30 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
     try {
       setIsSubmitting(true);
 
-      const result = await createOrder({
+      const orderInput = {
         ...checkoutState,
         products: products,
         slug: slug,
-        deliveryFee: deliveryFee,
-        customer: {
-          name: checkoutState.customer?.name ?? undefined,
-          phone: checkoutState.customer?.phone ?? undefined,
-        },
-      });
+        deliveryFee: Number(deliveryFee),
+        delivery:
+          checkoutState.consumptionMethod === "DELIVERY"
+            ? {
+                address: {
+                  street: checkoutState.delivery?.address?.street ?? "",
+                  number: checkoutState.delivery?.address?.number ?? "",
+                  neighborhood:
+                    checkoutState.delivery?.address?.neighborhood ?? "",
+                  city: checkoutState.delivery?.address?.city ?? "",
+                  complement:
+                    checkoutState.delivery?.address?.complement ?? null,
+                },
+              }
+            : undefined,
+      };
+
+      const result = await createOrder(
+        orderInput as unknown as CreateOrderInputDTO,
+      );
 
       if (result) {
         toast.success("Pedido enviado com sucesso! 🚀");
