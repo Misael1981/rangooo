@@ -12,7 +12,6 @@ export const createOrder = async (
   input: CreateOrderInputDTO,
 ): Promise<OrderResponseDTO> => {
   const session = await getServerSession(authOptions);
-  console.log("DEBUG INPUT DA ACTION:", JSON.stringify(input, null, 2));
 
   if (!session?.user) throw new Error("Não autenticado");
 
@@ -82,6 +81,7 @@ export const createOrder = async (
         orderNumber: nextOrderNumber,
         status: "PENDING",
         consumptionMethod: input.consumptionMethod,
+        paymentMethod: input.payment.paymentMethod,
 
         deliveryAddress:
           input.consumptionMethod === "DELIVERY"
@@ -121,6 +121,7 @@ export const createOrder = async (
       customerName: input.customer?.name || order.user.name || "Cliente",
       customerPhone: input.customer?.phone || order.user.phone || "",
       method: order.consumptionMethod,
+      payment: order.paymentMethod,
       items: order.items.map((item) => ({
         name: item.customName,
         category: item.product?.menuCategory?.name || "Geral",

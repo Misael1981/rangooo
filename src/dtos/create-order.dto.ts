@@ -45,6 +45,11 @@ export type CreateOrderInputDTO = {
   consumptionMethod: "DELIVERY" | "PICKUP" | "DINE_IN";
   products: CreateOrderProductDTO[];
   deliveryFee?: number;
+  payment: {
+    paymentMethod: string;
+    needsChange: boolean;
+    changeAmount?: string;
+  };
 
   delivery?: {
     address: {
