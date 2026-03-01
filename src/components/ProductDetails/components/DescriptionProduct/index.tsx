@@ -23,8 +23,11 @@ const DescriptionProduct = ({
   onExtrasChange,
   onRemovedIngredientsChange,
 }: DescriptionProductProps) => {
+  console.log("Ingredientes do produto:", ingredients);
+  console.log("Ingredientes adicionais do produto:", additionalIngredients);
+
   return (
-    <section className="space-y-6 bg-white">
+    <section className="space-y-6 bg-white flex-1">
       <div className="space-y-2">
         <h3 className="flex items-center text-lg font-semibold">
           <UtensilsCrossed className="mr-2" />
@@ -34,28 +37,34 @@ const DescriptionProduct = ({
         <p className="text-sm opacity-55">{descriptionProduct}</p>
       </div>
       <div className="space-y-2">
-        <h3 className="flex items-center text-lg font-semibold">
-          <PiChefHatLight className="mr-2" />
-          Ingredientes
-        </h3>
+        {ingredients.length > 0 && (
+          <>
+            <h3 className="flex items-center text-lg font-semibold">
+              <PiChefHatLight className="mr-2" />
+              Ingredientes
+            </h3>
 
-        <ul className="list-inside list-disc text-sm opacity-55">
-          {ingredients.map((ingredient, index) => (
-            <li key={index}>{ingredient}</li>
-          ))}
-        </ul>
-        <div className="flex flex-col items-center justify-center gap-4 p-4 pb-8">
-          <IngredientManager
-            title="Adicionar ingrediente"
-            ingredients={additionalIngredients}
-            onChange={onExtrasChange}
-          />
-          <IngredientManager
-            title="Retirar ingrediente"
-            ingredients={ingredients.map((name) => ({ name }))}
-            onChangeDelete={onRemovedIngredientsChange}
-          />
-        </div>
+            <ul className="list-inside list-disc text-sm opacity-55">
+              {ingredients.map((ingredient, index) => (
+                <li key={index}>{ingredient}</li>
+              ))}
+            </ul>
+          </>
+        )}
+        {additionalIngredients.length > 0 && (
+          <div className="flex flex-col items-center justify-center gap-4 p-4 pb-8">
+            <IngredientManager
+              title="Adicionar ingrediente"
+              ingredients={additionalIngredients}
+              onChange={onExtrasChange}
+            />
+            <IngredientManager
+              title="Retirar ingrediente"
+              ingredients={ingredients.map((name) => ({ name }))}
+              onChangeDelete={onRemovedIngredientsChange}
+            />
+          </div>
+        )}
       </div>
     </section>
   );

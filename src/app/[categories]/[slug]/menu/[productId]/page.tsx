@@ -33,16 +33,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <PageContainer>
-      <HeaderMenu image={product.imageUrl} alt={product.name} />
-      <main className=" bg-white min-h-50 -mt-6 z-50 relative rounded-t-3xl p-4 space-y-4">
-        <ProductDetails
-          establishmentName={establishmentData.name}
-          establishmentImage={establishmentData.avatarImageUrl}
-          product={product}
-          deliveryFee={deliveryFee}
-          establishmentOpen={establishmentOpen}
-        />
-      </main>
+      <div className="flex flex-col min-h-screen">
+        <HeaderMenu image={product.imageUrl} alt={product.name} />
+        <main className="flex-1 bg-white -mt-6 z-50 relative rounded-t-3xl p-4 space-y-4">
+          <ProductDetails
+            establishmentName={establishmentData.name}
+            establishmentImage={establishmentData.avatarImageUrl}
+            product={product}
+            deliveryFee={deliveryFee}
+            establishmentOpen={establishmentOpen}
+          />
+        </main>
+      </div>
     </PageContainer>
   );
 }
