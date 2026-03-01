@@ -25,7 +25,13 @@ const ConsumptionMethodOption = ({
         className="flex flex-col items-center justify-center gap-2"
       >
         <div className="relative h-20 w-20">
-          <Image src={imageUrl} alt={alt} fill className="object-contain" />
+          <Image
+            src={imageUrl}
+            alt={alt}
+            fill
+            quality={85}
+            className="object-contain"
+          />
         </div>
         <p className="text-sm">{buttonText}</p>
       </Link>
