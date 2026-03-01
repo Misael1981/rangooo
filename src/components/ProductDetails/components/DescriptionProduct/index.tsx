@@ -23,9 +23,6 @@ const DescriptionProduct = ({
   onExtrasChange,
   onRemovedIngredientsChange,
 }: DescriptionProductProps) => {
-  console.log("Ingredientes do produto:", ingredients);
-  console.log("Ingredientes adicionais do produto:", additionalIngredients);
-
   return (
     <section className="space-y-6 bg-white flex-1">
       <div className="space-y-2">
