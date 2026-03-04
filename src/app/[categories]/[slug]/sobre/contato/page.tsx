@@ -39,16 +39,18 @@ export default async function ContactsPage({ params }: ContactsPageProps) {
 
   return (
     <PageContainer>
-      <HeaderAbout title="Informações e Contato" />
-      <main className="p-4">
-        <EstablishmentDetails
-          establishmentData={establishmentData}
-          establishmentAddress={establishmentAddress}
-        />
-        <section className="h-75 w-full max-w-150 rounded-md border border-solid border-primary bg-slate-100 p-4">
-          <MapsLocation address={addressString} />
-        </section>
-      </main>
+      <div className="min-h-screen bg-white">
+        <HeaderAbout title="Informações e Contato" />
+        <main className="p-4">
+          <EstablishmentDetails
+            establishmentData={establishmentData}
+            establishmentAddress={establishmentAddress}
+          />
+          <section className="h-75 w-full max-w-150 rounded-md border border-solid border-primary bg-slate-100 p-4">
+            <MapsLocation address={addressString} />
+          </section>
+        </main>
+      </div>
     </PageContainer>
   );
 }

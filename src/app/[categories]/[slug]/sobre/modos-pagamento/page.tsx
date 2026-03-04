@@ -22,7 +22,7 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
   return (
     <PageContainer>
       <HeaderAbout title="Modos de pagamento" />
-      <main className="p-4">
+      <main className="p-4 min-h-screen bg-red-50">
         <PaymentMethods methods={methods} />
       </main>
     </PageContainer>
