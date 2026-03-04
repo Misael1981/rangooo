@@ -9,15 +9,19 @@ import DialogEstablishmentClosed from "../DialogEstablishmentClosed";
 const AddToBagButton = ({
   product,
   establishmentOpen,
+  restaurantDeliveryAreas,
 }: AddToBagButtonProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { toogleCart, addToCart } = useContext(CartContext);
+  const { toogleCart, addToCart, setRestaurantDeliveryAreas } =
+    useContext(CartContext);
 
   const handleAddToBag = () => {
     if (!establishmentOpen) {
       setIsDialogOpen(true);
       return;
     }
+
+    setRestaurantDeliveryAreas(restaurantDeliveryAreas);
 
     toogleCart();
     addToCart(product);

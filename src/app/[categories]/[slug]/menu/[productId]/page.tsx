@@ -31,6 +31,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const establishmentOpen = restaurant.isOpen;
 
+  console.log("Dados deliveryAreas do restautante:", restaurant.deliveryAreas);
+
+  const restaurantDeliveryAreas = restaurant.deliveryAreas;
+
   return (
     <PageContainer>
       <div className="flex flex-col min-h-screen">
@@ -42,6 +46,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             product={product}
             deliveryFee={deliveryFee}
             establishmentOpen={establishmentOpen}
+            restaurantDeliveryAreas={restaurantDeliveryAreas}
           />
         </main>
       </div>

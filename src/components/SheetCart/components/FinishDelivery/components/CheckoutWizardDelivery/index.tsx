@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckoutState } from "@/dtos/finish-order.dto";
 import ConfirmStep from "./components/ConfirmStep";
+import { useCart } from "@/contexts/cart-context";
 
 type CheckoutWizardDeliveryProps = {
   user: UserDTO | null;
@@ -46,6 +47,8 @@ const CheckoutWizardDelivery = ({
     needsChange: false,
     changeAmount: "",
   });
+  const { setDeliveryFee, consumptionMethod, restaurantDeliveryAreas } =
+    useCart();
 
   const isFinalStep = currentStep === steps.length - 1;
 
@@ -80,6 +83,27 @@ const CheckoutWizardDelivery = ({
   }, [defaultAddress]);
 
   const deliveryAddress = checkoutState.delivery?.address;
+
+  useEffect(() => {
+    const currentAddress = checkoutState.delivery?.address || userAddress;
+
+    if (consumptionMethod === "DELIVERY" && currentAddress?.areaType) {
+      const matchedArea = restaurantDeliveryAreas.find(
+        (area) => area.areaType === currentAddress.areaType,
+      );
+
+      const fee = matchedArea ? matchedArea.fee : 0;
+      setDeliveryFee(fee);
+    } else if (consumptionMethod !== "DELIVERY") {
+      setDeliveryFee(0);
+    }
+  }, [
+    consumptionMethod,
+    userAddress,
+    checkoutState.delivery?.address,
+    restaurantDeliveryAreas,
+    setDeliveryFee,
+  ]);
 
   useEffect(() => {
     if (userAddress && !deliveryAddress) {

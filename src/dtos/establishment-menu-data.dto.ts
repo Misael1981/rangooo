@@ -1,3 +1,5 @@
+import { AreaType } from "@/generated/prisma/enums";
+
 export interface ConsumptionMethodDTO {
   id: string;
   method: "DINE_IN" | "PICKUP" | "DELIVERY";
@@ -36,6 +38,12 @@ export interface SocialMediaDTO {
   name: string;
 }
 
+export interface DeliveryAreaDTO {
+  id: string;
+  areaType: AreaType;
+  fee: number;
+}
+
 export interface EstablishmentMenuDataDTO {
   id: string;
   name: string;
@@ -58,6 +66,7 @@ export interface EstablishmentMenuDataDTO {
   socialMedia: SocialMediaDTO[];
   consumptionMethods: ConsumptionMethodDTO[];
   menuCategories: MenuCategoryDTO[];
+  deliveryAreas: DeliveryAreaDTO[];
 
   printerStatus?: string;
   printingToken?: string;

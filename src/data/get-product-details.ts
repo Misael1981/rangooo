@@ -16,7 +16,7 @@ export async function getProductDetails(
       },
       include: {
         restaurant: {
-          include: { consumptionMethods: true },
+          include: { consumptionMethods: true, deliveryAreas: true },
         },
         menuCategory: {
           include: {
@@ -50,6 +50,10 @@ export async function getProductDetails(
         deliveryFee: Number(product.restaurant.deliveryFee),
         latitude: Number(product.restaurant.latitude),
         longitude: Number(product.restaurant.longitude),
+        deliveryAreas: product.restaurant.deliveryAreas.map((area) => ({
+          ...area,
+          fee: Number(area.fee),
+        })),
       } as unknown as EstablishmentMenuDataDTO,
     };
 

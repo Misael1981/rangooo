@@ -1,3 +1,5 @@
+import { DeliveryAreaDTO } from "./establishment-menu-data.dto";
+
 export type ManageableIngredient = {
   id?: string;
   name: string;
@@ -16,4 +18,5 @@ export type AddToBagButtonProps = {
     consumptionMethod: string;
   };
   establishmentOpen: boolean;
+  restaurantDeliveryAreas: DeliveryAreaDTO[];
 };

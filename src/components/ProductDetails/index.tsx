@@ -1,6 +1,9 @@
 "use client";
 
-import { AdditionalIngredientDTO } from "@/dtos/establishment-menu-data.dto";
+import {
+  AdditionalIngredientDTO,
+  DeliveryAreaDTO,
+} from "@/dtos/establishment-menu-data.dto";
 import LogoImage from "../LogoImage";
 import QuantitySelector from "./components/QuantitySelector";
 import DescriptionProduct from "./components/DescriptionProduct";
@@ -25,6 +28,7 @@ type ProductDetailsProps = {
     additionalIngredients: AdditionalIngredientDTO[];
   };
   establishmentOpen: boolean;
+  restaurantDeliveryAreas: DeliveryAreaDTO[];
 };
 
 const ProductDetails = ({
@@ -33,6 +37,7 @@ const ProductDetails = ({
   product,
   deliveryFee,
   establishmentOpen,
+  restaurantDeliveryAreas,
 }: ProductDetailsProps) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedExtras, setSelectedExtras] = useState<ManageableIngredient[]>(
@@ -108,6 +113,7 @@ const ProductDetails = ({
       <AddToBagButton
         product={productToCart}
         establishmentOpen={establishmentOpen}
+        restaurantDeliveryAreas={restaurantDeliveryAreas}
       />
     </>
   );

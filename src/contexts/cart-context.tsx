@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode, useMemo } from "react";
 import { ManageableIngredient } from "@/dtos/cart.dto";
+import { DeliveryAreaDTO } from "@/dtos/establishment-menu-data.dto";
 
 export interface CartItem {
   lineId: string;
@@ -32,6 +33,8 @@ interface CartContextData {
   deliveryFee: number;
   totalFinal: number;
   consumptionMethod: "DELIVERY" | "PICKUP" | "DINE_IN" | null;
+  restaurantDeliveryAreas: DeliveryAreaDTO[];
+  setRestaurantDeliveryAreas: (areas: DeliveryAreaDTO[]) => void;
   clearCart: () => void;
   setDeliveryFee: (fee: number) => void;
   addToCart: (item: CartItem) => void;
@@ -48,6 +51,8 @@ export const CartContext = createContext<CartContextData>({
   totalPrice: 0,
   totalQuantity: 0,
   deliveryFee: 0,
+  restaurantDeliveryAreas: [],
+  setRestaurantDeliveryAreas: () => {},
   setDeliveryFee: () => {},
   totalFinal: 0,
   addToCart: () => {},
@@ -66,6 +71,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [consumptionMethod, setConsumptionMethod] =
     useState<ConsumptionMethod>(null);
+  const [restaurantDeliveryAreas, setRestaurantDeliveryAreas] = useState<
+    DeliveryAreaDTO[]
+  >([]);
 
   const toogleCart = () => {
     setIsOpen((prev) => !prev);
@@ -169,6 +177,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         totalPrice,
         totalFinal,
         consumptionMethod,
+        restaurantDeliveryAreas,
+        setRestaurantDeliveryAreas,
         clearCart,
         setConsumptionMethod: updateConsumptionMethod,
         addToCart,
