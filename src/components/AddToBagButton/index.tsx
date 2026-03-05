@@ -5,15 +5,22 @@ import { Button } from "../ui/button";
 import { CartContext } from "@/contexts/cart-context";
 import { AddToBagButtonProps } from "@/dtos/cart.dto";
 import DialogEstablishmentClosed from "../DialogEstablishmentClosed";
+import { calcDeliveryFee } from "@/helpers/calc-delivery";
+import { useSearchParams } from "next/navigation";
 
 const AddToBagButton = ({
   product,
   establishmentOpen,
   restaurantDeliveryAreas,
+  systemSettings,
+  useRangoooDelivery,
+  userAreaType,
 }: AddToBagButtonProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { toogleCart, addToCart, setRestaurantDeliveryAreas } =
+  const { toogleCart, addToCart, setDeliveryFee, setConsumptionMethod } =
     useContext(CartContext);
+  const searchParams = useSearchParams();
+  const consumptionMethod = searchParams.get("consumptionMethod");
 
   const handleAddToBag = () => {
     if (!establishmentOpen) {
@@ -21,7 +28,17 @@ const AddToBagButton = ({
       return;
     }
 
-    setRestaurantDeliveryAreas(restaurantDeliveryAreas);
+    if (consumptionMethod) {
+      setConsumptionMethod(consumptionMethod);
+    }
+
+    const fee = calcDeliveryFee(
+      userAreaType,
+      systemSettings!,
+      restaurantDeliveryAreas,
+      useRangoooDelivery,
+    );
+    setDeliveryFee(fee / 100);
 
     toogleCart();
     addToCart(product);

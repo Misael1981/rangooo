@@ -7,7 +7,11 @@ import QuantitySelector from "@/components/ProductDetails/components/QuantitySel
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCart } from "@/contexts/cart-context";
 import { ManageableIngredient } from "@/dtos/cart.dto";
-import { ProductDTO } from "@/dtos/establishment-menu-data.dto";
+import {
+  DeliveryAreaDTO,
+  ProductDTO,
+  SystemSettingsDTO,
+} from "@/dtos/establishment-menu-data.dto";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -16,8 +20,10 @@ interface ProductDoubleDetailsProps {
   establishmentImage: string | null;
   flavor1: Partial<ProductDTO>;
   flavor2: Partial<ProductDTO>;
-  deliveryFee: number;
   establishmentOpen: boolean;
+  restaurantDeliveryAreas: DeliveryAreaDTO[];
+  systemSettings: SystemSettingsDTO;
+  useRangoooDelivery: boolean;
 }
 
 const ProductDoubleDetails = ({
@@ -25,8 +31,10 @@ const ProductDoubleDetails = ({
   establishmentImage,
   flavor1,
   flavor2,
-  deliveryFee,
   establishmentOpen,
+  restaurantDeliveryAreas,
+  systemSettings,
+  useRangoooDelivery,
 }: ProductDoubleDetailsProps) => {
   const [quantity, setQuantity] = useState(1);
   const [extrasFlavor1, setExtrasFlavor1] = useState<ManageableIngredient[]>(
@@ -44,7 +52,12 @@ const ProductDoubleDetails = ({
     return Math.max(price1, price2);
   };
 
-  const { setDeliveryFee, setConsumptionMethod } = useCart();
+  const {
+    setConsumptionMethod,
+    setSystemSettings,
+    setUseRangoooDelivery,
+    setRestaurantDeliveryAreas,
+  } = useCart();
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -53,10 +66,19 @@ const ProductDoubleDetails = ({
       setConsumptionMethod(method);
     }
 
-    if (deliveryFee !== undefined) {
-      setDeliveryFee(Number(deliveryFee));
-    }
-  }, [searchParams, deliveryFee, setDeliveryFee, setConsumptionMethod]);
+    setSystemSettings(systemSettings);
+    setUseRangoooDelivery(useRangoooDelivery);
+    setRestaurantDeliveryAreas(restaurantDeliveryAreas);
+  }, [
+    searchParams,
+    systemSettings,
+    useRangoooDelivery,
+    restaurantDeliveryAreas,
+    setConsumptionMethod,
+    setSystemSettings,
+    setUseRangoooDelivery,
+    setRestaurantDeliveryAreas,
+  ]);
 
   const productsToCart = {
     lineId: `double-${flavor1.id}-${flavor2.id}-${JSON.stringify(allExtras)}-${JSON.stringify(removedFlavor1)}-${JSON.stringify(removedFlavor2)}`,

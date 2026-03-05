@@ -3,21 +3,20 @@
 import {
   AdditionalIngredientDTO,
   DeliveryAreaDTO,
+  SystemSettingsDTO,
 } from "@/dtos/establishment-menu-data.dto";
 import LogoImage from "../LogoImage";
 import QuantitySelector from "./components/QuantitySelector";
 import DescriptionProduct from "./components/DescriptionProduct";
 import { ScrollArea } from "../ui/scroll-area";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddToBagButton from "../AddToBagButton";
 import { ManageableIngredient } from "@/dtos/cart.dto";
 import { useSearchParams } from "next/navigation";
-import { useCart } from "@/contexts/cart-context";
 
 type ProductDetailsProps = {
   establishmentName: string;
   establishmentImage: string | null;
-  deliveryFee: number;
   product: {
     id: string;
     imageUrl: string | null;
@@ -29,36 +28,28 @@ type ProductDetailsProps = {
   };
   establishmentOpen: boolean;
   restaurantDeliveryAreas: DeliveryAreaDTO[];
+  systemSettings: SystemSettingsDTO;
+  useRangoooDelivery: boolean;
+  userAreaType: string | null;
 };
 
 const ProductDetails = ({
   establishmentName,
   establishmentImage,
   product,
-  deliveryFee,
   establishmentOpen,
   restaurantDeliveryAreas,
+  systemSettings,
+  useRangoooDelivery,
+  userAreaType,
 }: ProductDetailsProps) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedExtras, setSelectedExtras] = useState<ManageableIngredient[]>(
     [],
   );
   const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
-
-  const { setDeliveryFee, setConsumptionMethod } = useCart();
   const searchParams = useSearchParams();
   const consumptionMethod = searchParams.get("consumptionMethod") || "";
-
-  useEffect(() => {
-    const method = searchParams.get("consumptionMethod");
-    if (method) {
-      setConsumptionMethod(method);
-    }
-
-    if (deliveryFee !== undefined) {
-      setDeliveryFee(Number(deliveryFee));
-    }
-  }, [searchParams, deliveryFee, setDeliveryFee, setConsumptionMethod]);
 
   const productToCart = {
     lineId: `${product.id}-${JSON.stringify(selectedExtras)}`,
@@ -69,7 +60,6 @@ const ProductDetails = ({
     quantity,
     extras: selectedExtras,
     consumptionMethod: consumptionMethod,
-    deliveryFee: deliveryFee,
     removedIngredients,
   };
 
@@ -114,6 +104,9 @@ const ProductDetails = ({
         product={productToCart}
         establishmentOpen={establishmentOpen}
         restaurantDeliveryAreas={restaurantDeliveryAreas}
+        systemSettings={systemSettings}
+        useRangoooDelivery={useRangoooDelivery}
+        userAreaType={userAreaType}
       />
     </>
   );

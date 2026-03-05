@@ -32,8 +32,6 @@ const UserSheet = ({ user }: UserSheetProps) => {
     await signOut({ callbackUrl: "/" });
   };
 
-  console.log("Status in UserSheet: ", status);
-
   useEffect(() => {
     if (status === "authenticated" && !user) {
       const timeout = setTimeout(() => {

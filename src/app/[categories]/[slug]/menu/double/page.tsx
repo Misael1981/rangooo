@@ -1,6 +1,6 @@
 import { getDoubleProductDetails } from "@/data/get-double-product-details";
 import HeaderDoubleImages from "./components/HeaderDoubleImages";
-import ProductDoubleDetails from "./components/ProductDoubleDetails";
+import ProductDoubleDetailsWrapper from "./components/ProductDoubleDetailsWrapper";
 import { PageContainer } from "@/components/PageContainer";
 
 interface DoublePizzaPageProps {
@@ -49,13 +49,15 @@ export default async function DoublePizzaPage({
         alt2={f2.name}
       />
       <main className=" bg-white min-h-50 -mt-6 z-50 relative rounded-t-3xl p-4 space-y-4">
-        <ProductDoubleDetails
+        <ProductDoubleDetailsWrapper
           establishmentName={restaurant.name}
           establishmentImage={restaurant.avatarImageUrl}
           flavor1={flavor1WithExtras}
           flavor2={flavor2WithExtras}
-          deliveryFee={deliveryFee}
           establishmentOpen={establishmentOpen}
+          restaurantDeliveryAreas={restaurant.deliveryAreas}
+          systemSettings={restaurant.systemSettings}
+          useRangoooDelivery={restaurant.useRangoooDelivery}
         />
       </main>
     </PageContainer>

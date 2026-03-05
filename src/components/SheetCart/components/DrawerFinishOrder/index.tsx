@@ -49,8 +49,6 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
   const slug = params.slug as string;
   const { data: session, status } = useSession();
 
-  console.log(session);
-
   const isLogged = status === "authenticated";
 
   const consumptionMethod: ConsumptionMethod = METHOD_MAP.some(

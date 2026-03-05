@@ -1,4 +1,7 @@
-import { DeliveryAreaDTO } from "./establishment-menu-data.dto";
+import {
+  DeliveryAreaDTO,
+  SystemSettingsDTO,
+} from "./establishment-menu-data.dto";
 
 export type ManageableIngredient = {
   id?: string;
@@ -19,4 +22,7 @@ export type AddToBagButtonProps = {
   };
   establishmentOpen: boolean;
   restaurantDeliveryAreas: DeliveryAreaDTO[];
+  systemSettings: SystemSettingsDTO;
+  useRangoooDelivery: boolean;
+  userAreaType: string | null;
 };

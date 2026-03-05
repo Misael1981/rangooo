@@ -47,8 +47,7 @@ const CheckoutWizardDelivery = ({
     needsChange: false,
     changeAmount: "",
   });
-  const { setDeliveryFee, consumptionMethod, restaurantDeliveryAreas } =
-    useCart();
+  const { setDeliveryFee, consumptionMethod, setUserAreaType } = useCart();
 
   const isFinalStep = currentStep === steps.length - 1;
 
@@ -68,6 +67,26 @@ const CheckoutWizardDelivery = ({
 
   const defaultAddress = user?.addresses?.find((addr) => addr.isDefault);
 
+  useEffect(() => {
+    const currentAddress = checkoutState.delivery?.address || defaultAddress;
+
+    if (currentAddress?.areaType) {
+      setUserAreaType(currentAddress.areaType);
+    }
+
+    if (consumptionMethod === "DELIVERY") {
+      setDeliveryFee(null as unknown as number);
+    } else {
+      setDeliveryFee(0);
+    }
+  }, [
+    consumptionMethod,
+    defaultAddress,
+    checkoutState.delivery?.address,
+    setDeliveryFee,
+    setUserAreaType,
+  ]);
+
   const userAddress = useMemo(() => {
     if (!defaultAddress) return undefined;
 
@@ -82,38 +101,21 @@ const CheckoutWizardDelivery = ({
     };
   }, [defaultAddress]);
 
-  const deliveryAddress = checkoutState.delivery?.address;
-
   useEffect(() => {
-    const currentAddress = checkoutState.delivery?.address || userAddress;
-
-    if (consumptionMethod === "DELIVERY" && currentAddress?.areaType) {
-      const matchedArea = restaurantDeliveryAreas.find(
-        (area) => area.areaType === currentAddress.areaType,
-      );
-
-      const fee = matchedArea ? matchedArea.fee : 0;
-      setDeliveryFee(fee);
-    } else if (consumptionMethod !== "DELIVERY") {
-      setDeliveryFee(0);
-    }
-  }, [
-    consumptionMethod,
-    userAddress,
-    checkoutState.delivery?.address,
-    restaurantDeliveryAreas,
-    setDeliveryFee,
-  ]);
-
-  useEffect(() => {
-    if (userAddress && !deliveryAddress) {
+    if (userAddress && !checkoutState.delivery?.address) {
       onUpdateState("delivery", { address: userAddress });
     }
 
     if (typeof onStepChange === "function") {
       onStepChange(isFinalStep);
     }
-  }, [isFinalStep, onStepChange, userAddress, deliveryAddress, onUpdateState]);
+  }, [
+    isFinalStep,
+    onStepChange,
+    userAddress,
+    checkoutState.delivery?.address,
+    onUpdateState,
+  ]);
 
   const handlePaymentUpdate = <K extends keyof PaymentFormData>(
     field: K,

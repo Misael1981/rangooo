@@ -59,7 +59,19 @@ export default async function MenuPage({
 
   return (
     <PageContainer>
-      <AppMenuUI category={categories} establishment={establishment} />
+      <AppMenuUI
+        category={
+          categories as
+            | "pizzarias"
+            | "restaurantes"
+            | "hamburguerias"
+            | "sorveterias"
+            | "acai"
+            | "saudavel"
+            | "doces"
+        }
+        establishment={establishment}
+      />
     </PageContainer>
   );
 }

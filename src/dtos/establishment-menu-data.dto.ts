@@ -44,6 +44,12 @@ export interface DeliveryAreaDTO {
   fee: number;
 }
 
+export interface SystemSettingsDTO {
+  urbanDeliveryFee: number;
+  ruralDeliveryFee: number;
+  districtDeliveryFee: number;
+}
+
 export interface EstablishmentMenuDataDTO {
   id: string;
   name: string;
@@ -67,6 +73,9 @@ export interface EstablishmentMenuDataDTO {
   consumptionMethods: ConsumptionMethodDTO[];
   menuCategories: MenuCategoryDTO[];
   deliveryAreas: DeliveryAreaDTO[];
+  useRangoooDelivery: boolean;
+  systemSettings: SystemSettingsDTO;
+  userAreaType: string | null;
 
   printerStatus?: string;
   printingToken?: string;

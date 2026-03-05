@@ -7,8 +7,21 @@ import {
 export async function getProductDetails(
   restaurantSlug: string,
   productId: string,
+  userId?: string,
 ) {
   try {
+    const systemSettings = await db.systemSettings.findFirst();
+
+    let userAreaType = null;
+
+    if (userId) {
+      const defaultAddress = await db.address.findFirst({
+        where: { userId, isDefault: true },
+        select: { areaType: true },
+      });
+      userAreaType = defaultAddress?.areaType || null;
+    }
+
     const product = await db.product.findFirst({
       where: {
         id: productId,
@@ -48,12 +61,21 @@ export async function getProductDetails(
       restaurant: {
         ...product.restaurant,
         deliveryFee: Number(product.restaurant.deliveryFee),
+        userAreaType,
         latitude: Number(product.restaurant.latitude),
         longitude: Number(product.restaurant.longitude),
         deliveryAreas: product.restaurant.deliveryAreas.map((area) => ({
           ...area,
           fee: Number(area.fee),
         })),
+        systemSettings: systemSettings
+          ? {
+              ...systemSettings,
+              urbanDeliveryFee: Number(systemSettings.urbanDeliveryFee),
+              ruralDeliveryFee: Number(systemSettings.ruralDeliveryFee),
+              districtDeliveryFee: Number(systemSettings.districtDeliveryFee),
+            }
+          : null,
       } as unknown as EstablishmentMenuDataDTO,
     };
 
