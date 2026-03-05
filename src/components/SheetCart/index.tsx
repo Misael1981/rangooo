@@ -25,6 +25,7 @@ function SheetCart() {
     deliveryFee,
     consumptionMethod,
     totalPrice,
+    userAreaType,
   } = useContext(CartContext);
 
   const extrasTotal = products.reduce((acc, item) => {
@@ -63,11 +64,19 @@ function SheetCart() {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Entrega</span>
                 <span>
-                  {consumptionMethod?.toUpperCase() === "DELIVERY"
-                    ? deliveryFee === 0
-                      ? "Grátis"
-                      : formatCurrency(deliveryFee)
-                    : "Não aplicável"}
+                  {consumptionMethod?.toUpperCase() === "DELIVERY" ? (
+                    !userAreaType ? (
+                      <span className="text-red-500 text-xs font-medium">
+                        Selecione o endereço no checkout
+                      </span>
+                    ) : deliveryFee === 0 ? (
+                      <span className="text-green-600 font-bold">Grátis</span>
+                    ) : (
+                      formatCurrency(deliveryFee)
+                    )
+                  ) : (
+                    "Não aplicável"
+                  )}
                 </span>
               </div>
               <div className="flex justify-between text-sm">

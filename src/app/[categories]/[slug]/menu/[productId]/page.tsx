@@ -37,7 +37,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const systemSettings = restaurant.systemSettings;
   const useRangoooDelivery = restaurant.useRangoooDelivery;
   const userAreaType = restaurant.userAreaType;
-  console.log("User Area Type:", userAreaType);
 
   return (
     <PageContainer>

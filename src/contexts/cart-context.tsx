@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode, useMemo } from "react";
 import { ManageableIngredient } from "@/dtos/cart.dto";
+import { AreaType } from "@/generated/prisma/enums";
 
 export interface CartItem {
   lineId: string;
@@ -30,6 +31,8 @@ interface CartContextData {
   deliveryFee: number;
   totalFinal: number;
   consumptionMethod: ConsumptionMethod;
+  userAreaType: string | null;
+  setUserAreaType: (areaType: string | null) => void;
   setDeliveryFee: (fee: number | null) => void;
   setConsumptionMethod: (method: string) => void;
   addToCart: (item: CartItem) => void;
@@ -48,6 +51,8 @@ export const CartContext = createContext<CartContextData>({
   deliveryFee: 0,
   totalFinal: 0,
   consumptionMethod: null,
+  userAreaType: "",
+  setUserAreaType: () => {},
   setDeliveryFee: () => {},
   setConsumptionMethod: () => {},
   addToCart: () => {},
@@ -64,6 +69,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [deliveryFee, setDeliveryFeeState] = useState(0);
   const [consumptionMethod, setConsumptionMethodState] =
     useState<ConsumptionMethod>(null);
+  const [userAreaType, setUserAreaType] = useState<AreaType | string | null>(
+    null,
+  );
 
   const toogleCart = () => setIsOpen((prev) => !prev);
 
@@ -157,6 +165,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         totalPrice,
         totalFinal,
         consumptionMethod,
+        userAreaType,
+        setUserAreaType,
         setDeliveryFee,
         setConsumptionMethod,
         addToCart,

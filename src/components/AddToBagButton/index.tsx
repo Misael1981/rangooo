@@ -17,8 +17,13 @@ const AddToBagButton = ({
   userAreaType,
 }: AddToBagButtonProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { toogleCart, addToCart, setDeliveryFee, setConsumptionMethod } =
-    useContext(CartContext);
+  const {
+    toogleCart,
+    addToCart,
+    setDeliveryFee,
+    setConsumptionMethod,
+    setUserAreaType,
+  } = useContext(CartContext);
   const searchParams = useSearchParams();
   const consumptionMethod = searchParams.get("consumptionMethod");
 
@@ -39,6 +44,8 @@ const AddToBagButton = ({
       useRangoooDelivery,
     );
     setDeliveryFee(fee / 100);
+
+    setUserAreaType(userAreaType);
 
     toogleCart();
     addToCart(product);

@@ -2,6 +2,8 @@ import { getDoubleProductDetails } from "@/data/get-double-product-details";
 import HeaderDoubleImages from "./components/HeaderDoubleImages";
 import ProductDoubleDetailsWrapper from "./components/ProductDoubleDetailsWrapper";
 import { PageContainer } from "@/components/PageContainer";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 interface DoublePizzaPageProps {
   params: Promise<{ slug: string }>;
@@ -14,8 +16,10 @@ export default async function DoublePizzaPage({
 }: DoublePizzaPageProps) {
   const { slug } = await params;
   const { flavor1, flavor2 } = await searchParams;
+  const session = await getServerSession(authOptions);
+  const userId = session?.user?.id;
 
-  const data = await getDoubleProductDetails(slug, flavor1, flavor2);
+  const data = await getDoubleProductDetails(slug, flavor1, flavor2, userId);
 
   if (!data) {
     return (
@@ -37,7 +41,6 @@ export default async function DoublePizzaPage({
     ingredients: f2.ingredients || [],
   };
 
-  const deliveryFee = restaurant.deliveryFee;
   const establishmentOpen = restaurant.isOpen;
 
   return (
@@ -58,6 +61,7 @@ export default async function DoublePizzaPage({
           restaurantDeliveryAreas={restaurant.deliveryAreas}
           systemSettings={restaurant.systemSettings}
           useRangoooDelivery={restaurant.useRangoooDelivery}
+          userAreaType={restaurant.userAreaType}
         />
       </main>
     </PageContainer>

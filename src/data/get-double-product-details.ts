@@ -12,8 +12,19 @@ export async function getDoubleProductDetails(
   restaurantSlug: string,
   id1: string,
   id2: string,
+  userId?: string,
 ) {
   try {
+    let userAreaType = null;
+
+    if (userId) {
+      const defaultAddress = await db.address.findFirst({
+        where: { userId, isDefault: true },
+        select: { areaType: true },
+      });
+      userAreaType = defaultAddress?.areaType || null;
+    }
+
     const [product1, product2] = await Promise.all([
       db.product.findFirst({
         where: { id: id1, restaurant: { slug: restaurantSlug } },
@@ -64,6 +75,7 @@ export async function getDoubleProductDetails(
       flavor2: formatProduct(product2),
       restaurant: {
         ...product1.restaurant,
+        userAreaType,
         deliveryFee: Number(product1.restaurant.deliveryFee),
         latitude: Number(product1.restaurant.latitude),
         longitude: Number(product1.restaurant.longitude),

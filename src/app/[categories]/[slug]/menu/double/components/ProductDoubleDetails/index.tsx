@@ -5,7 +5,6 @@ import LogoImage from "@/components/LogoImage";
 import DescriptionProduct from "@/components/ProductDetails/components/DescriptionProduct";
 import QuantitySelector from "@/components/ProductDetails/components/QuantitySelector";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCart } from "@/contexts/cart-context";
 import { ManageableIngredient } from "@/dtos/cart.dto";
 import {
   DeliveryAreaDTO,
@@ -13,7 +12,7 @@ import {
   SystemSettingsDTO,
 } from "@/dtos/establishment-menu-data.dto";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface ProductDoubleDetailsProps {
   establishmentName: string;
@@ -24,6 +23,7 @@ interface ProductDoubleDetailsProps {
   restaurantDeliveryAreas: DeliveryAreaDTO[];
   systemSettings: SystemSettingsDTO;
   useRangoooDelivery: boolean;
+  userAreaType: string | null;
 }
 
 const ProductDoubleDetails = ({
@@ -35,6 +35,7 @@ const ProductDoubleDetails = ({
   restaurantDeliveryAreas,
   systemSettings,
   useRangoooDelivery,
+  userAreaType,
 }: ProductDoubleDetailsProps) => {
   const [quantity, setQuantity] = useState(1);
   const [extrasFlavor1, setExtrasFlavor1] = useState<ManageableIngredient[]>(
@@ -52,33 +53,7 @@ const ProductDoubleDetails = ({
     return Math.max(price1, price2);
   };
 
-  const {
-    setConsumptionMethod,
-    setSystemSettings,
-    setUseRangoooDelivery,
-    setRestaurantDeliveryAreas,
-  } = useCart();
   const searchParams = useSearchParams();
-
-  useEffect(() => {
-    const method = searchParams.get("consumptionMethod");
-    if (method) {
-      setConsumptionMethod(method);
-    }
-
-    setSystemSettings(systemSettings);
-    setUseRangoooDelivery(useRangoooDelivery);
-    setRestaurantDeliveryAreas(restaurantDeliveryAreas);
-  }, [
-    searchParams,
-    systemSettings,
-    useRangoooDelivery,
-    restaurantDeliveryAreas,
-    setConsumptionMethod,
-    setSystemSettings,
-    setUseRangoooDelivery,
-    setRestaurantDeliveryAreas,
-  ]);
 
   const productsToCart = {
     lineId: `double-${flavor1.id}-${flavor2.id}-${JSON.stringify(allExtras)}-${JSON.stringify(removedFlavor1)}-${JSON.stringify(removedFlavor2)}`,
@@ -146,6 +121,10 @@ const ProductDoubleDetails = ({
       <AddToBagButton
         product={productsToCart}
         establishmentOpen={establishmentOpen}
+        restaurantDeliveryAreas={restaurantDeliveryAreas}
+        systemSettings={systemSettings}
+        useRangoooDelivery={useRangoooDelivery}
+        userAreaType={userAreaType}
       />
     </>
   );
