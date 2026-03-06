@@ -66,9 +66,7 @@ export default async function MenuPage({
             | "restaurantes"
             | "hamburguerias"
             | "sorveterias"
-            | "acai"
-            | "saudavel"
-            | "doces"
+            | "adegas"
         }
         establishment={establishment}
       />
