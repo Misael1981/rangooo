@@ -81,7 +81,7 @@ export const createOrder = async (
         orderNumber: nextOrderNumber,
         status: "PENDING",
         consumptionMethod: input.consumptionMethod,
-        paymentMethod: input.payment.paymentMethod,
+        paymentMethod: input.payment?.paymentMethod || "NOT_DEFINED",
 
         deliveryAddress:
           input.consumptionMethod === "DELIVERY"
