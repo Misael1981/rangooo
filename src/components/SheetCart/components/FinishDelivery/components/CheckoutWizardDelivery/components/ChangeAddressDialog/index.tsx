@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { addressSchema } from "@/dtos/change-address-for.dto";
 import { AreaType } from "@/generated/prisma/enums";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -61,6 +62,7 @@ const ChangeAddressDialog = ({
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(addressSchema),
@@ -74,6 +76,20 @@ const ChangeAddressDialog = ({
       reference: userAddress?.reference ?? "",
     },
   });
+
+  useEffect(() => {
+    if (isOpen && userAddress) {
+      reset({
+        street: userAddress.street ?? "",
+        number: userAddress.number ?? "",
+        neighborhood: userAddress.neighborhood ?? "",
+        city: userAddress.city ?? "",
+        areaType: userAddress.areaType ?? AreaType.URBAN,
+        complement: userAddress.complement ?? "",
+        reference: userAddress.reference ?? "",
+      });
+    }
+  }, [isOpen, userAddress, reset]);
 
   const handleFormSubmit = (data: FormData) => {
     onSubmitAddress?.(data);

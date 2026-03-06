@@ -23,6 +23,9 @@ const AddToBagButton = ({
     setDeliveryFee,
     setConsumptionMethod,
     setUserAreaType,
+    setRestaurantSettings,
+    setRestaurantDeliveryAreas,
+    setUseRangoooDelivery,
   } = useContext(CartContext);
   const searchParams = useSearchParams();
   const consumptionMethod = searchParams.get("consumptionMethod");
@@ -33,19 +36,29 @@ const AddToBagButton = ({
       return;
     }
 
-    if (consumptionMethod) {
-      setConsumptionMethod(consumptionMethod);
+    const method = consumptionMethod?.toUpperCase() || "DELIVERY";
+    setConsumptionMethod(method);
+
+    if (method === "DELIVERY" && userAreaType) {
+      const fee = calcDeliveryFee(
+        userAreaType,
+        systemSettings!,
+        restaurantDeliveryAreas,
+        useRangoooDelivery,
+      );
+
+      const finalFee = useRangoooDelivery ? fee / 100 : fee;
+      setDeliveryFee(finalFee);
+
+      setUserAreaType(userAreaType);
+    } else {
+      setDeliveryFee(0);
+      setUserAreaType(userAreaType || null);
     }
 
-    const fee = calcDeliveryFee(
-      userAreaType,
-      systemSettings!,
-      restaurantDeliveryAreas,
-      useRangoooDelivery,
-    );
-    setDeliveryFee(fee / 100);
-
-    setUserAreaType(userAreaType);
+    setRestaurantSettings(systemSettings);
+    setRestaurantDeliveryAreas(restaurantDeliveryAreas);
+    setUseRangoooDelivery(useRangoooDelivery);
 
     toogleCart();
     addToCart(product);

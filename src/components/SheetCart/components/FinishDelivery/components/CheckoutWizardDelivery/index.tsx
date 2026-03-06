@@ -1,7 +1,7 @@
 import { UserDTO } from "@/dtos/profile-status.dto";
 import { CheckCircle2, CreditCard, MapPin } from "lucide-react";
 import { JSX, useEffect, useMemo, useState } from "react";
-import AddressStep from "./components/AddressStep";
+import AddressStep, { AddressFormData } from "./components/AddressStep";
 import PaymentStep, { PaymentFormData } from "./components/PaymentStep";
 import {
   Card,
@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckoutState } from "@/dtos/finish-order.dto";
 import ConfirmStep from "./components/ConfirmStep";
-import { useCart } from "@/contexts/cart-context";
 
 type CheckoutWizardDeliveryProps = {
   user: UserDTO | null;
@@ -47,7 +46,6 @@ const CheckoutWizardDelivery = ({
     needsChange: false,
     changeAmount: "",
   });
-  const { setDeliveryFee, consumptionMethod, setUserAreaType } = useCart();
 
   const isFinalStep = currentStep === steps.length - 1;
 
@@ -67,37 +65,18 @@ const CheckoutWizardDelivery = ({
 
   const defaultAddress = user?.addresses?.find((addr) => addr.isDefault);
 
-  useEffect(() => {
-    const currentAddress = checkoutState.delivery?.address || defaultAddress;
-
-    if (currentAddress?.areaType) {
-      setUserAreaType(currentAddress.areaType);
-    }
-
-    if (consumptionMethod === "DELIVERY") {
-      setDeliveryFee(null as unknown as number);
-    } else {
-      setDeliveryFee(0);
-    }
-  }, [
-    consumptionMethod,
-    defaultAddress,
-    checkoutState.delivery?.address,
-    setDeliveryFee,
-    setUserAreaType,
-  ]);
-
   const userAddress = useMemo(() => {
     if (!defaultAddress) return undefined;
 
     return {
       street: defaultAddress.street,
       number: defaultAddress.number,
-      complement: defaultAddress.complement,
       neighborhood: defaultAddress.neighborhood,
       city: defaultAddress.city,
-      reference: defaultAddress.reference,
+      state: defaultAddress.state,
       areaType: defaultAddress.areaType,
+      complement: defaultAddress.complement ?? undefined,
+      reference: defaultAddress.reference ?? undefined,
     };
   }, [defaultAddress]);
 
@@ -130,8 +109,17 @@ const CheckoutWizardDelivery = ({
     onUpdateState("payment", newPaymentData);
   };
 
+  const handleAddressUpdate = (data: AddressFormData) => {
+    onUpdateState("delivery", { address: data });
+  };
+
   const stepComponents: Record<number, JSX.Element> = {
-    0: <AddressStep userAddress={userAddress} />,
+    0: (
+      <AddressStep
+        userAddress={userAddress}
+        onAddressChange={handleAddressUpdate}
+      />
+    ),
     1: (
       <PaymentStep formData={formPaymentData} onUpdate={handlePaymentUpdate} />
     ),

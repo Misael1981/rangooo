@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { CartProvider } from "@/contexts/cart-context";
 import SheetCart from "@/components/SheetCart";
 import { Suspense } from "react";
+import { RestaurantProvider } from "@/contexts/restaurant-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -49,11 +50,13 @@ export default function RootLayout({
       >
         <AuthProvider>
           <CartProvider>
-            <Suspense fallback={null}>
-              {children}
-              <Toaster />
-              <SheetCart />
-            </Suspense>
+            <RestaurantProvider>
+              <Suspense fallback={null}>
+                {children}
+                <Toaster />
+                <SheetCart />
+              </Suspense>
+            </RestaurantProvider>
           </CartProvider>
         </AuthProvider>
       </body>

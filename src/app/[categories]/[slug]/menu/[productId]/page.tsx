@@ -1,6 +1,7 @@
 import HeaderMenu from "@/components/HeaderMenu";
 import { PageContainer } from "@/components/PageContainer";
 import ProductDetailsWrapper from "@/components/ProductDetailsWrapper";
+import { RestaurantInitializer } from "@/components/RestaurantInitializer";
 import { getProductDetails } from "@/data/get-product-details";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
@@ -40,6 +41,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <PageContainer>
+      <RestaurantInitializer
+        systemSettings={systemSettings}
+        restaurantDeliveryAreas={restaurantDeliveryAreas}
+        useRangoooDelivery={useRangoooDelivery}
+        userAreaType={userAreaType}
+      />
       <div className="flex flex-col min-h-screen">
         <HeaderMenu image={product.imageUrl} alt={product.name} />
         <main className="flex-1 bg-white -mt-6 z-50 relative rounded-t-3xl p-4 space-y-4">

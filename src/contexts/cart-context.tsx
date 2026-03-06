@@ -3,6 +3,10 @@
 import { createContext, useContext, useState, ReactNode, useMemo } from "react";
 import { ManageableIngredient } from "@/dtos/cart.dto";
 import { AreaType } from "@/generated/prisma/enums";
+import {
+  DeliveryAreaDTO,
+  SystemSettingsDTO,
+} from "@/dtos/establishment-menu-data.dto";
 
 export interface CartItem {
   lineId: string;
@@ -32,6 +36,12 @@ interface CartContextData {
   totalFinal: number;
   consumptionMethod: ConsumptionMethod;
   userAreaType: string | null;
+  restaurantSettings: SystemSettingsDTO | null;
+  restaurantDeliveryAreas: DeliveryAreaDTO[] | null;
+  useRangoooDelivery: boolean;
+  setRestaurantSettings: (settings: SystemSettingsDTO | null) => void;
+  setRestaurantDeliveryAreas: (areas: DeliveryAreaDTO[] | null) => void;
+  setUseRangoooDelivery: (useRangooo: boolean) => void;
   setUserAreaType: (areaType: string | null) => void;
   setDeliveryFee: (fee: number | null) => void;
   setConsumptionMethod: (method: string) => void;
@@ -52,6 +62,12 @@ export const CartContext = createContext<CartContextData>({
   totalFinal: 0,
   consumptionMethod: null,
   userAreaType: "",
+  restaurantSettings: null,
+  restaurantDeliveryAreas: null,
+  useRangoooDelivery: false,
+  setRestaurantSettings: () => {},
+  setRestaurantDeliveryAreas: () => {},
+  setUseRangoooDelivery: () => {},
   setUserAreaType: () => {},
   setDeliveryFee: () => {},
   setConsumptionMethod: () => {},
@@ -72,6 +88,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [userAreaType, setUserAreaType] = useState<AreaType | string | null>(
     null,
   );
+  const [restaurantSettings, setRestaurantSettings] =
+    useState<SystemSettingsDTO | null>(null);
+  const [restaurantDeliveryAreas, setRestaurantDeliveryAreas] = useState<
+    DeliveryAreaDTO[] | null
+  >(null);
+  const [useRangoooDelivery, setUseRangoooDelivery] = useState<boolean>(false);
 
   const toogleCart = () => setIsOpen((prev) => !prev);
 
@@ -166,6 +188,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         totalFinal,
         consumptionMethod,
         userAreaType,
+        restaurantSettings,
+        restaurantDeliveryAreas,
+        useRangoooDelivery,
+        setRestaurantSettings,
+        setRestaurantDeliveryAreas,
+        setUseRangoooDelivery,
         setUserAreaType,
         setDeliveryFee,
         setConsumptionMethod,
