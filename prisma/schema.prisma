@@ -160,21 +160,6 @@ model DeliveryPerson {
   @@map("delivery_persons")
 }
 
-model OrderDelivery {
-  id               String             @id @default(uuid())
-  orderId          String             @unique
-  deliveryPersonId String
-  assignedAt       DateTime           @default(now())
-  pickedUpAt       DateTime?
-  deliveredAt      DateTime?
-  status           DeliveryStatus     @default(ASSIGNED)
-
-  order            Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  deliveryPerson   DeliveryPerson     @relation(fields: [deliveryPersonId], references: [id])
-
-  @@map("order_deliveries")
-}
-
 model DeliverySession {
   id               String    @id @default(cuid())
   deliveryPersonId String
@@ -392,12 +377,28 @@ model Order {
   orderNumber       Int?
   printId           String?
   paymentMethod     String?
+  deliveryPersonId  String?
   delivery          OrderDelivery?
   consumptionMethod ConsumptionMethod @default(DELIVERY)
   status            OrderStatus       @default(PENDING)
   restaurant        Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   items             OrderItem[]
+}
+
+model OrderDelivery {
+  id               String             @id @default(uuid())
+  orderId          String             @unique
+  deliveryPersonId String
+  assignedAt       DateTime           @default(now())
+  pickedUpAt       DateTime?
+  deliveredAt      DateTime?
+  status           DeliveryStatus     @default(ASSIGNED)
+
+  order            Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  deliveryPerson   DeliveryPerson     @relation(fields: [deliveryPersonId], references: [id])
+
+  @@map("order_deliveries")
 }
 
 model OrderItem {
@@ -446,6 +447,7 @@ enum OrderStatus {
   PENDING
   CONFIRMED
   PREPARING
+  OUT_FOR_DELIVERY
   DELIVERED
   CANCELED
 }

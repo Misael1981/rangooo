@@ -10,9 +10,6 @@ type ConfirmStepProps = {
 const ConfirmStep = ({ checkoutState }: ConfirmStepProps) => {
   const { products, totalFinal } = useContext(CartContext);
 
-  console.log(products);
-  console.log(totalFinal);
-
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold flex items-center gap-2">

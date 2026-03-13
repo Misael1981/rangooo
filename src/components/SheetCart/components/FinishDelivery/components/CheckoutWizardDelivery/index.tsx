@@ -110,7 +110,12 @@ const CheckoutWizardDelivery = ({
   };
 
   const handleAddressUpdate = (data: AddressFormData) => {
-    onUpdateState("delivery", { address: data });
+    const updatedAddress = {
+      ...userAddress,
+      ...data,
+    };
+
+    onUpdateState("delivery", { address: updatedAddress });
   };
 
   const stepComponents: Record<number, JSX.Element> = {

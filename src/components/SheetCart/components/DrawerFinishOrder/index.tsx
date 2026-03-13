@@ -128,6 +128,8 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
                   city: checkoutState.delivery?.address?.city ?? "",
                   complement:
                     checkoutState.delivery?.address?.complement ?? null,
+                  areaType: checkoutState.delivery?.address?.areaType ?? null,
+                  reference: checkoutState.delivery?.address?.reference ?? null,
                 },
               }
             : undefined,
