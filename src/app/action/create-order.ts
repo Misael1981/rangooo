@@ -8,6 +8,16 @@ import { sendOrderToPrint } from "@/lib/send-order-to-print";
 import { CreateOrderInputDTO, OrderResponseDTO } from "@/dtos/create-order.dto";
 import { parseExtras } from "@/helpers/parse-extras";
 import { serializeOrder } from "@/helpers/serialize-order";
+import Pusher from "pusher";
+
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID!,
+  key: process.env.NEXT_PUBLIC_PUSHER_APP_KEY!,
+  secret: process.env.PUSHER_SECRET!,
+  cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
+  useTLS: true,
+});
+
 export const createOrder = async (
   input: CreateOrderInputDTO,
 ): Promise<OrderResponseDTO> => {
@@ -110,6 +120,15 @@ export const createOrder = async (
       },
     });
   });
+
+  if (order.consumptionMethod === "DELIVERY") {
+    pusher
+      .trigger("delivery-orders", "new-order", {
+        orderId: order.id,
+        restaurantName: order.restaurant.name,
+      })
+      .catch((err) => console.error("❌ Erro ao avisar Pusher:", err));
+  }
 
   /* ---------------- Impressão ---------------- */
 
