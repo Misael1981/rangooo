@@ -21,7 +21,7 @@ type StatusConfig = {
 const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   PENDING: {
     label: "Pendente",
-    className: "bg-yellow-100 text-yellow-800 border-yellow-300",
+    className: "bg-pink-200 text-pink-800 border-pink-300",
   },
   CONFIRMED: {
     label: "Confirmado",
@@ -30,6 +30,10 @@ const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
   PREPARING: {
     label: "Preparando",
     className: "bg-orange-100 text-orange-800 border-orange-300",
+  },
+  OUT_FOR_DELIVERY: {
+    label: "Saiu para a entrega",
+    className: "bg-yellow-200 text-yelllow-800 border-yelllow-300",
   },
   DELIVERED: {
     label: "Entregue",
