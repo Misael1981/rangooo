@@ -155,23 +155,43 @@ model DeliveryPerson {
   user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   deliveries        OrderDelivery[]
   deliverySessions  DeliverySession[]
-
+  orderRejections   OrderRejection[]
 
   @@map("delivery_persons")
 }
 
-model DeliverySession {
-  id               String    @id @default(cuid())
+model OrderRejection {
+  id               String   @id @default(cuid())
+  orderId          String
   deliveryPersonId String
-  startTime        DateTime  @default(now())
-  endTime          DateTime?
-  
-  // Métricas específicas desta sessão
-  ordersCompleted  Int       @default(0)
-  sessionRating    Float?    // Média das avaliações recebidas APENAS nesta sessão
-  sessionRatingCount Int     @default(0)
+  reason           String?
+  createdAt        DateTime @default(now())
 
   deliveryPerson   DeliveryPerson @relation(fields: [deliveryPersonId], references: [id])
+  
+  @@index([deliveryPersonId])
+  @@map("order_rejections")
+}
+
+model DeliverySession {
+  id                 String    @id @default(cuid())
+  deliveryPersonId   String
+  date               DateTime  @default(now()) 
+  startTime          DateTime  @default(now())
+  endTime            DateTime?
+  lastRejectionAt    DateTime?
+  rejectionsCount    Int       @default(0) 
+  
+  ordersCompleted    Int       @default(0)
+  totalEarnings      Decimal   @default(0) @db.Decimal(10, 2) 
+  sessionRating      Float?    
+  sessionRatingCount Int       @default(0)
+
+  deliveryPerson   DeliveryPerson @relation(fields: [deliveryPersonId], references: [id])
+
+  
+  @@unique([deliveryPersonId, date]) 
+  @@map("delivery_sessions")
 }
 
 model Restaurant {
