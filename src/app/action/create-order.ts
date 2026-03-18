@@ -9,6 +9,7 @@ import { CreateOrderInputDTO, OrderResponseDTO } from "@/dtos/create-order.dto";
 import { parseExtras } from "@/helpers/parse-extras";
 import { serializeOrder } from "@/helpers/serialize-order";
 import { pusherServer } from "@/lib/pusher";
+import { sendPushToDeliveryPersons } from "./send-push-to-delivery-persons";
 
 export const createOrder = async (
   input: CreateOrderInputDTO,
@@ -122,6 +123,8 @@ export const createOrder = async (
       })
       .then(() => console.log("✅ Evento Pusher disparado com sucesso!"))
       .catch((err) => console.error("❌ Erro ao avisar Pusher:", err));
+
+    await sendPushToDeliveryPersons();
   }
 
   /* ---------------- Impressão ---------------- */

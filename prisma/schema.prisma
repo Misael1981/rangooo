@@ -152,6 +152,7 @@ model DeliveryPerson {
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
 
+  pushSubscriptions PushSubscription[]
   user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   deliveries        OrderDelivery[]
   deliverySessions  DeliverySession[]
@@ -160,6 +161,16 @@ model DeliveryPerson {
   @@map("delivery_persons")
 }
 
+model PushSubscription {
+  id               String         @id @default(uuid())
+  deliveryPersonId String
+  endpoint         String         @unique 
+  auth             String         
+  p256dh           String         
+  createdAt        DateTime       @default(now())
+
+  deliveryPerson   DeliveryPerson @relation(fields: [deliveryPersonId], references: [id], onDelete: Cascade)
+}
 model OrderRejection {
   id               String   @id @default(cuid())
   orderId          String
@@ -186,6 +197,9 @@ model DeliverySession {
   totalEarnings      Decimal   @default(0) @db.Decimal(10, 2) 
   sessionRating      Float?    
   sessionRatingCount Int       @default(0)
+  
+  totalFeeToPay      Decimal   @default(0) @db.Decimal(10, 2) 
+  isPaid             Boolean   @default(false)                
 
   deliveryPerson   DeliveryPerson @relation(fields: [deliveryPersonId], references: [id])
 
@@ -193,6 +207,7 @@ model DeliverySession {
   @@unique([deliveryPersonId, date]) 
   @@map("delivery_sessions")
 }
+
 
 model Restaurant {
   id                  String                        @id @default(uuid())
