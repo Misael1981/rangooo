@@ -85,6 +85,14 @@ const CheckoutWizardDelivery = ({
       onUpdateState("delivery", { address: userAddress });
     }
 
+    if (!checkoutState.payment) {
+      onUpdateState("payment", {
+        paymentMethod: "pix",
+        needsChange: false,
+        changeAmount: "",
+      });
+    }
+
     if (typeof onStepChange === "function") {
       onStepChange(isFinalStep);
     }
@@ -93,6 +101,7 @@ const CheckoutWizardDelivery = ({
     onStepChange,
     userAddress,
     checkoutState.delivery?.address,
+    checkoutState.payment,
     onUpdateState,
   ]);
 
