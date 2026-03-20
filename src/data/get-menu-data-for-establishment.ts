@@ -16,6 +16,7 @@ export async function getEstablishmentMenuData(
           orderBy: { createdAt: "asc" },
           include: {
             products: {
+              where: { isVisible: true },
               orderBy: { name: "asc" },
             },
           },
