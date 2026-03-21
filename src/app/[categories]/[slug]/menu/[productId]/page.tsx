@@ -34,10 +34,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const establishmentOpen = restaurant.isOpen;
 
-  const restaurantDeliveryAreas = restaurant.deliveryAreas;
   const systemSettings = restaurant.systemSettings;
   const useRangoooDelivery = restaurant.useRangoooDelivery;
   const userAreaType = restaurant.userAreaType;
+  const restaurantDeliveryAreas = restaurant.deliveryAreas.map((area) => ({
+    ...area,
+    fee: area.fee / 100,
+  }));
 
   return (
     <PageContainer>

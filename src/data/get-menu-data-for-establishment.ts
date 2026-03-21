@@ -7,7 +7,23 @@ export async function getEstablishmentMenuData(
   try {
     const establishment = await db.restaurant.findUnique({
       where: { slug },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        avatarImageUrl: true,
+        coverImageUrl: true,
+        isOpen: true,
+        category: true,
+        description: true,
+        street: true,
+        number: true,
+        neighborhood: true,
+        city: true,
+        state: true,
+        complement: true,
+        deliveryFee: true,
+        useRangoooDelivery: true,
         consumptionMethods: {
           where: { isActive: true },
           orderBy: { displayOrder: "asc" },
