@@ -8,7 +8,7 @@ export function calcDeliveryFee(
     ruralDeliveryFee: number;
     districtDeliveryFee: number;
   },
-  deliveryAreas: DeliveryAreaDTO[],
+  deliveryAreas: DeliveryAreaDTO[] = [],
   useRangoooDelivery = false,
   restaurantDeliveryFee = 0,
 ): number {

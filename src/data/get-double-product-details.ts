@@ -28,11 +28,25 @@ export async function getDoubleProductDetails(
     const [product1, product2] = await Promise.all([
       db.product.findFirst({
         where: { id: id1, restaurant: { slug: restaurantSlug } },
-        include: { restaurant: { include: { consumptionMethods: true } } },
+        include: {
+          restaurant: {
+            include: {
+              consumptionMethods: true,
+              deliveryAreas: true,
+            },
+          },
+        },
       }),
       db.product.findFirst({
         where: { id: id2, restaurant: { slug: restaurantSlug } },
-        include: { restaurant: { include: { consumptionMethods: true } } },
+        include: {
+          restaurant: {
+            include: {
+              consumptionMethods: true,
+              deliveryAreas: true,
+            },
+          },
+        },
       }),
     ]);
 
@@ -77,6 +91,10 @@ export async function getDoubleProductDetails(
         ...product1.restaurant,
         userAreaType,
         deliveryFee: Number(product1.restaurant.deliveryFee),
+        deliveryAreas: product1.restaurant.deliveryAreas.map((area) => ({
+          ...area,
+          fee: area.fee / 100,
+        })),
         latitude: Number(product1.restaurant.latitude),
         longitude: Number(product1.restaurant.longitude),
       } as unknown as EstablishmentMenuDataDTO,
