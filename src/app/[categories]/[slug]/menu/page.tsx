@@ -10,6 +10,14 @@ type MenuPageProps = {
   searchParams: { [key: string]: string };
 };
 
+const CATEGORY_TO_SLUG: Record<string, string> = {
+  RESTAURANT: "restaurantes",
+  PIZZARIA: "pizzarias",
+  HAMBURGUERIA: "hamburguerias",
+  SORVETERIA: "sorveterias",
+  ADEGA: "adegas",
+};
+
 // 1. Cache para as categorias (Revalida a cada 1 hora)
 const getCachedValidCategories = unstable_cache(
   async () => {
@@ -17,7 +25,9 @@ const getCachedValidCategories = unstable_cache(
       select: { category: true },
       distinct: ["category"],
     });
-    return distinctCategories.map((c) => c.category.toLowerCase() + "s");
+    return distinctCategories
+      .map((c) => CATEGORY_TO_SLUG[c.category])
+      .filter((slug): slug is string => !!slug);
   },
   ["valid-category-slugs"],
   { revalidate: 3600, tags: ["categories"] },
@@ -41,7 +51,7 @@ export default async function MenuPage({
 
   const validCategories = await getCachedValidCategories();
   if (!validCategories.includes(categories)) {
-    return redirect("/404");
+    return notFound();
   }
 
   const establishment = await getEstablishmentMenuData(slug);
@@ -50,7 +60,10 @@ export default async function MenuPage({
     return notFound();
   }
 
-  const correctCategoryPath = establishment.category.toLowerCase() + "s";
+  const correctCategoryPath =
+    CATEGORY_TO_SLUG[establishment.category] ||
+    establishment.category.toLowerCase() + "s";
+
   if (correctCategoryPath !== categories) {
     return redirect(
       `/${correctCategoryPath}/${slug}/menu?consumptionMethod=${consumptionMethod}`,
