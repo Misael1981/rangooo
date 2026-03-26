@@ -114,6 +114,8 @@ export const createOrder = async (
     });
   });
 
+  console.log("Como o pedido está sendo contruido: ", order);
+
   if (order.consumptionMethod === "DELIVERY") {
     console.log("🚀 Disparando evento Pusher para pedido:", order.id);
     pusherServer
@@ -128,7 +130,6 @@ export const createOrder = async (
   }
 
   /* ---------------- Impressão ---------------- */
-  // Criamos uma função auto-executável ou apenas garantimos que o catch resolva
   try {
     const printData = {
       id: order.id,
@@ -137,6 +138,7 @@ export const createOrder = async (
       customerName: input.customer?.name || order.user.name || "Cliente",
       customerPhone: input.customer?.phone || order.user.phone || "",
       method: order.consumptionMethod,
+      deliveryFee: order.deliveryFee,
       payment: order.paymentMethod,
       items: order.items.map((item) => ({
         name: item.customName,
@@ -151,12 +153,12 @@ export const createOrder = async (
       details: order.deliveryAddress,
     };
 
-    // Aumentamos para 15s para dar tempo da rede respirar
+    console.log("Dados que vão para a impressora!", printData);
+
     const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Timeout Impressora")), 15000),
     );
 
-    // Fazemos a corrida, mas tratamos o resultado localmente
     const printId = await Promise.race([
       sendOrderToPrint(order.restaurantId, printData),
       timeoutPromise,
@@ -165,7 +167,7 @@ export const createOrder = async (
         `⚠️ Falha na comunicação com a impressora (#${order.orderNumber}):`,
         err.message,
       );
-      return null; // Se der erro ou timeout, printId será null
+      return null;
     });
 
     if (printId) {
@@ -178,10 +180,8 @@ export const createOrder = async (
       );
     }
   } catch (criticalErr) {
-    // Esse catch evita que qualquer erro bizarro na lógica de impressão mate a Server Action
     console.error("❌ Erro crítico no fluxo de impressão:", criticalErr);
   }
 
-  // O retorno do pedido acontece INDEPENDENTE do sucesso da impressora
   return serializeOrder(order);
 };
