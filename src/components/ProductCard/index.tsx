@@ -25,9 +25,7 @@ const ProductCard = ({
   const CardContent = (
     <div
       className={`flex w-full items-center justify-between gap-4 border rounded-lg bg-white p-4 shadow-sm transition-all ${
-        isSelected
-          ? "border-green-500 ring-2 ring-green-100"
-          : "border-gray-200"
+        isSelected ? "border-primary ring-2 ring-green-100" : "border-gray-200"
       }`}
     >
       <div className="space-y-1">

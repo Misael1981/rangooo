@@ -101,12 +101,12 @@ const SelectionMenu = ({
         <div className="fixed bottom-6 left-0 right-0 px-5 lg:max-w-xl lg:mx-auto">
           <Button
             asChild
-            className="w-full shadow-lg bg-green-600 hover:bg-green-700 h-12"
+            className="w-full shadow-lg bg-primary hover:bg-primary-700 h-12"
           >
             <Link
               href={`/${categorie}s/${slug}/menu/double?flavor1=${selectedIds[0]}&flavor2=${selectedIds[1]}&consumptionMethod=${method}`}
             >
-              Montar Pizza Meio a Meio
+              Selecionar Pizza
             </Link>
           </Button>
         </div>
