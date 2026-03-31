@@ -12,6 +12,7 @@ type FinishDeliveryProps = {
   ) => void;
   onCancel: () => void;
   onSubmit: (checkoutState: CheckoutState) => void;
+  isSubmitting: boolean;
 };
 
 const FinishDelivery = ({
@@ -20,6 +21,7 @@ const FinishDelivery = ({
   checkoutState,
   onUpdateState,
   onSubmit,
+  isSubmitting,
 }: FinishDeliveryProps) => {
   const [isFinalStep, setIsFinalStep] = useState(false);
 
@@ -32,6 +34,7 @@ const FinishDelivery = ({
         onStepChange={setIsFinalStep}
         onCancel={onCancel}
         onSubmit={onSubmit}
+        isSubmitting={isSubmitting}
       />
     </>
   );

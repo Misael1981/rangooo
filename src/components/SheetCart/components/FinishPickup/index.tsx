@@ -20,6 +20,7 @@ type FinishPickupProps = {
   ) => void;
   onSubmit: (checkoutState: CheckoutState) => void;
   onCancel: () => void;
+  isSubmitting: boolean;
 };
 
 const steps = [
@@ -32,6 +33,7 @@ const FinishPickup = ({
   onCancel,
   checkoutState,
   onUpdateState,
+  isSubmitting,
 }: FinishPickupProps) => {
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -117,8 +119,9 @@ const FinishPickup = ({
             <Button
               className="bg-green-600 hover:bg-green-700"
               onClick={() => onSubmit(checkoutState)}
+              disabled={isSubmitting}
             >
-              Finalizar Pedido
+              {isSubmitting ? "Enviando pedido..." : "Finalizar Pedido"}
             </Button>
           ) : (
             <Button onClick={nextStep}>Continuar</Button>

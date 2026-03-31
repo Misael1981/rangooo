@@ -188,10 +188,11 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
                 {consumptionMethod === "DELIVERY" && (
                   <FinishDelivery
                     userData={userData}
-                    onCancel={handleCancel}
                     checkoutState={checkoutState}
                     onUpdateState={updateCheckoutData}
+                    onCancel={handleCancel}
                     onSubmit={handleSubmit}
+                    isSubmitting={isSubmitting}
                   />
                 )}
 
@@ -201,15 +202,17 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
                     onUpdateState={updateCheckoutData}
                     onSubmit={handleSubmit}
                     onCancel={handleCancel}
+                    isSubmitting={isSubmitting}
                   />
                 )}
 
                 {consumptionMethod === "DINE_IN" && (
                   <FinishDineIn
-                    onCancel={handleCancel}
                     checkoutState={checkoutState}
                     onUpdateState={updateCheckoutData}
+                    onCancel={handleCancel}
                     onSubmit={handleSubmit}
+                    isSubmitting={isSubmitting}
                   />
                 )}
               </div>

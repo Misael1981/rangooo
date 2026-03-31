@@ -20,6 +20,7 @@ type FinishDineInProps = {
   ) => void;
   onCancel: () => void;
   onSubmit: (checkoutState: CheckoutState) => void;
+  isSubmitting: boolean;
 };
 
 const steps = [
@@ -32,6 +33,7 @@ const FinishDineIn = ({
   checkoutState,
   onUpdateState,
   onSubmit,
+  isSubmitting,
 }: FinishDineInProps) => {
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -119,8 +121,9 @@ const FinishDineIn = ({
               <Button
                 className="bg-green-600 hover:bg-green-700"
                 onClick={() => onSubmit(checkoutState)}
+                disabled={isSubmitting}
               >
-                Finalizar Pedido
+                {isSubmitting ? "Enviando pedido..." : "Finalizar Pedido"}
               </Button>
             ) : (
               <Button onClick={nextStep}>Continuar</Button>
