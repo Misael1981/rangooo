@@ -5,11 +5,16 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 import { sendOrderToPrint } from "@/lib/send-order-to-print";
-import { CreateOrderInputDTO, OrderResponseDTO } from "@/dtos/create-order.dto";
-import { parseExtras } from "@/helpers/parse-extras";
+import {
+  CreateOrderInputDTO,
+  OrderExtraDTO,
+  OrderResponseDTO,
+} from "@/dtos/create-order.dto";
 import { serializeOrder } from "@/helpers/serialize-order";
 import { pusherServer } from "@/lib/pusher";
 import { sendPushToDeliveryPersons } from "./send-push-to-delivery-persons";
+import { Prisma } from "@/generated/prisma/client";
+import { parseJsonArray } from "@/helpers/parse-json-array";
 
 export const createOrder = async (
   input: CreateOrderInputDTO,
@@ -52,25 +57,25 @@ export const createOrder = async (
 
     const nextOrderNumber = currentDay * 100 + (ordersToday + 1);
 
-    let totalAmount = 0;
+    const totalAmount = input.products.reduce((acc, p) => {
+      const extrasTotal =
+        p.extras?.reduce((sum, e) => sum + (e.price || 0), 0) || 0;
 
-    const itemsData = input.products.map((p) => {
-      const quantity = Math.max(1, Number(p.quantity ?? 1));
-      const basePrice = Number(p.price ?? 0);
+      const additionalTotal =
+        p.additionalIngredients?.reduce((sum, e) => sum + (e.price || 0), 0) ||
+        0;
 
-      const extrasPrice =
-        p.extras?.reduce((acc, e) => acc + Number(e.price ?? 0), 0) ?? 0;
+      const flavor2AdditionalTotal =
+        p.flavor2?.additionalIngredients?.reduce(
+          (sum, e) => sum + (e.price || 0),
+          0,
+        ) || 0;
 
-      totalAmount += (basePrice + extrasPrice) * quantity;
+      const base =
+        p.price + extrasTotal + additionalTotal + flavor2AdditionalTotal;
 
-      return {
-        productId: p.productId ?? p.id!,
-        quantity,
-        priceAtOrder: basePrice,
-        customName: p.name,
-        extras: p.extras ? JSON.stringify(p.extras) : null,
-      };
-    });
+      return acc + base * (p.quantity || 1);
+    }, 0);
 
     const finalDeliveryFee =
       input.consumptionMethod === "DELIVERY" ? (input.deliveryFee ?? 0) : 0;
@@ -97,9 +102,37 @@ export const createOrder = async (
         totalAmount: finalTotalAmount,
 
         items: {
-          create: itemsData,
+          create: input.products.map((p) => {
+            if (!p.productId || !p.quantity) {
+              throw new Error(`Produto ou quantidade inválida`);
+            }
+
+            return {
+              product: {
+                connect: { id: p.productId },
+              },
+              quantity: p.quantity,
+              priceAtOrder: p.price,
+              customName: p.name,
+              extras: JSON.stringify(p.extras || []),
+              removedIngredients: JSON.stringify(p.removedIngredients || []),
+
+              additionalIngredients: p.additionalIngredients || Prisma.JsonNull,
+
+              isDouble: !!p.flavor2,
+              flavor2Id: p.flavor2?.id || null,
+              flavor2Name: p.flavor2?.name || null,
+              flavor2Removed: p.flavor2
+                ? JSON.stringify(p.flavor2.removedIngredients)
+                : null,
+
+              flavor2additionalIngredients:
+                p.flavor2?.additionalIngredients || Prisma.JsonNull,
+            };
+          }),
         },
       },
+
       include: {
         user: true,
         restaurant: true,
@@ -114,8 +147,6 @@ export const createOrder = async (
     });
   });
 
-  console.log("Como o pedido está sendo contruido: ", order);
-
   if (order.consumptionMethod === "DELIVERY") {
     console.log("🚀 Disparando evento Pusher para pedido:", order.id);
     pusherServer
@@ -123,10 +154,11 @@ export const createOrder = async (
         orderId: order.id,
         restaurantName: order.restaurant.name,
       })
-      .then(() => console.log("✅ Evento Pusher disparado com sucesso!"))
-      .catch((err) => console.error("❌ Erro ao avisar Pusher:", err));
+      .catch((err) => console.error("❌ Erro Pusher:", err));
 
-    await sendPushToDeliveryPersons();
+    sendPushToDeliveryPersons().catch((err) =>
+      console.error("❌ Erro Push:", err),
+    );
   }
 
   /* ---------------- Impressão ---------------- */
@@ -138,17 +170,50 @@ export const createOrder = async (
       customerName: input.customer?.name || order.user.name || "Cliente",
       customerPhone: input.customer?.phone || order.user.phone || "",
       method: order.consumptionMethod,
-      deliveryFee: order.deliveryFee,
+      deliveryFee: Number(order.deliveryFee),
       payment: order.paymentMethod,
-      items: order.items.map((item) => ({
-        name: item.customName,
-        category: item.product?.menuCategory?.name || "Geral",
-        quantity: item.quantity,
-        price: Number(item.priceAtOrder),
-        extras: parseExtras(item.extras)
+      items: order.items.map((item) => {
+        const flavor1Extras = parseJsonArray<OrderExtraDTO>(item.extras)
           .map((e) => e.name || e.title)
-          .filter((e): e is string => !!e),
-      })),
+          .filter((e): e is string => !!e);
+
+        const flavor1Removed = parseJsonArray<string>(item.removedIngredients);
+
+        let flavor2Info: {
+          name: string;
+          extras: string[];
+          removed: string[];
+        } | null = null;
+
+        if (item.isDouble && item.flavor2Name) {
+          const f2Extras = parseJsonArray<OrderExtraDTO>(
+            item.flavor2additionalIngredients,
+          )
+            .map((e) => e.name || e.title)
+            .filter((e): e is string => !!e);
+
+          const f2Removed = parseJsonArray<string>(item.flavor2Removed);
+
+          flavor2Info = {
+            name: item.flavor2Name,
+            extras: f2Extras,
+            removed: f2Removed,
+          };
+        }
+
+        return {
+          name: item.customName,
+          category: item.product?.menuCategory?.name || "Geral",
+          quantity: item.quantity,
+          price: Number(item.priceAtOrder),
+
+          extras: flavor1Extras,
+          removedIngredients: flavor1Removed,
+
+          isDouble: item.isDouble,
+          flavor2: flavor2Info,
+        };
+      }),
       total: Number(order.totalAmount),
       details: order.deliveryAddress,
     };

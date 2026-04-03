@@ -15,6 +15,16 @@ export type CreateOrderProductDTO = {
   price: number;
   quantity?: number;
   extras?: OrderExtraDTO[];
+  removedIngredients: string[];
+  additionalIngredients?: OrderExtraDTO[] | null;
+
+  isDouble?: boolean;
+  flavor2?: {
+    id: string;
+    name: string;
+    removedIngredients: string[];
+    additionalIngredients?: OrderExtraDTO[] | null;
+  } | null;
 };
 
 /* ---------------- Detalhes ---------------- */

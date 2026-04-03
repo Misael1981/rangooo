@@ -43,11 +43,6 @@ export default async function DoublePizzaPage({
 
   const establishmentOpen = restaurant.isOpen;
 
-  console.log(data);
-  console.log(
-    "Como está chegando o restaurantDeliveryAreas: ",
-    restaurant.deliveryAreas,
-  );
   return (
     <PageContainer>
       <HeaderDoubleImages
