@@ -23,6 +23,8 @@ export const createOrder = async (
 
   if (!session?.user) throw new Error("Não autenticado");
 
+  console.log("MÉTODO DE CONSUMO RECEBIDO:", input.consumptionMethod);
+
   const order = await db.$transaction(async (tx) => {
     const [user, restaurant] = await Promise.all([
       tx.user.findFirst({
@@ -217,8 +219,6 @@ export const createOrder = async (
       total: Number(order.totalAmount),
       details: order.deliveryAddress,
     };
-
-    console.log("Dados que vão para a impressora!", printData);
 
     const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Timeout Impressora")), 15000),

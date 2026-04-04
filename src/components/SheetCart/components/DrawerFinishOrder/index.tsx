@@ -7,7 +7,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import FinishDelivery from "../FinishDelivery";
 import { useProfileStatus } from "@/hooks/use-profile-status";
 import FinishPickup from "../FinishPickup";
@@ -34,31 +34,22 @@ const METHOD_MAP = [
   { value: "DINE_IN", label: "Mesa" },
 ] as const;
 
-type ConsumptionMethod = (typeof METHOD_MAP)[number]["value"];
-
 const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
   const [openOrderSuccess, setOpenOrderSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [userClosedModal, setUserClosedModal] = useState(false);
 
-  const sp = useSearchParams();
-  const methodParam = sp.get("consumptionMethod");
-  const { products, clearCart, toogleCart, deliveryFee } = useCart();
+  const { products, clearCart, toogleCart, deliveryFee, consumptionMethod } =
+    useCart();
   const params = useParams();
   const slug = params.slug as string;
   const { data: session, status } = useSession();
 
   const isLogged = status === "authenticated";
 
-  const consumptionMethod: ConsumptionMethod = METHOD_MAP.some(
-    (m) => m.value === methodParam,
-  )
-    ? (methodParam as ConsumptionMethod)
-    : "DELIVERY";
-
   const [checkoutState, setCheckoutState] = useState<CheckoutState>({
-    consumptionMethod,
+    consumptionMethod: consumptionMethod ?? "DELIVERY",
     customer: {},
   });
 
@@ -114,6 +105,7 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
 
       const orderInput = {
         ...checkoutState,
+        consumptionMethod,
         products: products,
         slug: slug,
         deliveryFee: Number(deliveryFee),
