@@ -40,8 +40,14 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [userClosedModal, setUserClosedModal] = useState(false);
 
-  const { products, clearCart, toogleCart, deliveryFee, consumptionMethod } =
-    useCart();
+  const {
+    products,
+    clearCart,
+    toogleCart,
+    deliveryFee,
+    consumptionMethod,
+    setDeliveryFee,
+  } = useCart();
   const params = useParams();
   const slug = params.slug as string;
   const { data: session, status } = useSession();
@@ -74,6 +80,12 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
     }
   }, [userData, checkoutState.customer.name]);
 
+  useEffect(() => {
+    if (checkoutState.consumptionMethod !== "DELIVERY" && deliveryFee > 0) {
+      setDeliveryFee(0);
+    }
+  }, [checkoutState.consumptionMethod, deliveryFee, setDeliveryFee]);
+
   const updateCheckoutData = (
     key: keyof CheckoutState,
     value: CheckoutState[keyof CheckoutState],
@@ -105,7 +117,6 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
 
       const orderInput = {
         ...checkoutState,
-        consumptionMethod,
         products: products,
         slug: slug,
         deliveryFee: Number(deliveryFee),
