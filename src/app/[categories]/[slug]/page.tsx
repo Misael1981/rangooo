@@ -10,6 +10,9 @@ import WelcomeSectionCategoryEstablishment from "@/components/WelcomeSectionCate
 import ConsumptionMethodOption from "@/components/ConsumptionMethodOption";
 import LogoImage from "@/components/LogoImage";
 import { PageContainer } from "@/components/PageContainer";
+import { getSession } from "@/lib/auth";
+import { getUserById } from "@/data/get-user-by-id";
+import UserSheet from "@/components/UserSheet";
 
 interface PageProps {
   params: Promise<{ categories: string; slug: string }>;
@@ -17,6 +20,10 @@ interface PageProps {
 
 export default async function EstabelecimentoPage({ params }: PageProps) {
   const { categories, slug } = await params;
+  const session = await getSession();
+
+  const userId = session?.user?.id ?? null;
+  const user = userId ? await getUserById(userId) : null;
 
   if (!CATEGORIES_URL.includes(categories)) {
     return notFound();
@@ -59,6 +66,7 @@ export default async function EstabelecimentoPage({ params }: PageProps) {
   return (
     <PageContainer>
       <div className="mx-auto flex min-h-svh max-w-xl flex-col items-center justify-center gap-4 rounded-lg bg-yellow-50 shadow-2xl sm:min-h-[90vh]">
+        <UserSheet user={user} />
         <div className="flex flex-col items-center justify-center space-y-2 ">
           <LogoImage
             establishmentImage={establishment.avatarImageUrl}

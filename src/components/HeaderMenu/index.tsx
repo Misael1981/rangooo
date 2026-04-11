@@ -1,6 +1,6 @@
 import Image from "next/image";
-import CartButton from "../CartButton";
 import BackButton from "../BackButton";
+import MyOrdersButtonLink from "../MyOrdersButtonLink";
 
 type HeaderMenuProps = {
   image: string | null;
@@ -18,7 +18,7 @@ const HeaderMenu = ({ image, alt }: HeaderMenuProps) => {
         fill
         className="object-cover"
       />
-      <CartButton />
+      <MyOrdersButtonLink />
     </header>
   );
 };
