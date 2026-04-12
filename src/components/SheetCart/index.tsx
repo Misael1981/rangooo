@@ -50,7 +50,7 @@ function SheetCart() {
 
   const { status } = useSession();
   const isLogged = status === "authenticated";
-  const { isProfileCompleted } = useProfileStatus();
+  const { isProfileCompleted, isLoading } = useProfileStatus();
 
   const handleLogin = (provider: "google" | "facebook") => {
     if (!termsAccepted) {
@@ -173,7 +173,7 @@ function SheetCart() {
       </Dialog>
 
       {/* MODAL DE PRIMEIRO CADASTRO */}
-      {isLogged && !isProfileCompleted && (
+      {isLogged && !isLoading && isProfileCompleted === false && (
         <FirstRegistration
           open={!userClosedRegistration}
           onOpenChange={(open) => {

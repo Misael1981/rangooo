@@ -18,7 +18,6 @@ import { useCart } from "@/contexts/cart-context";
 import { toast } from "sonner";
 import FinishDineIn from "../FinishDineIn";
 import OrderSuccessfulDialog from "@/components/OrderSuccessfulDialog";
-import { useSession } from "next-auth/react";
 import { CreateOrderInputDTO } from "@/dtos/create-order.dto";
 
 type DrawerFinishOrderProps = {
@@ -46,36 +45,28 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
   } = useCart();
   const params = useParams();
   const slug = params.slug as string;
-  const { data: session, status } = useSession();
-
-  const isLogged = status === "authenticated";
 
   const [checkoutState, setCheckoutState] = useState<CheckoutState>({
     consumptionMethod: consumptionMethod ?? "DELIVERY",
-    customer: {},
+    customer: { name: "", phone: "" },
   });
 
-  const methodLabel = METHOD_MAP.find(
-    (m) => m.value === consumptionMethod,
-  )?.label;
+  const { userData } = useProfileStatus();
 
-  const { isProfileCompleted, userData } = useProfileStatus();
-
+  // Alimenta o checkout com os dados do perfil assim que o Drawer abrir
   useEffect(() => {
-    if (userData && !checkoutState.customer.name) {
-      const timer = setTimeout(() => {
-        setCheckoutState((prev) => ({
-          ...prev,
-          customer: {
-            name: userData.name ?? "",
-            phone: userData.phone ?? "",
-          },
-        }));
-      }, 0);
-      return () => clearTimeout(timer);
+    if (userData && open) {
+      setCheckoutState((prev) => ({
+        ...prev,
+        customer: {
+          name: userData.name ?? "",
+          phone: userData.phone ?? "",
+        },
+      }));
     }
-  }, [userData, checkoutState.customer.name]);
+  }, [userData, open]);
 
+  // Se mudar o método para algo que não seja entrega, limpa a taxa
   useEffect(() => {
     if (checkoutState.consumptionMethod !== "DELIVERY" && deliveryFee > 0) {
       setDeliveryFee(0);
@@ -145,6 +136,10 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
       setIsSubmitting(false);
     }
   };
+
+  const methodLabel = METHOD_MAP.find(
+    (m) => m.value === consumptionMethod,
+  )?.label;
 
   return (
     <>

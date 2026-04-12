@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState, useCallback } from "react";
 import { UserDTO as anyUserDTO } from "@/dtos/profile-status.dto";
 
-// Tipagem para ajudar o TS e evitar o 'any'
 interface ProfileData {
   isProfileCompleted: boolean | null;
   userData: anyUserDTO | null;
@@ -49,5 +48,9 @@ export function useProfileStatus() {
     }
   }, [status, session?.user?.id, loadProfile]);
 
-  return data;
+  return {
+    isProfileCompleted: data.isProfileCompleted,
+    userData: data.userData,
+    isLoading: data.loading,
+  };
 }
