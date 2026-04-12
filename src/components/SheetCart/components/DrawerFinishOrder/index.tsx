@@ -18,9 +18,7 @@ import { useCart } from "@/contexts/cart-context";
 import { toast } from "sonner";
 import FinishDineIn from "../FinishDineIn";
 import OrderSuccessfulDialog from "@/components/OrderSuccessfulDialog";
-import { signIn, useSession } from "next-auth/react";
-import CardLogin from "../FinishDelivery/components/CardLogin";
-import FirstRegistration from "@/components/FirstRegistration";
+import { useSession } from "next-auth/react";
 import { CreateOrderInputDTO } from "@/dtos/create-order.dto";
 
 type DrawerFinishOrderProps = {
@@ -37,8 +35,6 @@ const METHOD_MAP = [
 const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
   const [openOrderSuccess, setOpenOrderSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [userClosedModal, setUserClosedModal] = useState(false);
 
   const {
     products,
@@ -98,15 +94,6 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
 
   const handleCancel = () => {
     window.history.back();
-  };
-
-  const handleLogin = (provider: "google" | "facebook") => {
-    if (!termsAccepted) {
-      toast.error("É necessário aceitar os termos e condições");
-      return;
-    }
-
-    signIn(provider);
   };
 
   const handleSubmit = async (checkoutState: CheckoutState) => {
@@ -171,56 +158,38 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
               Método de consumo: {methodLabel}
             </DrawerDescription>
           </DrawerHeader>
-          {!isLogged ? (
-            <CardLogin
-              termsAccepted={termsAccepted}
-              onAcceptTerms={() => setTermsAccepted(true)}
-              onLogin={handleLogin}
-            />
-          ) : (
-            <div className="flex flex-col flex-1 overflow-hidden">
-              {!isProfileCompleted && (
-                <FirstRegistration
-                  open={!userClosedModal}
-                  onOpenChange={(open) => {
-                    if (!open) setUserClosedModal(true);
-                  }}
-                />
-              )}
-              <div className="flex-1 overflow-y-auto px-1">
-                {consumptionMethod === "DELIVERY" && (
-                  <FinishDelivery
-                    userData={userData}
-                    checkoutState={checkoutState}
-                    onUpdateState={updateCheckoutData}
-                    onCancel={handleCancel}
-                    onSubmit={handleSubmit}
-                    isSubmitting={isSubmitting}
-                  />
-                )}
+          <div className="flex-1 overflow-y-auto px-1">
+            {consumptionMethod === "DELIVERY" && (
+              <FinishDelivery
+                userData={userData}
+                checkoutState={checkoutState}
+                onUpdateState={updateCheckoutData}
+                onCancel={handleCancel}
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+              />
+            )}
 
-                {consumptionMethod === "PICKUP" && (
-                  <FinishPickup
-                    checkoutState={checkoutState}
-                    onUpdateState={updateCheckoutData}
-                    onSubmit={handleSubmit}
-                    onCancel={handleCancel}
-                    isSubmitting={isSubmitting}
-                  />
-                )}
+            {consumptionMethod === "PICKUP" && (
+              <FinishPickup
+                checkoutState={checkoutState}
+                onUpdateState={updateCheckoutData}
+                onSubmit={handleSubmit}
+                onCancel={handleCancel}
+                isSubmitting={isSubmitting}
+              />
+            )}
 
-                {consumptionMethod === "DINE_IN" && (
-                  <FinishDineIn
-                    checkoutState={checkoutState}
-                    onUpdateState={updateCheckoutData}
-                    onCancel={handleCancel}
-                    onSubmit={handleSubmit}
-                    isSubmitting={isSubmitting}
-                  />
-                )}
-              </div>
-            </div>
-          )}
+            {consumptionMethod === "DINE_IN" && (
+              <FinishDineIn
+                checkoutState={checkoutState}
+                onUpdateState={updateCheckoutData}
+                onCancel={handleCancel}
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+              />
+            )}
+          </div>
         </DrawerContent>
       </Drawer>
       <OrderSuccessfulDialog
