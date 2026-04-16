@@ -23,8 +23,6 @@ export const createOrder = async (
 
   if (!session?.user) throw new Error("Não autenticado");
 
-  console.log("MÉTODO DE CONSUMO RECEBIDO:", input.consumptionMethod);
-
   const order = await db.$transaction(async (tx) => {
     const [user, restaurant] = await Promise.all([
       tx.user.findFirst({
@@ -150,11 +148,11 @@ export const createOrder = async (
   });
 
   if (order.consumptionMethod === "DELIVERY") {
-    console.log("🚀 Disparando evento Pusher para pedido:", order.id);
     pusherServer
-      .trigger("delivery-orders", "new-order", {
+      .trigger("delivery-orders", "order:created", {
         orderId: order.id,
         restaurantName: order.restaurant.name,
+        restaurantId: order.restaurantId,
       })
       .catch((err) => console.error("❌ Erro Pusher:", err));
 
@@ -162,6 +160,16 @@ export const createOrder = async (
       console.error("❌ Erro Push:", err),
     );
   }
+
+  pusherServer
+    .trigger(`restaurant-${order.restaurantId}`, "order:created", {
+      order: {
+        id: order.id,
+        status: order.status,
+      },
+      consolelog: `Pedido #${order.orderNumber} criado para o restaurante ${order.restaurant.name}`,
+    })
+    .catch((err) => console.error("❌ Erro Pusher:", err));
 
   /* ---------------- Impressão ---------------- */
   try {
