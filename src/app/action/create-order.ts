@@ -158,6 +158,9 @@ export const createOrder = async (
       // Adicionado para debug visual no terminal do VS Code/Cursor
       consoleTolog: `Pedido #${order.orderNumber} disparado para canal: restaurant-${order.restaurantId}`,
     })
+    .then(() =>
+      console.log(`✅ Pusher disparado para restaurant-${order.restaurantId}`),
+    )
     .catch((err) => console.error("❌ Erro Pusher Estabelecimento:", err));
   sendPushToEstablishments({
     slug: order.restaurant.slug,
