@@ -166,14 +166,17 @@ export const createOrder = async (
     .trigger(`restaurant-${order.restaurantId}`, "order:created", {
       order: {
         id: order.id,
+        restaurantName: order.restaurant.name,
         restaurantId: order.restaurantId,
       },
-      // consolelog: `Pedido #${order.orderNumber} criado para o restaurante ${order.restaurant.name}`,
+      // Adicionado para debug visual no terminal do VS Code/Cursor
+      consoleTolog: `Pedido #${order.orderNumber} disparado para canal: restaurant-${order.restaurantId}`,
     })
-    .catch((err) => console.error("❌ Erro Pusher:", err));
-  sendPushToEstablishments({ slug: order.restaurant.slug }).catch((err) =>
-    console.error("❌ Erro Push:", err),
-  );
+    .catch((err) => console.error("❌ Erro Pusher Estabelecimento:", err));
+  sendPushToEstablishments({
+    slug: order.restaurant.slug,
+    restaurantId: order.restaurantId,
+  }).catch((err) => console.error("❌ Erro Push:", err));
 
   /* ---------------- Impressão ---------------- */
   try {

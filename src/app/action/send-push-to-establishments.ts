@@ -9,8 +9,16 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY!,
 );
 
-export async function sendPushToEstablishments({ slug }: { slug: string }) {
-  const subscriptions = await db.pushSubscription.findMany();
+export async function sendPushToEstablishments({
+  slug,
+  restaurantId,
+}: {
+  slug: string;
+  restaurantId: string;
+}) {
+  const subscriptions = await db.restaurantPushSubscription.findMany({
+    where: { restaurantId },
+  });
 
   const notifications = subscriptions.map((sub) =>
     webpush

@@ -172,6 +172,17 @@ model PushSubscription {
   deliveryPerson DeliveryPerson @relation(fields: [deliveryPersonId], references: [id], onDelete: Cascade)
 }
 
+model RestaurantPushSubscription {
+  id           String   @id @default(uuid())
+  restaurantId String
+  endpoint     String   @unique
+  auth         String
+  p256dh       String
+  createdAt    DateTime @default(now())
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
 model OrderRejection {
   id               String   @id @default(cuid())
   orderId          String
@@ -251,6 +262,7 @@ model Restaurant {
   deliveryAreas      DeliveryArea[]
   plan               PlanType       @default(BASICO)
 
+  restaurantPushSubscription RestaurantPushSubscription[]
   businessHours      BusinessHours[]
   contacts           ContactNumber[]
   menuCategories     MenuCategory[]
