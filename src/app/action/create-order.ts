@@ -15,6 +15,7 @@ import { pusherServer } from "@/lib/pusher";
 import { sendPushToDeliveryPersons } from "./send-push-to-delivery-persons";
 import { Prisma } from "@/generated/prisma/client";
 import { parseJsonArray } from "@/helpers/parse-json-array";
+import { sendPushToEstablishments } from "./send-push-to-establishments";
 
 export const createOrder = async (
   input: CreateOrderInputDTO,
@@ -165,10 +166,14 @@ export const createOrder = async (
     .trigger(`restaurant-${order.restaurantId}`, "order:created", {
       order: {
         id: order.id,
-        status: order.status,
+        restaurantId: order.restaurantId,
       },
+      // consolelog: `Pedido #${order.orderNumber} criado para o restaurante ${order.restaurant.name}`,
     })
     .catch((err) => console.error("❌ Erro Pusher:", err));
+  sendPushToEstablishments({ slug: order.restaurant.slug }).catch((err) =>
+    console.error("❌ Erro Push:", err),
+  );
 
   /* ---------------- Impressão ---------------- */
   try {
