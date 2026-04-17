@@ -167,7 +167,6 @@ export const createOrder = async (
         id: order.id,
         status: order.status,
       },
-      consolelog: `Pedido #${order.orderNumber} criado para o restaurante ${order.restaurant.name}`,
     })
     .catch((err) => console.error("❌ Erro Pusher:", err));
 
