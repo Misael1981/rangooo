@@ -148,20 +148,6 @@ export const createOrder = async (
     });
   });
 
-  if (order.consumptionMethod === "DELIVERY") {
-    pusherServer
-      .trigger("delivery-orders", "order:created", {
-        orderId: order.id,
-        restaurantName: order.restaurant.name,
-        restaurantId: order.restaurantId,
-      })
-      .catch((err) => console.error("❌ Erro Pusher:", err));
-
-    sendPushToDeliveryPersons().catch((err) =>
-      console.error("❌ Erro Push:", err),
-    );
-  }
-
   pusherServer
     .trigger(`restaurant-${order.restaurantId}`, "order:created", {
       order: {
@@ -177,6 +163,20 @@ export const createOrder = async (
     slug: order.restaurant.slug,
     restaurantId: order.restaurantId,
   }).catch((err) => console.error("❌ Erro Push:", err));
+
+  if (order.consumptionMethod === "DELIVERY") {
+    pusherServer
+      .trigger("delivery-orders", "order:created", {
+        orderId: order.id,
+        restaurantName: order.restaurant.name,
+        restaurantId: order.restaurantId,
+      })
+      .catch((err) => console.error("❌ Erro Pusher:", err));
+
+    sendPushToDeliveryPersons().catch((err) =>
+      console.error("❌ Erro Push:", err),
+    );
+  }
 
   /* ---------------- Impressão ---------------- */
   try {
