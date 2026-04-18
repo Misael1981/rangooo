@@ -67,14 +67,12 @@ function SheetCart() {
   }, 0);
 
   const handleFinishOrder = () => {
-    const isDelivery = consumptionMethod?.toUpperCase() === "DELIVERY";
-
-    if (isDelivery && !isLogged) {
+    if (!isLogged) {
       setShowLoginModal(true);
       return;
     }
 
-    if (isLogged && !isProfileCompleted) {
+    if (!isProfileCompleted) {
       setUserClosedRegistration(false);
       return;
     }
