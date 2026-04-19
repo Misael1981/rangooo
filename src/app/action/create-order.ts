@@ -155,7 +155,7 @@ export const createOrder = async (
         restaurantName: order.restaurant.name,
         restaurantId: order.restaurantId,
       },
-      // Adicionado para debug visual no terminal do VS Code/Cursor
+      // Adicionado para debug visual no terminal do VS Code
       consoleTolog: `Pedido #${order.orderNumber} disparado para canal: restaurant-${order.restaurantId}`,
     })
     .then(() =>
@@ -237,6 +237,8 @@ export const createOrder = async (
       total: Number(order.totalAmount),
       details: order.deliveryAddress,
     };
+
+    console.log("📤 Enviando dados para impressão:", printData);
 
     const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Timeout Impressora")), 15000),
