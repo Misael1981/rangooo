@@ -26,11 +26,6 @@ import { useProfileStatus } from "@/hooks/use-profile-status";
 import CardLogin from "./components/FinishDelivery/components/CardLogin";
 import { toast } from "sonner";
 
-/**
- * SheetCart
- * Gerencia a sacola de compras e controla o fluxo de checkout.
- * Implementa uma "trava" de segurança: se for DELIVERY, exige login antes de abrir o checkout.
- */
 function SheetCart() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);

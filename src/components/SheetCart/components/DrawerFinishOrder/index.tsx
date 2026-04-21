@@ -53,6 +53,15 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
 
   const { userData } = useProfileStatus();
 
+  useEffect(() => {
+    if (consumptionMethod) {
+      setCheckoutState((prev) => ({
+        ...prev,
+        consumptionMethod,
+      }));
+    }
+  }, [consumptionMethod]);
+
   // Alimenta o checkout com os dados do perfil assim que o Drawer abrir
   useEffect(() => {
     if (userData && open) {
