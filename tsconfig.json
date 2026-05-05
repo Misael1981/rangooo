@@ -19,7 +19,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@misael1981/rangooo-database": [
+        "./node_modules/@misael1981/rangooo-database/generated-client"
+      ]
     }
   },
   "include": [

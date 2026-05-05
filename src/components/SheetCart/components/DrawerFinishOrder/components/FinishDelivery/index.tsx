@@ -1,0 +1,43 @@
+import { useState } from "react"
+import { UserDTO } from "@/dtos/profile-status.dto"
+import { CheckoutState } from "@/dtos/finish-order.dto"
+import CheckoutWizardDelivery from "./components/CheckoutWizardDelivery"
+
+type FinishDeliveryProps = {
+  userData: UserDTO | null
+  checkoutState: CheckoutState
+  onUpdateState: (
+    key: keyof CheckoutState,
+    value: CheckoutState[keyof CheckoutState],
+  ) => void
+  onCancel: () => void
+  onSubmit: (checkoutState: CheckoutState) => void
+  isSubmitting: boolean
+}
+
+const FinishDelivery = ({
+  userData,
+  onCancel,
+  checkoutState,
+  onUpdateState,
+  onSubmit,
+  isSubmitting,
+}: FinishDeliveryProps) => {
+  const [isFinalStep, setIsFinalStep] = useState(false)
+
+  return (
+    <>
+      <CheckoutWizardDelivery
+        user={userData}
+        checkoutState={checkoutState}
+        onUpdateState={onUpdateState}
+        onStepChange={setIsFinalStep}
+        onCancel={onCancel}
+        onSubmit={onSubmit}
+        isSubmitting={isSubmitting}
+      />
+    </>
+  )
+}
+
+export default FinishDelivery

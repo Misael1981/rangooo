@@ -1,0 +1,61 @@
+import TermsAcceptance from "@/components/TermsAcceptance"
+import { Button } from "@/components/ui/button"
+import { UserLock } from "lucide-react"
+import { FaFacebookF, FaGoogle } from "react-icons/fa"
+
+type CardLoginProps = {
+  termsAccepted: boolean
+  onAcceptTerms: () => void
+  onLogin: (provider: "google" | "facebook") => void
+}
+
+const CardLogin = ({
+  termsAccepted,
+  onAcceptTerms,
+  onLogin,
+}: CardLoginProps) => {
+  return (
+    <div className="bg-muted/40 space-y-5 rounded-xl border p-6 text-center shadow-sm">
+      <div className="bg-primary/10 mx-auto flex h-12 w-12 items-center justify-center rounded-full">
+        <UserLock className="text-primary" />
+      </div>
+
+      <div className="space-y-2">
+        <h3 className="text-xl font-semibold">Faça seu login</h3>
+
+        <p className="text-muted-foreground text-sm">
+          Para finalizar seu pedido, precisamos que você esteja logado e tenha
+          seus dados cadastrados.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Button
+          className={`gap-2 bg-[#d64131] text-white hover:bg-[#c0392b] ${
+            !termsAccepted && "cursor-not-allowed opacity-50"
+          }`}
+          aria-disabled={!termsAccepted}
+          onClick={() => onLogin("google")}
+        >
+          <FaGoogle />
+          Entrar com Google
+        </Button>
+
+        <Button
+          className={`gap-2 bg-[#1877F2] text-white hover:bg-[#166FE5] ${
+            !termsAccepted && "cursor-not-allowed opacity-50"
+          }`}
+          aria-disabled={!termsAccepted}
+          onClick={() => onLogin("facebook")}
+        >
+          <FaFacebookF />
+          Entrar com Facebook
+        </Button>
+
+        <TermsAcceptance onAccept={onAcceptTerms} />
+      </div>
+    </div>
+  )
+}
+
+export default CardLogin
