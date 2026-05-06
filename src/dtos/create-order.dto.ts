@@ -24,11 +24,21 @@ export type CreateOrderProductDTO = {
   additionalIngredients?: OrderExtraDTO[] | null
 
   isDouble?: boolean
-  flavor2?: {
+  flavor1Id?: string
+  flavor2Id?: string
+
+  flavor1Details?: {
     id: string
     name: string
     removedIngredients: string[]
-    additionalIngredients?: OrderExtraDTO[] | null
+    extras?: OrderExtraDTO[] | null
+  } | null
+
+  flavor2Details?: {
+    id: string
+    name: string
+    removedIngredients: string[]
+    extras?: OrderExtraDTO[] | null
   } | null
 }
 

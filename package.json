@@ -11,7 +11,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
     "@hookform/resolvers": "^5.2.2",
-    "@misael1981/rangooo-database": "github:misael1981/rangooo-database",
+    "@misael1981/rangooo-database": "github:Misael1981/rangooo-database",
     "@prisma/client": "^6.19.3",
     "@react-google-maps/api": "^2.20.8",
     "class-variance-authority": "^0.7.1",

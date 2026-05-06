@@ -4,15 +4,14 @@ import { db } from "@/lib/prisma"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
-import { CreateOrderInputDTO, OrderExtraDTO } from "@/dtos/create-order.dto"
+import { CreateOrderInputDTO } from "@/dtos/create-order.dto"
 import { OrderResponseDTO } from "@/dtos/finish-order.dto"
-import { Prisma } from "@misael1981/rangooo-database"
-import { pusherServer } from "@/lib/pusher"
-import { sendPushToEstablishments } from "./send-push-to-establishments"
-import { sendPushToDeliveryPersons } from "./send-push-to-delivery-persons"
-import { parseJsonArray } from "@/helpers/parse-json-array"
-import { sendOrderToPrint } from "@/lib/send-order-to-print"
 import { serializeOrder } from "@/helpers/serialize-order"
+import { generateOrderNumber } from "@/services/order-number.service"
+import { calculateOrderTotal } from "@/services/order-total.service"
+import { notifyNewOrder } from "@/services/notification.service"
+import { processOrderPrinting } from "@/services/printer.service"
+import { Prisma } from "@misael1981/rangooo-database"
 
 export const createOrder = async (
   input: CreateOrderInputDTO,
@@ -40,40 +39,9 @@ export const createOrder = async (
     if (!user || !restaurant)
       throw new Error("Usuário ou Restaurante não encontrado")
 
-    const startOfDay = new Date()
-    startOfDay.setHours(0, 0, 0, 0)
+    const nextOrderNumber = await generateOrderNumber(tx, restaurant.id)
 
-    // Função Nº do pedido
-    const currentDay = new Date().getDate()
-
-    const ordersToday = await tx.order.count({
-      where: {
-        restaurantId: restaurant.id,
-        createdAt: { gte: startOfDay },
-      },
-    })
-
-    const nextOrderNumber = currentDay * 100 + (ordersToday + 1)
-
-    const totalAmount = input.products.reduce((acc, p) => {
-      const extrasTotal =
-        p.extras?.reduce((sum, e) => sum + (e.price || 0), 0) || 0
-
-      const additionalTotal =
-        p.additionalIngredients?.reduce((sum, e) => sum + (e.price || 0), 0) ||
-        0
-
-      const flavor2AdditionalTotal =
-        p.flavor2?.additionalIngredients?.reduce(
-          (sum, e) => sum + (e.price || 0),
-          0,
-        ) || 0
-
-      const base =
-        p.price + extrasTotal + additionalTotal + flavor2AdditionalTotal
-
-      return acc + base * (p.quantity || 1)
-    }, 0)
+    const totalAmount = calculateOrderTotal(input.products)
 
     const finalDeliveryFee =
       input.consumptionMethod === "DELIVERY" ? (input.deliveryFee ?? 0) : 0
@@ -112,20 +80,39 @@ export const createOrder = async (
               quantity: p.quantity,
               priceAtOrder: p.price,
               customName: p.name,
+
+              // Estes são Strings no seu Schema, então JSON.stringify está correto aqui
               extras: JSON.stringify(p.extras || []),
               removedIngredients: JSON.stringify(p.removedIngredients || []),
 
-              additionalIngredients: p.additionalIngredients || Prisma.JsonNull,
+              isDouble: p.isDouble || false,
 
-              isDouble: !!p.flavor2,
-              flavor2Id: p.flavor2?.id || null,
-              flavor2Name: p.flavor2?.name || null,
-              flavor2Removed: p.flavor2
-                ? JSON.stringify(p.flavor2.removedIngredients)
+              // IDs e Nomes (Strings no Schema)
+              flavor1Id: p.isDouble ? p.flavor1Id : null,
+              flavor1Name: p.isDouble ? p.flavor1Details?.name : null,
+              flavor1Removed: p.isDouble
+                ? JSON.stringify(p.flavor1Details?.removedIngredients || [])
                 : null,
 
-              flavor2additionalIngredients:
-                p.flavor2?.additionalIngredients || Prisma.JsonNull,
+              flavor2Id: p.isDouble ? p.flavor2Id : null,
+              flavor2Name: p.isDouble ? p.flavor2Details?.name : null,
+              flavor2Removed: p.isDouble
+                ? JSON.stringify(p.flavor2Details?.removedIngredients || [])
+                : null,
+
+              // AQUI ESTÁ A CORREÇÃO: Campos Json no Prisma não aceitam Stringify, mande o objeto direto!
+              // Se for nulo, use Prisma.JsonNull
+              flavor1additionalIngredients: p.isDouble
+                ? p.flavor1Details?.extras || []
+                : p.extras || [],
+
+              flavor2additionalIngredients: p.isDouble
+                ? p.flavor2Details?.extras || []
+                : Prisma.JsonNull,
+
+              additionalIngredients: !p.isDouble
+                ? p.extras || []
+                : Prisma.JsonNull,
             }
           }),
         },
@@ -145,123 +132,11 @@ export const createOrder = async (
     })
   })
 
-  pusherServer
-    .trigger(`restaurant-${order.restaurantId}`, "order:created", {
-      order: {
-        id: order.id,
-        restaurantName: order.restaurant.name,
-        restaurantId: order.restaurantId,
-      },
-      // Adicionado para debug visual no terminal do VS Code
-      consoleTolog: `Pedido #${order.orderNumber} disparado para canal: restaurant-${order.restaurantId}`,
-    })
-    .then(() =>
-      console.log(`✅ Pusher disparado para restaurant-${order.restaurantId}`),
-    )
-    .catch((err) => console.error("❌ Erro Pusher Estabelecimento:", err))
-  sendPushToEstablishments({
-    slug: order.restaurant.slug,
-    restaurantId: order.restaurantId,
-  }).catch((err) => console.error("❌ Erro Push:", err))
-
-  if (order.consumptionMethod === "DELIVERY") {
-    pusherServer
-      .trigger("delivery-orders", "order:created", {
-        orderId: order.id,
-        restaurantName: order.restaurant.name,
-        restaurantId: order.restaurantId,
-      })
-      .catch((err) => console.error("❌ Erro Pusher:", err))
-
-    sendPushToDeliveryPersons().catch((err) =>
-      console.error("❌ Erro Push:", err),
-    )
-  }
+  /* ---------------- Notificações Pusher ---------------- */
+  await notifyNewOrder(order)
 
   /* ---------------- Impressão ---------------- */
-  try {
-    const printData = {
-      id: order.id,
-      restaurantName: order.restaurant.name,
-      number: `#${String(order.orderNumber).padStart(2, "0")}`,
-      customerName: input.customer?.name || order.user.name || "Cliente",
-      customerPhone: input.customer?.phone || order.user.phone || "",
-      method: order.consumptionMethod,
-      deliveryFee: Number(order.deliveryFee),
-      payment: order.paymentMethod,
-      items: order.items.map((item) => {
-        const flavor1Extras = parseJsonArray<OrderExtraDTO>(item.extras)
-          .map((e) => e.name || e.title)
-          .filter((e): e is string => !!e)
-
-        const flavor1Removed = parseJsonArray<string>(item.removedIngredients)
-
-        let flavor2Info: {
-          name: string
-          extras: string[]
-          removed: string[]
-        } | null = null
-
-        if (item.isDouble && item.flavor2Name) {
-          const f2Extras = parseJsonArray<OrderExtraDTO>(
-            item.flavor2additionalIngredients,
-          )
-            .map((e) => e.name || e.title)
-            .filter((e): e is string => !!e)
-
-          const f2Removed = parseJsonArray<string>(item.flavor2Removed)
-
-          flavor2Info = {
-            name: item.flavor2Name,
-            extras: f2Extras,
-            removed: f2Removed,
-          }
-        }
-
-        return {
-          name: item.customName,
-          category: item.product?.menuCategory?.name || "Geral",
-          quantity: item.quantity,
-          price: Number(item.priceAtOrder),
-
-          extras: flavor1Extras,
-          removedIngredients: flavor1Removed,
-
-          isDouble: item.isDouble,
-          flavor2: flavor2Info,
-        }
-      }),
-      total: Number(order.totalAmount),
-      details: order.deliveryAddress,
-    }
-
-    console.log("📤 Enviando dados para impressão:", printData)
-
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout Impressora")), 15000),
-    )
-
-    const printId = await Promise.race([
-      sendOrderToPrint(order.restaurantId, printData),
-      timeoutPromise,
-    ]).catch((err) => {
-      console.warn(
-        `⚠️ Falha na comunicação com a impressora (#${order.orderNumber}):`,
-        err.message,
-      )
-      return null
-    })
-
-    if (printId) {
-      await db.order.update({
-        where: { id: order.id },
-        data: { printId: printId as string },
-      })
-      console.log(`✅ Impressão confirmada para o pedido #${order.orderNumber}`)
-    }
-  } catch (criticalErr) {
-    console.error("❌ Erro crítico no fluxo de impressão:", criticalErr)
-  }
+  await processOrderPrinting(order, input)
 
   return serializeOrder(order) as unknown as OrderResponseDTO
 }

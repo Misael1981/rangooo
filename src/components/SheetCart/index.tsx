@@ -78,7 +78,7 @@ function SheetCart() {
   return (
     <>
       <Sheet open={isOpen} onOpenChange={toogleCart}>
-        <SheetContent className="flex h-full w-[90%] flex-col p-0">
+        <SheetContent className="flex h-full min-w-[90%] flex-col p-0">
           <SheetHeader className="p-4">
             <SheetTitle className="text-left text-black">Sacola</SheetTitle>
           </SheetHeader>

@@ -58,12 +58,23 @@ const ProductDoubleDetails = ({
     imageUrl: flavor1.imageUrl || null,
     price: calculateDoublePrice(flavor1.price ?? 0, flavor2.price ?? 0),
     isDouble: true,
-    removedIngredients: removedFlavor1,
-    flavor2: {
-      id: flavor2.id || "",
-      name: flavor2.name || "",
-      removedIngredients: removedFlavor2,
+
+    // Aqui está o segredo: IDs claros para o seu novo schema do Prisma
+    flavor1Id: flavor1.id,
+    flavor2Id: flavor2.id,
+
+    // Mantenha os detalhes para exibição no frontend
+    flavor1Details: {
+      name: flavor1.name,
+      removedIngredients: removedFlavor1,
+      extras: extrasFlavor1, // Agora você sabe de qual metade é o extra!
     },
+    flavor2Details: {
+      name: flavor2.name,
+      removedIngredients: removedFlavor2,
+      extras: extrasFlavor2,
+    },
+
     extras: allExtras,
     quantity: quantity,
     consumptionMethod: searchParams.get("consumptionMethod") || "",

@@ -10,7 +10,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverExternalPackages: ["@misael1981/rangooo-database"],
+  transpilePackages: ["@misael1981/rangooo-database"],
+  serverExternalPackages: [],
 }
 
 export default nextConfig
