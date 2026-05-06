@@ -1,64 +1,14 @@
-import { CreateOrderInputDTO, OrderExtraDTO } from "@/dtos/create-order.dto"
+import {
+  CreateOrderInputDTO,
+  OrderExtraDTO,
+  PrinterOrderDTO,
+} from "@/dtos/create-order.dto"
 import { parseJsonArray } from "@/helpers/parse-json-array"
 import { db } from "@/lib/prisma"
 import { sendOrderToPrint } from "@/lib/send-order-to-print"
-import { $Enums } from "@misael1981/rangooo-database"
-import {
-  Decimal,
-  JsonValue,
-} from "@misael1981/rangooo-database/generated-client/runtime/library"
-
-type PrinterOrder = {
-  id: string
-  orderNumber: number | null
-  consumptionMethod: $Enums.ConsumptionMethod
-  deliveryFee: Decimal
-  paymentMethod: string | null
-  totalAmount: Decimal
-  deliveryAddress: JsonValue | null
-  restaurantId: string
-  createdAt: Date
-  updatedAt: Date
-  userId: string
-  customName: string | null
-  extras: string | null
-  printId: string | null
-  deliveryPersonId: string | null
-  status: $Enums.OrderStatus
-  user: {
-    id: string
-    name: string | null
-    phone: string | null
-  }
-  restaurant: {
-    id: string
-    name: string
-    slug: string
-  }
-  items: {
-    id: string
-    quantity: number
-    priceAtOrder: Decimal
-    customName: string | null
-    isDouble: boolean
-    flavor1Name: string | null
-    flavor1additionalIngredients: JsonValue | null
-    flavor1Removed: JsonValue | null
-    flavor2Name: string | null
-    flavor2additionalIngredients: JsonValue | null
-    flavor2Removed: JsonValue | null
-    extras: JsonValue | null
-    removedIngredients: JsonValue | null
-    product: {
-      menuCategory: {
-        name: string
-      }
-    }
-  }[]
-}
 
 export async function processOrderPrinting(
-  order: PrinterOrder,
+  order: PrinterOrderDTO,
   input: CreateOrderInputDTO,
 ) {
   console.log("Como está chegando o pedido para impressão: ", order)
@@ -107,20 +57,29 @@ export async function processOrderPrinting(
   }
 }
 
-// Função auxiliar interna para não poluir o código principal
-function mapPrinterItem(item: PrinterOrder["items"][number]) {
-  const flavor1Extras = parseJsonArray<OrderExtraDTO>(item.extras)
-    .map((e) => e.name || e.title)
-    .filter((e): e is string => !!e)
-  const flavor1Removed = parseJsonArray<string>(item.removedIngredients)
+function mapPrinterItem(item: PrinterOrderDTO["items"][number]) {
+  const flavor1Extras = item.isDouble
+    ? Array.isArray(item.flavor1additionalIngredients)
+      ? (item.flavor1additionalIngredients as OrderExtraDTO[])
+          .map((e) => e.name || e.title)
+          .filter((e): e is string => !!e)
+      : []
+    : parseJsonArray<OrderExtraDTO>(item.extras)
+        .map((e) => e.name || e.title)
+        .filter((e): e is string => !!e)
+
+  const flavor1Removed = item.isDouble
+    ? parseJsonArray<string>(item.flavor1Removed)
+    : parseJsonArray<string>(item.removedIngredients)
 
   let flavor2Info = null
   if (item.isDouble && item.flavor2Name) {
-    const f2Extras = parseJsonArray<OrderExtraDTO>(
-      item.flavor2additionalIngredients,
-    )
-      .map((e) => e.name || e.title)
-      .filter((e): e is string => !!e)
+    const f2Extras = Array.isArray(item.flavor2additionalIngredients)
+      ? (item.flavor2additionalIngredients as OrderExtraDTO[])
+          .map((e) => e.name || e.title)
+          .filter((e): e is string => !!e)
+      : []
+
     const f2Removed = parseJsonArray<string>(item.flavor2Removed)
 
     flavor2Info = {
@@ -135,8 +94,13 @@ function mapPrinterItem(item: PrinterOrder["items"][number]) {
     category: item.product?.menuCategory?.name || "Geral",
     quantity: item.quantity,
     price: Number(item.priceAtOrder),
-    extras: flavor1Extras,
-    removedIngredients: flavor1Removed,
+
+    flavor1: {
+      name: item.isDouble ? item.flavor1Name || "Sabor 1" : item.customName,
+      extras: flavor1Extras,
+      removed: flavor1Removed,
+    },
+
     isDouble: item.isDouble,
     flavor2: flavor2Info,
   }

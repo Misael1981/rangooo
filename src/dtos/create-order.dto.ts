@@ -1,9 +1,14 @@
 import {
+  $Enums,
   Order,
   OrderItem,
   Restaurant,
   User,
 } from "@misael1981/rangooo-database"
+import {
+  Decimal,
+  JsonValue,
+} from "@misael1981/rangooo-database/generated-client/runtime/library"
 
 /* ---------------- Produtos ---------------- */
 export type OrderExtraDTO = {
@@ -106,3 +111,54 @@ export type OrderWithDetails = Order & {
 }
 
 export type OrderResponseDTO = OrderWithDetails
+
+/* ---------------- Impressão ---------------- */
+
+export type PrinterOrderDTO = {
+  id: string
+  orderNumber: number | null
+  consumptionMethod: $Enums.ConsumptionMethod
+  deliveryFee: Decimal
+  paymentMethod: string | null
+  totalAmount: Decimal
+  deliveryAddress: JsonValue | null
+  restaurantId: string
+  createdAt: Date
+  updatedAt: Date
+  userId: string
+  customName: string | null
+  extras: string | null
+  printId: string | null
+  deliveryPersonId: string | null
+  status: $Enums.OrderStatus
+  user: {
+    id: string
+    name: string | null
+    phone: string | null
+  }
+  restaurant: {
+    id: string
+    name: string
+    slug: string
+  }
+  items: {
+    id: string
+    quantity: number
+    priceAtOrder: Decimal
+    customName: string | null
+    isDouble: boolean
+    flavor1Name: string | null
+    flavor1additionalIngredients: JsonValue | null
+    flavor1Removed: JsonValue | null
+    flavor2Name: string | null
+    flavor2additionalIngredients: JsonValue | null
+    flavor2Removed: JsonValue | null
+    extras: JsonValue | null
+    removedIngredients: JsonValue | null
+    product: {
+      menuCategory: {
+        name: string
+      }
+    }
+  }[]
+}
