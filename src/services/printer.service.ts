@@ -11,7 +11,6 @@ export async function processOrderPrinting(
   order: PrinterOrderDTO,
   input: CreateOrderInputDTO,
 ) {
-  console.log("Como está chegando o pedido para impressão: ", order)
   try {
     const printData = {
       id: order.id,
@@ -26,6 +25,12 @@ export async function processOrderPrinting(
       total: Number(order.totalAmount),
       details: order.deliveryAddress,
     }
+
+    // Log para Debug
+    console.log(
+      "DADOS ENVIADOS PARA O ELECTRON:",
+      JSON.stringify(printData, null, 2),
+    )
 
     // Lógica de Timeout e Envio
     const timeoutPromise = new Promise((_, reject) =>
@@ -72,6 +77,23 @@ function mapPrinterItem(item: PrinterOrderDTO["items"][number]) {
     ? parseJsonArray<string>(item.flavor1Removed)
     : parseJsonArray<string>(item.removedIngredients)
 
+  let flavor1Info = null
+  if (item.isDouble && item.flavor1Name) {
+    const f1Extras = Array.isArray(item.flavor1additionalIngredients)
+      ? (item.flavor1additionalIngredients as OrderExtraDTO[])
+          .map((e) => e.name || e.title)
+          .filter((e): e is string => !!e)
+      : []
+
+    const f1Removed = parseJsonArray<string>(item.flavor1Removed)
+
+    flavor1Info = {
+      name: item.flavor1Name,
+      extras: f1Extras,
+      removed: f1Removed,
+    }
+  }
+
   let flavor2Info = null
   if (item.isDouble && item.flavor2Name) {
     const f2Extras = Array.isArray(item.flavor2additionalIngredients)
@@ -95,13 +117,8 @@ function mapPrinterItem(item: PrinterOrderDTO["items"][number]) {
     quantity: item.quantity,
     price: Number(item.priceAtOrder),
 
-    flavor1: {
-      name: item.isDouble ? item.flavor1Name || "Sabor 1" : item.customName,
-      extras: flavor1Extras,
-      removed: flavor1Removed,
-    },
-
     isDouble: item.isDouble,
+    flavor1: flavor1Info,
     flavor2: flavor2Info,
   }
 }

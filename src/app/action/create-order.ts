@@ -136,6 +136,7 @@ export const createOrder = async (
   await notifyNewOrder(order)
 
   /* ---------------- Impressão ---------------- */
+  console.log("Processando impressão do pedido...", order)
   await processOrderPrinting(order, input)
 
   return serializeOrder(order) as unknown as OrderResponseDTO
