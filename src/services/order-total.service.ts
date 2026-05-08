@@ -18,7 +18,7 @@ export function calculateOrderTotal(products: CreateOrderProductDTO[]) {
 
     // Soma dos adicionais do sabor 2
     const flavor2AdditionalTotal =
-      p.flavor2?.additionalIngredients?.reduce(
+      p.flavor2Details?.extras?.reduce(
         (sum: number, e: { price?: number }) => sum + (e.price || 0),
         0,
       ) || 0
