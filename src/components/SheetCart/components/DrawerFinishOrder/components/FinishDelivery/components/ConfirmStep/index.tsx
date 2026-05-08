@@ -1,7 +1,8 @@
-import { CheckCircle2, ShoppingBag } from "lucide-react"
+import { CheckCircle2, ShoppingBag, TriangleAlert } from "lucide-react"
 import { CheckoutState } from "@/dtos/finish-order.dto"
 import { CartContext } from "@/contexts/cart-context"
 import { useContext } from "react"
+import { formatCurrency } from "@/helpers/format-currency"
 
 type ConfirmStepProps = {
   checkoutState: CheckoutState
@@ -26,13 +27,15 @@ const ConfirmStep = ({ checkoutState }: ConfirmStepProps) => {
             {products.map((item, index) => (
               <div key={index} className="flex justify-between text-sm">
                 <span>{item.name}</span>
-                <span className="font-semibold">{item.price}</span>
+                <span className="font-semibold">
+                  {formatCurrency(item.price)}
+                </span>
               </div>
             ))}
           </div>
-          <div className="flex justify-between border-t pt-2 font-bold text-red-600">
+          <div className="flex justify-between border-t pt-2 font-bold text-green-600">
             <span>Total</span>
-            <span>{totalFinal}</span>
+            <span>{formatCurrency(totalFinal)}</span>
           </div>
         </div>
 
@@ -66,6 +69,15 @@ const ConfirmStep = ({ checkoutState }: ConfirmStepProps) => {
               checkoutState.payment?.needsChange &&
               ` (Troco para R$ ${checkoutState.payment?.changeAmount})`}
           </p>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+        <div className="flex flex-col items-center gap-2 text-amber-800">
+          <TriangleAlert className="h-5 w-5" />
+          <span className="text-center text-sm font-medium">
+            O pagamento será realizado na entrega/retirada do produto.
+          </span>
         </div>
       </div>
 

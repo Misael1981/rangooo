@@ -63,20 +63,6 @@ export async function processOrderPrinting(
 }
 
 function mapPrinterItem(item: PrinterOrderDTO["items"][number]) {
-  const flavor1Extras = item.isDouble
-    ? Array.isArray(item.flavor1additionalIngredients)
-      ? (item.flavor1additionalIngredients as OrderExtraDTO[])
-          .map((e) => e.name || e.title)
-          .filter((e): e is string => !!e)
-      : []
-    : parseJsonArray<OrderExtraDTO>(item.extras)
-        .map((e) => e.name || e.title)
-        .filter((e): e is string => !!e)
-
-  const flavor1Removed = item.isDouble
-    ? parseJsonArray<string>(item.flavor1Removed)
-    : parseJsonArray<string>(item.removedIngredients)
-
   let flavor1Info = null
   if (item.isDouble && item.flavor1Name) {
     const f1Extras = Array.isArray(item.flavor1additionalIngredients)
