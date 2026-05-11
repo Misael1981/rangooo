@@ -5,6 +5,7 @@ import { getUserOrders } from "@/data/get-user-my-orders"
 import SecondaryHeader from "@/components/SecondaryHeader"
 import OrderFilter from "./components/OrderFilter"
 import OrderCard from "./components/OrderCard"
+import { OrderStatusListener } from "@/components/OrderStatusListener"
 
 export default async function MyOrdersPage({
   searchParams,
@@ -23,6 +24,7 @@ export default async function MyOrdersPage({
 
   return (
     <>
+      <OrderStatusListener />
       <SecondaryHeader title="Meus Pedidos" />
       <main className="mx-auto max-w-2xl space-y-4 p-4">
         <div className="rounded-r-2xl border-l-4 border-red-500 bg-linear-to-r from-red-50 to-transparent p-6">
