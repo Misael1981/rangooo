@@ -22,7 +22,7 @@ import OrderSuccessfulDialog from "@/components/OrderSuccessfulDialog"
 
 type DrawerFinishOrderProps = {
   open: boolean
-  onOpenChange: (open: boolean) => void // Nome padrão do Shadcn
+  onOpenChange: (open: boolean) => void
 }
 
 const METHOD_MAP = [
@@ -82,6 +82,7 @@ const DrawerFinishOrder = ({ open, onOpenChange }: DrawerFinishOrderProps) => {
 
       const orderInput = {
         ...checkoutState,
+        consumptionMethod: consumptionMethod,
         products: products,
         slug: slug,
         deliveryFee: Number(deliveryFee),

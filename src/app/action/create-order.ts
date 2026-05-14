@@ -20,6 +20,8 @@ export const createOrder = async (
 
   if (!session?.user) throw new Error("Não autenticado")
 
+  console.log("Como os dados chegam:", input)
+
   const order = await db.$transaction(async (tx) => {
     const [user, restaurant] = await Promise.all([
       tx.user.findFirst({
@@ -100,14 +102,18 @@ export const createOrder = async (
                 ? JSON.stringify(p.flavor2Details?.removedIngredients || [])
                 : null,
 
-              // AQUI ESTÁ A CORREÇÃO: Campos Json no Prisma não aceitam Stringify, mande o objeto direto!
-              // Se for nulo, use Prisma.JsonNull
               flavor1additionalIngredients: p.isDouble
-                ? p.flavor1Details?.extras || []
-                : p.extras || [],
+                ? p.flavor1Details?.extras?.map((e) => ({
+                    name: e.name,
+                    price: e.price,
+                  })) || []
+                : Prisma.JsonNull,
 
               flavor2additionalIngredients: p.isDouble
-                ? p.flavor2Details?.extras || []
+                ? p.flavor2Details?.extras?.map((e) => ({
+                    name: e.name,
+                    price: e.price,
+                  })) || []
                 : Prisma.JsonNull,
 
               additionalIngredients: !p.isDouble
@@ -132,11 +138,12 @@ export const createOrder = async (
     })
   })
 
+  console.log("Pedido criado com sucesso:", order)
+
   /* ---------------- Notificações Pusher ---------------- */
   await notifyNewOrder(order)
 
   /* ---------------- Impressão ---------------- */
-  console.log("Processando impressão do pedido...", order)
   await processOrderPrinting(order, input)
 
   return serializeOrder(order) as unknown as OrderResponseDTO

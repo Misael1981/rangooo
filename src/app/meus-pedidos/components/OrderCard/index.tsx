@@ -30,6 +30,10 @@ const ORDER_STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
     label: "Saiu para a entrega",
     className: "bg-yellow-200 text-yelllow-800 border-yelllow-300",
   },
+  READY_FOR_PICKUP: {
+    label: "Pronto para retirar",
+    className: "bg-green-100 text-green-800 border-green-300",
+  },
   DELIVERED: {
     label: "Entregue",
     className: "bg-green-100 text-green-800 border-green-300",
