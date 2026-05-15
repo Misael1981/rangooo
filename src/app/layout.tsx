@@ -6,6 +6,7 @@ import { Toaster } from "sonner"
 import { CartProvider } from "@/contexts/cart-context"
 import { RestaurantProvider } from "@/contexts/restaurant-context"
 import SheetCart from "@/components/SheetCart"
+import { OrderStatusListener } from "@/components/OrderStatusListener"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -57,6 +58,7 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <RestaurantProvider>
+              <OrderStatusListener />
               {children}
               <Toaster />
               <SheetCart />

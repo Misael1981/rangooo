@@ -1,5 +1,6 @@
 import { sendPushToDeliveryPersons } from "@/app/action/send-push-to-delivery-persons"
 import { sendPushToEstablishments } from "@/app/action/send-push-to-establishments"
+import { sendPushToKDS } from "@/app/action/send-push-to-kds"
 import { pusherServer } from "@/lib/pusher"
 import { $Enums } from "@misael1981/rangooo-database"
 import {
@@ -33,44 +34,50 @@ type OrderWithRestaurant = {
 
 export async function notifyNewOrder(order: OrderWithRestaurant) {
   const restaurantChannel = `restaurant-${order.restaurantId}`
+  const kdsChannel = `kds-${order.restaurantId}`
 
-  // 1. Notificar o Estabelecimento (Pusher)
-  const pusherRestaurant = pusherServer
-    .trigger(restaurantChannel, "order:created", {
+  const pusherNotification = pusherServer
+    .trigger([restaurantChannel, kdsChannel], "order:created", {
       order: {
         id: order.id,
+        orderNumber: order.orderNumber,
         restaurantName: order.restaurant.name,
-        restaurantId: order.restaurantId,
       },
-      consoleTolog: `Pedido #${order.orderNumber} disparado para canal: ${restaurantChannel}`,
     })
-    .catch((err) => console.error("❌ Erro Pusher Estabelecimento:", err))
+    .catch((err) => console.error("❌ Erro Pusher:", err))
 
-  // 2. Notificar o Estabelecimento (Web Push)
+  // 2. Web Push (Notificações silenciosas/background)
   const pushRestaurant = sendPushToEstablishments({
     slug: order.restaurant.slug,
     restaurantId: order.restaurantId,
-  }).catch((err) => console.error("❌ Erro Push:", err))
+  })
 
-  const notifications = [pusherRestaurant, pushRestaurant]
+  const pushKDS = sendPushToKDS({
+    slug: order.restaurant.slug,
+    restaurantId: order.restaurantId,
+  })
+
+  // Criamos o array de promises limpo
+  const notifications: Promise<unknown>[] = [
+    pusherNotification,
+    pushRestaurant,
+    pushKDS,
+  ]
 
   // 3. Notificar Entregadores (Se for Delivery)
   if (order.consumptionMethod === "DELIVERY") {
-    const pusherDelivery = pusherServer
-      .trigger("delivery-orders", "order:created", {
+    const pusherDelivery = pusherServer.trigger(
+      "delivery-orders",
+      "order:created",
+      {
         orderId: order.id,
         restaurantName: order.restaurant.name,
-        restaurantId: order.restaurantId,
-      })
-      .catch((err) => console.error("❌ Erro Pusher Entregadores:", err))
-
-    const pushDelivery = sendPushToDeliveryPersons().catch((err) =>
-      console.error("❌ Erro Push Entregadores:", err),
+      },
     )
+    const pushDelivery = sendPushToDeliveryPersons()
 
     notifications.push(pusherDelivery, pushDelivery)
   }
 
-  // Usamos Promise.allSettled para que uma falha no Pusher não cancele o envio do Push
   return Promise.allSettled(notifications)
 }
