@@ -20,7 +20,7 @@ export function OrderStatusListener() {
       "order-updated",
       (data: { orderNumber: number; status: string }) => {
         toast.success(`Pedido #${data.orderNumber} atualizado!`)
-        router.refresh() // atualiza os cards da página
+        router.refresh()
       },
     )
 

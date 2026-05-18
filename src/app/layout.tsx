@@ -7,6 +7,7 @@ import { CartProvider } from "@/contexts/cart-context"
 import { RestaurantProvider } from "@/contexts/restaurant-context"
 import SheetCart from "@/components/SheetCart"
 import { OrderStatusListener } from "@/components/OrderStatusListener"
+import { PushInitializer } from "@/components/PushInitializer"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -59,6 +60,7 @@ export default function RootLayout({
           <CartProvider>
             <RestaurantProvider>
               <OrderStatusListener />
+              <PushInitializer />
               {children}
               <Toaster />
               <SheetCart />
