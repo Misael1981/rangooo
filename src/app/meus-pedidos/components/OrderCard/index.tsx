@@ -114,20 +114,22 @@ const OrderCard = ({ order }: OrderCardProps) => {
               </span>
 
               {/* Produto */}
-              <div className="flex items-center justify-between">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <span className="bg-muted flex h-6 w-6 items-center justify-center rounded-md text-[11px] font-bold">
                     {item.quantity}x
                   </span>
 
                   <span className="leading-tight font-medium">
-                    {item.product.name}
+                    {item.customName}
                   </span>
                 </div>
 
-                <span className="font-semibold text-emerald-600">
-                  {formatCurrency(item.priceAtOrder)}
-                </span>
+                <div className="flex justify-end">
+                  <span className="font-semibold text-emerald-600">
+                    {formatCurrency(item.priceAtOrder)}
+                  </span>
+                </div>
               </div>
             </div>
           ))}

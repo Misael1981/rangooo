@@ -61,6 +61,7 @@ export const getUserOrders = async (
     items: order.items.map((item) => ({
       id: item.id,
       quantity: item.quantity,
+      customName: item.customName,
       priceAtOrder: Number(item.priceAtOrder),
       product: {
         name: item.product.name,

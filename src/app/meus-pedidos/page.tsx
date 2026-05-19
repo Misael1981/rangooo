@@ -10,7 +10,7 @@ import { OrderStatusListener } from "@/components/OrderStatusListener"
 export default async function MyOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string }> // Tipado como Promise
+  searchParams: Promise<{ search?: string }>
 }) {
   const session = await getServerSession(authOptions)
   const { search } = await searchParams
@@ -36,8 +36,8 @@ export default async function MyOrdersPage({
             <span className="font-semibold text-gray-800">
               histórico de sabores
             </span>
-            . Bateu aquela saudade daquele lanchão? Use a busca abaixo para
-            reencontrar seus estabelecimentos favoritos!
+            . Bateu aquela saudade daquele rango favorito? Use a busca abaixo
+            para reencontrar seus estabelecimentos prediletos!
           </p>
         </div>
 

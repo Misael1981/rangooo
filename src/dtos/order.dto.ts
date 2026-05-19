@@ -11,6 +11,7 @@ export interface OrderItem {
   id: string
   quantity: number
   priceAtOrder: number
+  customName: string | null
   product: {
     name: string
     menuCategory: {
