@@ -8,6 +8,7 @@ import { RestaurantProvider } from "@/contexts/restaurant-context"
 import SheetCart from "@/components/SheetCart"
 import { OrderStatusListener } from "@/components/OrderStatusListener"
 import { PushInitializer } from "@/components/PushInitializer"
+import AppLoader from "@/components/AppLoader"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,7 +36,7 @@ export const metadata = {
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
     shortcut: ["/favicon-96x96.png"],
-    other: [{ rel: "mask-icon", url: "/logos.svg", color: "#0d9488" }],
+    other: [{ rel: "mask-icon", url: "/logos.svg", color: "#540604" }],
   },
   manifest: "/site.webmanifest",
 }
@@ -61,7 +62,7 @@ export default function RootLayout({
             <RestaurantProvider>
               <OrderStatusListener />
               <PushInitializer />
-              {children}
+              <AppLoader>{children}</AppLoader>
               <Toaster />
               <SheetCart />
             </RestaurantProvider>
