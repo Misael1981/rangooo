@@ -18,8 +18,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  transpilePackages: ["@misael1981/rangooo-database"],
-  // serverExternalPackages: [],
+  serverExternalPackages: ["@misael1981/rangooo-database"],
 }
 
 const pwaConfig = withPWA(nextConfig)
