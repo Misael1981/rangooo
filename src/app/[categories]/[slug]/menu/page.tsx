@@ -5,14 +5,14 @@ import { getCachedValidCategories } from "@/lib/getCachedValidCategories"
 import { getEstablishmentMenuData } from "@/data/get-menu-data-for-establishment"
 import AppMenuUI from "./components/AppMenuUI"
 
-type MenuPageProps = {
-  params: { [key: string]: string }
-  searchParams: { [key: string]: string }
-}
-
 const isConsumptionMethod = (method: string | undefined) => {
   if (!method) return false
   return ["DINE_IN", "PICKUP", "DELIVERY"].includes(method.toUpperCase())
+}
+
+type MenuPageProps = {
+  params: Promise<{ [key: string]: string }>
+  searchParams: Promise<{ [key: string]: string }>
 }
 
 export default async function MenuPage({
