@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { AnimatePresence } from "framer-motion"
 import SplashScreen from "../SplashScreen"
 
 type AppLoaderProps = {
@@ -8,7 +9,6 @@ type AppLoaderProps = {
 }
 
 function getInitialShowSplash() {
-  // No SSR não existe window/localStorage, então protege isso
   if (typeof window === "undefined") return false
 
   const alreadySeen = localStorage.getItem("rangooo-splash")
@@ -31,5 +31,9 @@ export default function AppLoader({ children }: AppLoaderProps) {
     return () => clearTimeout(timer)
   }, [showSplash])
 
-  return showSplash ? <SplashScreen /> : children
+  return (
+    <AnimatePresence mode="wait">
+      {showSplash ? <SplashScreen key="splash" /> : <>{children}</>}
+    </AnimatePresence>
+  )
 }

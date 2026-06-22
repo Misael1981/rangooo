@@ -16,10 +16,6 @@ const SplashScreen = () => {
           duration: 1.5,
           repeat: Infinity,
         }}
-        exit={{
-          opacity: 0,
-          scale: 1.2,
-        }}
       >
         <Image
           src="/logo-rangooo.svg"
