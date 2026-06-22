@@ -24,7 +24,7 @@ const DescriptionProduct = ({
   onRemovedIngredientsChange,
 }: DescriptionProductProps) => {
   return (
-    <section className="flex-1 space-y-6 bg-white">
+    <section className="flex-1 space-y-6 bg-white pb-20">
       <div className="space-y-2">
         <h3 className="flex items-center text-lg font-semibold">
           <UtensilsCrossed className="mr-2" />
@@ -48,19 +48,26 @@ const DescriptionProduct = ({
             </ul>
           </>
         )}
+
         {additionalIngredients.length > 0 && (
-          <div className="flex flex-col items-center justify-center gap-4 p-4 pb-8">
-            <IngredientManager
-              title="Adicionar ingrediente"
-              ingredients={additionalIngredients}
-              onChange={onExtrasChange}
-            />
-            <IngredientManager
-              title="Retirar ingrediente"
-              ingredients={ingredients.map((name) => ({ name }))}
-              onChangeDelete={onRemovedIngredientsChange}
-            />
-          </div>
+          <>
+            <div className="flex w-full items-center justify-center">
+              <IngredientManager
+                key="add-ingredients"
+                title="Adicionar ingrediente"
+                ingredients={additionalIngredients}
+                onChange={onExtrasChange}
+              />
+            </div>
+            <div className="flex w-full items-center justify-center">
+              <IngredientManager
+                key="remove-ingredients"
+                title="Retirar ingrediente"
+                ingredients={ingredients.map((name) => ({ name }))}
+                onChangeDelete={onRemovedIngredientsChange}
+              />
+            </div>
+          </>
         )}
       </div>
     </section>
