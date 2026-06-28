@@ -26,12 +26,6 @@ export async function processOrderPrinting(
       details: order.deliveryAddress,
     }
 
-    // Log para Debug
-    console.log(
-      "DADOS ENVIADOS PARA O ELECTRON:",
-      JSON.stringify(printData, null, 2),
-    )
-
     // Lógica de Timeout e Envio
     const timeoutPromise = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Timeout Impressora")), 15000),
@@ -50,6 +44,12 @@ export async function processOrderPrinting(
       })
       return { success: true, printId }
     }
+
+    // Log para Debug
+    console.log(
+      "DADOS ENVIADOS PARA O ELECTRON:",
+      JSON.stringify(printData, null, 2),
+    )
 
     return { success: false, error: "Nenhum ID de impressão retornado" }
   } catch (err) {
