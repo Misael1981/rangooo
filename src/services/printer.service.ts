@@ -26,30 +26,39 @@ export async function processOrderPrinting(
       details: order.deliveryAddress,
     }
 
-    // Lógica de Timeout e Envio
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout Impressora")), 15000),
+    // Log para Debug
+    console.log(
+      "DADOS ENVIADOS PARA O ELECTRON:",
+      JSON.stringify(printData, null, 2),
     )
 
+    // Lógica de Timeout e Envio
+    let timeoutId: NodeJS.Timeout
+    const timeoutPromise = new Promise(
+      (_, reject) =>
+        (timeoutId = setTimeout(
+          () => reject(new Error("Timeout Impressora")),
+          15000,
+        )),
+    )
+
+    // Executa a corrida
     const printId = await Promise.race([
       sendOrderToPrint(order.restaurantId, printData),
       timeoutPromise,
-    ])
+    ]).finally(() => clearTimeout(timeoutId)) // Limpa o timer para não prender processo no Render
 
     if (printId) {
-      // Atualiza o ID da impressão no banco de forma isolada
+      console.log(
+        `✅ Pedido ${printData.number} enviado e confirmado pelo Electron. ID: ${printId}`,
+      )
+
       await db.order.update({
         where: { id: order.id },
         data: { printId: printId as string },
       })
       return { success: true, printId }
     }
-
-    // Log para Debug
-    console.log(
-      "DADOS ENVIADOS PARA O ELECTRON:",
-      JSON.stringify(printData, null, 2),
-    )
 
     return { success: false, error: "Nenhum ID de impressão retornado" }
   } catch (err) {
