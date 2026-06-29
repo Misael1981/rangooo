@@ -56,7 +56,7 @@ export default function RootLayout({
         inter.variable,
       )}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex flex-col">
         <AuthProvider>
           <CartProvider>
             <RestaurantProvider>
