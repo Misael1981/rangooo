@@ -26,11 +26,9 @@ export async function sendPushToDeliveryPersons() {
         }),
       )
     } catch (err: unknown) {
-      // Se o status for 410, o token expirou ou o entregador removeu a permissão
       if ((err as { statusCode: number }).statusCode === 410) {
         console.warn(`🧹 Limpando token expirado de entregador ID: ${sub.id}`)
 
-        // Remove a inscrição inválida do banco de dados
         await db.pushSubscription
           .delete({
             where: { id: sub.id },
@@ -39,12 +37,10 @@ export async function sendPushToDeliveryPersons() {
             console.error("Erro ao deletar subscription:", dbErr),
           )
       } else {
-        // Qualquer outro tipo de erro (ex: rede, chaves VAPID erradas, etc)
         console.error(`❌ Erro no push para o entregador ${sub.id}:`, err)
       }
     }
   })
 
-  // Aguarda todos os envios (e limpezas) finalizarem em paralelo
   await Promise.all(notifications)
 }
