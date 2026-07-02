@@ -61,5 +61,9 @@
   },
   "prisma": {
     "schema": "node_modules/@misael1981/rangooo-database/prisma/schema.prisma"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.1.0",
+    "utf-8-validate": "^6.0.6"
   }
 }

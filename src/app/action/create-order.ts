@@ -140,11 +140,14 @@ export const createOrder = async (
 
   console.log("Pedido criado com sucesso:", order)
 
-  /* ---------------- Notificações Pusher ---------------- */
-  await notifyNewOrder(order)
+  /* ---------------- Processamento em Background ---------------- */
+  notifyNewOrder(order).catch((err) =>
+    console.error("❌ Falha crítica no fluxo de notificações:", err),
+  )
 
-  /* ---------------- Impressão ---------------- */
-  await processOrderPrinting(order, input)
+  processOrderPrinting(order, input).catch((err) =>
+    console.error("❌ Falha crítica no fluxo de impressão:", err),
+  )
 
   return serializeOrder(order) as unknown as OrderResponseDTO
 }

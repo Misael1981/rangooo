@@ -46,16 +46,23 @@ export async function notifyNewOrder(order: OrderWithRestaurant) {
     })
     .catch((err) => console.error("❌ Erro Pusher:", err))
 
-  // 2. Web Push (Notificações silenciosas/background)
+  // 2. Web Push - Interceptando o erro 410 aqui
   const pushRestaurant = sendPushToEstablishments({
     slug: order.restaurant.slug,
     restaurantId: order.restaurantId,
+  }).catch(async (err) => {
+    if (err.statusCode === 410 || err.message?.includes("410")) {
+      console.warn(`⚠️ Token expirado em Estabelecimentos (410).`)
+      // Aqui você pode rodar a lógica para deletar as subs antigas do restauranteId se quiser
+    } else {
+      console.error("❌ Erro WebPush Estabelecimentos:", err)
+    }
   })
 
   const pushKDS = sendPushToKDS({
     slug: order.restaurant.slug,
     restaurantId: order.restaurantId,
-  })
+  }).catch((err) => console.error("❌ Erro WebPush KDS:", err))
 
   // Criamos o array de promises limpo
   const notifications: Promise<unknown>[] = [
@@ -66,15 +73,16 @@ export async function notifyNewOrder(order: OrderWithRestaurant) {
 
   // 3. Notificar Entregadores (Se for Delivery)
   if (order.consumptionMethod === "DELIVERY") {
-    const pusherDelivery = pusherServer.trigger(
-      "delivery-orders",
-      "order:created",
-      {
+    const pusherDelivery = pusherServer
+      .trigger("delivery-orders", "order:created", {
         orderId: order.id,
         restaurantName: order.restaurant.name,
-      },
+      })
+      .catch((err) => console.error("❌ Erro Pusher Delivery:", err))
+
+    const pushDelivery = sendPushToDeliveryPersons().catch((err) =>
+      console.error("❌ Erro WebPush Entregadores:", err),
     )
-    const pushDelivery = sendPushToDeliveryPersons()
 
     notifications.push(pusherDelivery, pushDelivery)
   }
