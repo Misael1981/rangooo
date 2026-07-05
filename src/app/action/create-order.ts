@@ -12,6 +12,7 @@ import { calculateOrderTotal } from "@/services/order-total.service"
 import { notifyNewOrder } from "@/services/notification.service"
 import { processOrderPrinting } from "@/services/printer.service"
 import { Prisma } from "@misael1981/rangooo-database"
+import { waitUntil } from "@vercel/functions"
 
 export const createOrder = async (
   input: CreateOrderInputDTO,
@@ -19,8 +20,6 @@ export const createOrder = async (
   const session = await getServerSession(authOptions)
 
   if (!session?.user) throw new Error("Não autenticado")
-
-  console.log("Como os dados chegam:", input)
 
   const order = await db.$transaction(async (tx) => {
     const [user, restaurant] = await Promise.all([
@@ -138,15 +137,19 @@ export const createOrder = async (
     })
   })
 
-  console.log("Pedido criado com sucesso:", order)
+  console.log("Pedido criado com sucesso:", order.id)
 
   /* ---------------- Processamento em Background ---------------- */
-  notifyNewOrder(order).catch((err) =>
-    console.error("❌ Falha crítica no fluxo de notificações:", err),
+  waitUntil(
+    processOrderPrinting(order, input).catch((err) =>
+      console.error("❌ Falha crítica no fluxo de impressão:", err),
+    ),
   )
 
-  processOrderPrinting(order, input).catch((err) =>
-    console.error("❌ Falha crítica no fluxo de impressão:", err),
+  waitUntil(
+    notifyNewOrder(order).catch((err) =>
+      console.error("❌ Falha crítica no fluxo de notificações:", err),
+    ),
   )
 
   return serializeOrder(order) as unknown as OrderResponseDTO

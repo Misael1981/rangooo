@@ -37,6 +37,11 @@ export async function getEstablishmentMenuData(
             },
           },
         },
+        deliveryEstimateSettings: {
+          select: {
+            fallbackMinutes: true,
+          },
+        },
       },
     })
 

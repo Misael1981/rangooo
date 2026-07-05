@@ -16,6 +16,7 @@
     "@misael1981/rangooo-database": "github:Misael1981/rangooo-database",
     "@prisma/client": "^6.19.3",
     "@react-google-maps/api": "^2.20.8",
+    "@vercel/functions": "^3.7.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

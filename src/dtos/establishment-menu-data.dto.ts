@@ -50,6 +50,10 @@ export interface SystemSettingsDTO {
   districtDeliveryFee: number
 }
 
+export interface DeliveryEstimateSettingsDTO {
+  fallbackMinutes: number
+}
+
 export interface EstablishmentMenuDataDTO {
   id: string
   name: string
@@ -76,6 +80,7 @@ export interface EstablishmentMenuDataDTO {
   useRangoooDelivery: boolean
   systemSettings: SystemSettingsDTO
   userAreaType: string | null
+  deliveryEstimateSettings: DeliveryEstimateSettingsDTO
 
   printerStatus?: string
   printingToken?: string

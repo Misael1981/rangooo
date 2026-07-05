@@ -1,3 +1,4 @@
+import { DeliveryEstimateSettingsDTO } from "@/dtos/establishment-menu-data.dto"
 import Link from "next/link"
 import { BsCreditCard, BsClock, BsInfoCircle } from "react-icons/bs"
 
@@ -5,9 +6,15 @@ type BusinessInfoProps = {
   slug: string
   isOpen: boolean
   categorie: string
+  deliveryEstimateSettings?: DeliveryEstimateSettingsDTO
 }
 
-const BusinessInfo = ({ slug, isOpen, categorie }: BusinessInfoProps) => {
+const BusinessInfo = ({
+  slug,
+  isOpen,
+  categorie,
+  deliveryEstimateSettings,
+}: BusinessInfoProps) => {
   const categories = categorie.toLowerCase()
 
   const linksInfos = [
@@ -27,6 +34,9 @@ const BusinessInfo = ({ slug, isOpen, categorie }: BusinessInfoProps) => {
       icon: <BsInfoCircle size={24} />,
     },
   ]
+
+  console.log("deliveryEstimateSettings", deliveryEstimateSettings)
+
   return (
     <section className="space-y-2">
       <ul className="flex items-center justify-between">
@@ -45,7 +55,15 @@ const BusinessInfo = ({ slug, isOpen, categorie }: BusinessInfoProps) => {
       <div className="flex flex-col items-center justify-center">
         <h4 className="text-center">Funcionamento</h4>
         {isOpen ? (
-          <p className="text-center text-lg text-green-500">Aberto</p>
+          <>
+            <p className="text-center text-lg text-green-500">Aberto</p>
+            {deliveryEstimateSettings?.fallbackMinutes && (
+              <p className="text-center text-sm text-gray-500">
+                Tempo estimado de entrega:{" "}
+                {deliveryEstimateSettings?.fallbackMinutes} minutos
+              </p>
+            )}
+          </>
         ) : (
           <p className="text-lg text-red-500">Fechado</p>
         )}

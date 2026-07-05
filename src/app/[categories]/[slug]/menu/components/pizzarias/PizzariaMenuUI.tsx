@@ -47,6 +47,7 @@ const PizzariaMenuUI = ({ establishment }: PizzariaMenuUIProps) => {
           slug={establishment.slug}
           isOpen={establishment.isOpen}
           categorie={establishment.category}
+          deliveryEstimateSettings={establishment.deliveryEstimateSettings}
         />
 
         <SelectionMenuPizzaria
