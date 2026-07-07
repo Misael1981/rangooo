@@ -59,6 +59,11 @@ const OrderCard = ({ order }: OrderCardProps) => {
   const status = order.status
   const config = ORDER_STATUS_CONFIG[status]
 
+  const isOrderActiveAndDelivering =
+    order.status !== "DELIVERED" &&
+    order.status !== "CANCELED" &&
+    !!order.estimatedDeliveryMinutes
+
   return (
     <Card className="gap-2 overflow-hidden transition-all hover:shadow-md">
       <CardHeader>
@@ -96,7 +101,7 @@ const OrderCard = ({ order }: OrderCardProps) => {
 
       <CardContent className="space-y-2">
         {/* Tempo de entrega */}
-        {order.estimatedDeliveryMinutes && (
+        {isOrderActiveAndDelivering && (
           <DeliveryTimer
             createdAt={order.createdAt}
             estimatedDeliveryMinutes={order.estimatedDeliveryMinutes}

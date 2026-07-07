@@ -18,6 +18,7 @@ import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import LoginSocialMidia from "./components/LoginSocialMidia"
 import UserMenuLinks from "./components/UserMenuLinks"
+import { GrInstagram } from "react-icons/gr"
 
 type UserSheetProps = {
   user: UserForLoginDTO | null
@@ -88,7 +89,27 @@ const UserSheet = ({ user }: UserSheetProps) => {
                   seus dados.
                 </p>
               </section>
-              <UserMenuLinks user={user} />
+
+              <section className="flex h-full flex-col justify-between">
+                <UserMenuLinks user={user} />
+
+                <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-6 text-center backdrop-blur-sm transition-all duration-300 hover:border-slate-200 hover:bg-slate-50">
+                  <p className="text-sm font-medium text-slate-600">
+                    Acompanhe as novidades do Rangooo
+                  </p>
+
+                  <a
+                    href="https://www.instagram.com/rangooo.app?igsh=ajFmbzM0NXBvaTA3"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center gap-2 rounded-xl bg-linear-to-r from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-purple-500/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/20 active:scale-[0.98]"
+                  >
+                    <GrInstagram className="h-5 w-5 transition-transform duration-300 group-hover:rotate-6" />
+                    <span>Siga @rangooo.app</span>
+                  </a>
+                </div>
+              </section>
+
               <SheetFooter className="mt-auto">
                 <Button
                   variant="destructive"

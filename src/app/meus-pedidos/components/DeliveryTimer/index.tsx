@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 
 type DeliveryTimerProps = {
   createdAt: string | Date
-  estimatedDeliveryMinutes: number
+  estimatedDeliveryMinutes: number | null
 }
 
 const DeliveryTimer = ({
@@ -18,7 +18,9 @@ const DeliveryTimer = ({
       const orderTime = new Date(createdAt).getTime()
       const now = new Date().getTime()
       const minutesPassed = Math.floor((now - orderTime) / 1000 / 60)
-      const remaining = estimatedDeliveryMinutes - minutesPassed
+      const remaining = estimatedDeliveryMinutes
+        ? estimatedDeliveryMinutes - minutesPassed
+        : 0
       return remaining > 0 ? remaining : 0
     }
 
