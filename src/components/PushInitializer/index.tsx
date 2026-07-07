@@ -31,7 +31,7 @@ export function PushInitializer() {
 
     async function initPush() {
       try {
-        // 1. Registra o arquivo sw.js que você já tem na pasta public
+        // 1. Registra o arquivo sw.js na pasta public
         const registration = await navigator.serviceWorker.register("/sw.js")
 
         // 2. Pede permissão para mandar notificações

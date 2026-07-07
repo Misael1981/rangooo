@@ -8,32 +8,50 @@ type AppLoaderProps = {
   children: React.ReactNode
 }
 
-function getInitialShowSplash() {
-  if (typeof window === "undefined") return false
-
-  const alreadySeen = localStorage.getItem("rangooo-splash")
-  if (alreadySeen) return false
-
-  localStorage.setItem("rangooo-splash", "true")
-  return true
-}
-
 export default function AppLoader({ children }: AppLoaderProps) {
-  const [showSplash, setShowSplash] = useState(getInitialShowSplash)
+  const [mounted, setMounted] = useState(false)
+  const [showSplash, setShowSplash] = useState(true)
 
   useEffect(() => {
-    if (!showSplash) return
+    setTimeout(() => {
+      setMounted(true)
 
-    const timer = setTimeout(() => {
-      setShowSplash(false)
-    }, 1500)
+      const alreadySeen = localStorage.getItem("rangooo-splash")
 
-    return () => clearTimeout(timer)
-  }, [showSplash])
+      if (alreadySeen) {
+        setShowSplash(false)
+      }
+    }, 0)
+
+    const alreadySeen =
+      typeof window !== "undefined"
+        ? localStorage.getItem("rangooo-splash")
+        : null
+
+    let timer: NodeJS.Timeout
+    if (!alreadySeen) {
+      timer = setTimeout(() => {
+        localStorage.setItem("rangooo-splash", "true")
+        setShowSplash(false)
+      }, 1500)
+    }
+
+    return () => {
+      if (timer) clearTimeout(timer)
+    }
+  }, [])
+
+  if (!mounted) {
+    return <SplashScreen key="splash" />
+  }
 
   return (
-    <AnimatePresence mode="wait">
-      {showSplash ? <SplashScreen key="splash" /> : <>{children}</>}
-    </AnimatePresence>
+    <>
+      <AnimatePresence mode="wait">
+        {showSplash && <SplashScreen key="splash" />}
+      </AnimatePresence>
+
+      {!showSplash && children}
+    </>
   )
 }
