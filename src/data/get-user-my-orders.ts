@@ -8,12 +8,17 @@ export const getUserOrders = async (
   const orders = await db.order.findMany({
     where: {
       userId: userId,
-      restaurant: {
-        name: {
-          contains: searchTerm,
-          mode: "insensitive",
-        },
-      },
+
+      ...(searchTerm
+        ? {
+            restaurant: {
+              name: {
+                contains: searchTerm,
+                mode: "insensitive",
+              },
+            },
+          }
+        : {}),
     },
     take: 10,
     orderBy: {
@@ -52,6 +57,8 @@ export const getUserOrders = async (
     orderNumber: order.orderNumber,
     consumptionMethod: order.consumptionMethod,
     createdAt: order.createdAt,
+
+    estimatedDeliveryMinutes: order.estimatedDeliveryMinutes,
     restaurant: {
       name: order.restaurant.name,
       slug: order.restaurant.slug,

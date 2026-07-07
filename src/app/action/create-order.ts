@@ -33,7 +33,15 @@ export const createOrder = async (
       }),
       tx.restaurant.findUnique({
         where: { slug: input.slug },
-        select: { id: true, name: true },
+        select: {
+          id: true,
+          name: true,
+          deliveryEstimateSettings: {
+            select: {
+              fallbackMinutes: true,
+            },
+          },
+        },
       }),
     ])
 
@@ -57,6 +65,10 @@ export const createOrder = async (
         status: "PENDING",
         consumptionMethod: input.consumptionMethod,
         paymentMethod: input.payment?.paymentMethod || "NOT_DEFINED",
+        estimatedDeliveryMinutes:
+          input.consumptionMethod === "DELIVERY"
+            ? (restaurant.deliveryEstimateSettings?.fallbackMinutes ?? 40)
+            : null,
 
         deliveryAddress:
           input.consumptionMethod === "DELIVERY"

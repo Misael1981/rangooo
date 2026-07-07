@@ -38,6 +38,10 @@ const OrderSuccessfulDialog = ({
           <DialogDescription>
             Seu pedido foi realizado com sucesso!
           </DialogDescription>
+          <DialogDescription className="text-center">
+            Acompanhe na página <span className="font-bold">Meus Pedidos</span>{" "}
+            para saber o status e o tempo de entrega do seu pedido.
+          </DialogDescription>
         </DialogHeader>
         <div className="flex justify-around">
           <Button

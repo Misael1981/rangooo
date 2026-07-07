@@ -28,6 +28,7 @@ export interface UserOrder {
   deliveryFee: number
   orderNumber: number
   consumptionMethod: string
+  estimatedDeliveryMinutes: number | null
   createdAt: Date
   restaurant: EstablishmentOrder
   items: OrderItem[]

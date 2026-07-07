@@ -7,6 +7,7 @@ import Image from "next/image"
 import { OrderItem, UserOrder } from "@/dtos/order.dto"
 import { formatCurrency } from "@/helpers/format-currency"
 import { ConsumptionMethod, OrderStatus } from "@misael1981/rangooo-database"
+import DeliveryTimer from "../DeliveryTimer"
 
 type StatusConfig = {
   label: string
@@ -94,6 +95,14 @@ const OrderCard = ({ order }: OrderCardProps) => {
       <Separator />
 
       <CardContent className="space-y-2">
+        {/* Tempo de entrega */}
+        {order.estimatedDeliveryMinutes && (
+          <DeliveryTimer
+            createdAt={order.createdAt}
+            estimatedDeliveryMinutes={order.estimatedDeliveryMinutes}
+          />
+        )}
+
         {/* Método de consumo */}
         <div className="text-muted-foreground flex items-center justify-between text-sm font-medium">
           <span>
