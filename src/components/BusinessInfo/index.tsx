@@ -35,8 +35,6 @@ const BusinessInfo = ({
     },
   ]
 
-  console.log("deliveryEstimateSettings", deliveryEstimateSettings)
-
   return (
     <section className="space-y-2">
       <ul className="flex items-center justify-between">
@@ -58,9 +56,11 @@ const BusinessInfo = ({
           <>
             <p className="text-center text-lg text-green-500">Aberto</p>
             {deliveryEstimateSettings?.fallbackMinutes && (
-              <p className="text-center text-sm text-gray-500">
+              <p className="text-center text-sm">
                 Tempo estimado de entrega:{" "}
-                {deliveryEstimateSettings?.fallbackMinutes} minutos
+                <span className="font-semibold">
+                  {deliveryEstimateSettings?.fallbackMinutes} minutos
+                </span>
               </p>
             )}
           </>
