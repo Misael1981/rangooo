@@ -4,54 +4,39 @@ import { useEffect, useState } from "react"
 import { AnimatePresence } from "framer-motion"
 import SplashScreen from "../SplashScreen"
 
-type AppLoaderProps = {
-  children: React.ReactNode
-}
-
-export default function AppLoader({ children }: AppLoaderProps) {
-  const [mounted, setMounted] = useState(false)
+export default function AppLoader({ children }: { children: React.ReactNode }) {
   const [showSplash, setShowSplash] = useState(true)
 
   useEffect(() => {
-    setTimeout(() => {
-      setMounted(true)
+    const alreadySeen = localStorage.getItem("rangooo-splash")
 
-      const alreadySeen = localStorage.getItem("rangooo-splash")
-
-      if (alreadySeen) {
+    if (alreadySeen) {
+      // Adia a execução para fora do fluxo de render síncrono do React
+      setTimeout(() => {
         setShowSplash(false)
-      }
-    }, 0)
-
-    const alreadySeen =
-      typeof window !== "undefined"
-        ? localStorage.getItem("rangooo-splash")
-        : null
-
-    let timer: NodeJS.Timeout
-    if (!alreadySeen) {
-      timer = setTimeout(() => {
-        localStorage.setItem("rangooo-splash", "true")
-        setShowSplash(false)
-      }, 1500)
+      }, 0)
+      return
     }
 
-    return () => {
-      if (timer) clearTimeout(timer)
-    }
+    const timer = setTimeout(() => {
+      localStorage.setItem("rangooo-splash", "true")
+      setShowSplash(false)
+    }, 1500)
+
+    return () => clearTimeout(timer)
   }, [])
-
-  if (!mounted) {
-    return <SplashScreen key="splash" />
-  }
 
   return (
     <>
       <AnimatePresence mode="wait">
-        {showSplash && <SplashScreen key="splash" />}
+        {showSplash ? (
+          <SplashScreen key="splash" />
+        ) : (
+          <div key="content" className="animate-in fade-in duration-500">
+            {children}
+          </div>
+        )}
       </AnimatePresence>
-
-      {!showSplash && children}
     </>
   )
 }

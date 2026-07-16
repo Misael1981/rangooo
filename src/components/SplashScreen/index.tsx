@@ -8,17 +8,17 @@ const SplashScreen = () => {
     <motion.div
       className="fixed inset-0 z-50 flex h-screen w-screen items-center justify-center bg-white"
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+      exit={{ opacity: 0, transition: { duration: 0.4, ease: "easeInOut" } }}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 1, scale: 1 }}
         animate={{
-          opacity: 1,
-          scale: [1, 1.05, 1],
+          scale: [1, 1.06, 1],
         }}
         transition={{
-          duration: 1.5,
+          duration: 1.6,
           repeat: Infinity,
+          ease: "easeInOut",
         }}
       >
         <Image
